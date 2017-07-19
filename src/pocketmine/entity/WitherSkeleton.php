@@ -26,15 +26,15 @@ use pocketmine\Player;
 use pocketmine\network\protocol\MobEquipmentPacket;
 use pocketmine\item\Item as ItemItem;
 
-class WitherSkeleton extends Monster implements ProjectileSource{
+class WitherSkeleton extends Monster implements ProjectileSource {
 	const NETWORK_ID = 48;
 
 	public $dropExp = [5, 5];
-	
+
 	public function getName() : string{
 		return "Wither Skeleton";
 	}
-	
+
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->eid = $this->getId();
@@ -51,7 +51,7 @@ class WitherSkeleton extends Monster implements ProjectileSource{
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
-		
+
 		$pk = new MobEquipmentPacket();
 		$pk->eid = $this->getId();
 		$pk->item = new ItemItem(ItemItem::STONE_SWORD);

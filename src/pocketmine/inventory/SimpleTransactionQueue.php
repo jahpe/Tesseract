@@ -15,7 +15,7 @@
  * (at your option) any later version.
  *
  * @author iTX Technologies
- * @link https://itxtech.org
+ * @link   https://itxtech.org
  *
  */
 
@@ -25,7 +25,7 @@ use pocketmine\event\inventory\InventoryTransactionEvent;
 
 use pocketmine\Player;
 
-class SimpleTransactionQueue implements TransactionQueue{
+class SimpleTransactionQueue implements TransactionQueue {
 
 	/** @var Player[] */
 	protected $player = null;
@@ -34,7 +34,7 @@ class SimpleTransactionQueue implements TransactionQueue{
 	protected $transactionQueue;
 	/** @var \SplQueue */
 	protected $transactionsToRetry;
-	
+
 	/** @var Inventory[] */
 	protected $inventories;
 

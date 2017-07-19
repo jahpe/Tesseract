@@ -26,7 +26,7 @@ use pocketmine\level\generator\normal\object\Ore as ObjectOre;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
 
-class Ore extends Populator{
+class Ore extends Populator {
 	private $oreTypes = [];
 
 	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){

@@ -24,7 +24,7 @@ namespace pocketmine\event\block;
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 
-class BlockGrowEvent extends BlockEvent implements Cancellable{
+class BlockGrowEvent extends BlockEvent implements Cancellable {
 	public static $handlerList = null;
 
 	/** @var Block */
@@ -44,7 +44,7 @@ class BlockGrowEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "BlockGrowEvent";
 	}

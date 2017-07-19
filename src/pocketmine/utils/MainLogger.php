@@ -25,35 +25,20 @@ use LogLevel;
 use pocketmine\Thread;
 use pocketmine\Worker;
 
-class MainLogger extends \AttachableThreadedLogger{
+class MainLogger extends \AttachableThreadedLogger {
+	/** @var MainLogger */
+	public static $logger = null;
+	public $shouldSendMsg = "";
+	public $shouldRecordMsg = false;
 	protected $logFile;
 	protected $logStream;
 	protected $shutdown;
 	protected $logDebug;
-	private $logResource;
-	/** @var MainLogger */
-	public static $logger = null;
-	
-	private $consoleCallback;
-
 	/** Extra Settings */
 	protected $write = false;
-
-	public $shouldSendMsg = "";
-	public $shouldRecordMsg = false;
+	private $logResource;
+	private $consoleCallback;
 	private $lastGet = 0;
-
-	public function setSendMsg($b){
-		$this->shouldRecordMsg = $b;
-		$this->lastGet = time();
-	}
-
-	public function getMessages(){
-		$msg = $this->shouldSendMsg;
-		$this->shouldSendMsg = "";
-		$this->lastGet = time();
-		return $msg;
-	}
 
 	/**
 	 * @param string $logFile
@@ -80,43 +65,21 @@ class MainLogger extends \AttachableThreadedLogger{
 		return static::$logger;
 	}
 
-	public function emergency($message, $name = "EMERGENCY"){
-		$this->send($message, \LogLevel::EMERGENCY, $name, TextFormat::RED);
+	public function setSendMsg($b){
+		$this->shouldRecordMsg = $b;
+		$this->lastGet = time();
 	}
 
-	public function alert($message, $name = "ALERT"){
-		$this->send($message, \LogLevel::ALERT, $name, TextFormat::RED);
+	public function getMessages(){
+		$msg = $this->shouldSendMsg;
+		$this->shouldSendMsg = "";
+		$this->lastGet = time();
+
+		return $msg;
 	}
 
-	public function critical($message, $name = "CRITICAL"){
-		$this->send($message, \LogLevel::CRITICAL, $name, TextFormat::RED);
-	}
-
-	public function error($message, $name = "ERROR"){
-		$this->send($message, \LogLevel::ERROR, $name, TextFormat::DARK_RED);
-	}
-
-	public function warning($message, $name = "WARNING"){
-		$this->send($message, \LogLevel::WARNING, $name, TextFormat::YELLOW);
-	}
-
-	public function notice($message, $name = "NOTICE"){
-		$this->send(TextFormat::BOLD . $message, \LogLevel::NOTICE, $name, TextFormat::AQUA);
-	}
-
-	public function info($message, $name = "INFO"){
-		$this->send($message, \LogLevel::INFO, $name, TextFormat::WHITE);
-	}
-	
 	public function developer($message, $name = "DEVELOPER"){
 		$this->send($message, \LogLevel::DEVELOPER, $name, TextFormat::GOLD);
-	}
-
-	public function debug($message, $name = "DEBUG"){
-		if($this->logDebug === false){
-			return;
-		}
-		$this->send($message, \LogLevel::DEBUG, $name, TextFormat::GRAY);
 	}
 
 	/**
@@ -198,8 +161,8 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
-	public function shutdown(){
-		$this->shutdown = true;
+	public function emergency($message, $name = "EMERGENCY"){
+		$this->send($message, \LogLevel::EMERGENCY, $name, TextFormat::RED);
 	}
 
 	protected function send($message, $level, $prefix, $color){
@@ -222,8 +185,8 @@ class MainLogger extends \AttachableThreadedLogger{
 			}
 		}
 
-    $message = TextFormat::toANSI(TextFormat::GREEN . "[Tesseract] " . TextFormat::RESET . TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . $color . $prefix . "> " . $message . TextFormat::RESET);
-	//$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s") . "] ". TextFormat::RESET . $color ."<".$prefix . ">" . " " . $message . TextFormat::RESET);
+		$message = TextFormat::toANSI(TextFormat::GREEN . "[Tesseract] " . TextFormat::RESET . TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . $color . $prefix . "> " . $message . TextFormat::RESET);
+		//$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s") . "] ". TextFormat::RESET . $color ."<".$prefix . ">" . " " . $message . TextFormat::RESET);
 		$cleanMessage = TextFormat::clean($message);
 
 		if(!Terminal::hasFormattingCodes()){
@@ -246,6 +209,41 @@ class MainLogger extends \AttachableThreadedLogger{
 				$this->notify();
 			});
 		}
+	}
+
+	public function alert($message, $name = "ALERT"){
+		$this->send($message, \LogLevel::ALERT, $name, TextFormat::RED);
+	}
+
+	public function critical($message, $name = "CRITICAL"){
+		$this->send($message, \LogLevel::CRITICAL, $name, TextFormat::RED);
+	}
+
+	public function error($message, $name = "ERROR"){
+		$this->send($message, \LogLevel::ERROR, $name, TextFormat::DARK_RED);
+	}
+
+	public function warning($message, $name = "WARNING"){
+		$this->send($message, \LogLevel::WARNING, $name, TextFormat::YELLOW);
+	}
+
+	public function notice($message, $name = "NOTICE"){
+		$this->send(TextFormat::BOLD . $message, \LogLevel::NOTICE, $name, TextFormat::AQUA);
+	}
+
+	public function info($message, $name = "INFO"){
+		$this->send($message, \LogLevel::INFO, $name, TextFormat::WHITE);
+	}
+
+	public function debug($message, $name = "DEBUG"){
+		if($this->logDebug === false){
+			return;
+		}
+		$this->send($message, \LogLevel::DEBUG, $name, TextFormat::GRAY);
+	}
+
+	public function shutdown(){
+		$this->shutdown = true;
 	}
 
 	/*public function run(){
@@ -310,7 +308,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	public function setWrite($write){
 		$this->write = $write;
 	}
-	
+
 	public function setConsoleCallback($callback){
 		$this->consoleCallback = $callback;
 	}

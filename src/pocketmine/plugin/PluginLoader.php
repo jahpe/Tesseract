@@ -21,7 +21,7 @@
 
 namespace pocketmine\plugin;
 
-interface PluginLoader{
+interface PluginLoader {
 
 	/**
 	 * Loads the plugin contained in $file

@@ -39,7 +39,7 @@ use pocketmine\nbt\tag\IntTag;
 
 use pocketmine\nbt\tag\StringTag;
 
-class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
+class Dropper extends Spawnable implements InventoryHolder, Container, Nameable {
 
 	/** @var DropperInventory */
 	protected $inventory;
@@ -59,32 +59,27 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->scheduleUpdate();
 	}
 
-	public function close(){
-		if($this->closed === false){
-			foreach($this->getInventory()->getViewers() as $player){
-				$player->removeWindow($this->getInventory());
-			}
-
-			foreach($this->getInventory()->getViewers() as $player){
-				$player->removeWindow($this->getInventory());
-			}
-			parent::close();
-		}
-	}
-
-	public function saveNBT(){
-		$this->namedtag->Items = new ListTag("Items", []);
-		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
-		for($index = 0; $index < $this->getSize(); ++$index){
-			$this->setItem($index, $this->inventory->getItem($index));
-		}
-	}
-
 	/**
 	 * @return int
 	 */
 	public function getSize(){
 		return 9;
+	}
+
+	/**
+	 * This method should not be used by plugins, use the Inventory
+	 *
+	 * @param int $index
+	 *
+	 * @return Item
+	 */
+	public function getItem($index){
+		$i = $this->getSlotIndex($index);
+		if($i < 0){
+			return Item::get(Item::AIR, 0, 0);
+		}else{
+			return Item::nbtDeserialize($this->namedtag->Items[$i]);
+		}
 	}
 
 	/**
@@ -102,19 +97,31 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 		return -1;
 	}
 
+	public function close(){
+		if($this->closed === false){
+			foreach($this->getInventory()->getViewers() as $player){
+				$player->removeWindow($this->getInventory());
+			}
+
+			foreach($this->getInventory()->getViewers() as $player){
+				$player->removeWindow($this->getInventory());
+			}
+			parent::close();
+		}
+	}
+
 	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int $index
-	 *
-	 * @return Item
+	 * @return DropperInventory
 	 */
-	public function getItem($index){
-		$i = $this->getSlotIndex($index);
-		if($i < 0){
-			return Item::get(Item::AIR, 0, 0);
-		}else{
-			return Item::nbtDeserialize($this->namedtag->Items[$i]);
+	public function getInventory(){
+		return $this->inventory;
+	}
+
+	public function saveNBT(){
+		$this->namedtag->Items = new ListTag("Items", []);
+		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
+		for($index = 0; $index < $this->getSize(); ++$index){
+			$this->setItem($index, $this->inventory->getItem($index));
 		}
 	}
 
@@ -147,48 +154,18 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 		return true;
 	}
 
-	/**
-	 * @return DropperInventory
-	 */
-	public function getInventory(){
-		return $this->inventory;
-	}
-
 	public function getName() : string{
 		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Dropper";
-	}
-
-	public function hasName(){
-		return isset($this->namedtag->CustomName);
 	}
 
 	public function setName($str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);
+
 			return;
 		}
 
 		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-	public function getMotion(){
-		$meta = $this->getBlock()->getDamage();
-		switch($meta){
-			case Vector3::SIDE_DOWN:
-				return [0, -1, 0];
-			case Vector3::SIDE_UP:
-				return [0, 1, 0];
-			case Vector3::SIDE_NORTH:
-				return [0, 0, -1];
-			case Vector3::SIDE_SOUTH:
-				return [0, 0, 1];
-			case Vector3::SIDE_WEST:
-				return [-1, 0, 0];
-			case Vector3::SIDE_EAST:
-				return [1, 0, 0];
-			default:
-				return [0, 0, 0];
-		}
 	}
 
 	public function activate(){
@@ -224,6 +201,7 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 					if($t instanceof Tile){
 						if($t->getInventory()->canAddItem($needItem)){
 							$t->getInventory()->addItem($needItem);
+
 							return;
 						}
 					}
@@ -260,6 +238,26 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 	}
 
+	public function getMotion(){
+		$meta = $this->getBlock()->getDamage();
+		switch($meta){
+			case Vector3::SIDE_DOWN:
+				return [0, -1, 0];
+			case Vector3::SIDE_UP:
+				return [0, 1, 0];
+			case Vector3::SIDE_NORTH:
+				return [0, 0, -1];
+			case Vector3::SIDE_SOUTH:
+				return [0, 0, 1];
+			case Vector3::SIDE_WEST:
+				return [-1, 0, 0];
+			case Vector3::SIDE_EAST:
+				return [1, 0, 0];
+			default:
+				return [0, 0, 0];
+		}
+	}
+
 	public function getSpawnCompound(){
 		$c = new CompoundTag("", [
 			new StringTag("id", Tile::DROPPER),
@@ -273,5 +271,9 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 
 		return $c;
+	}
+
+	public function hasName(){
+		return isset($this->namedtag->CustomName);
 	}
 }

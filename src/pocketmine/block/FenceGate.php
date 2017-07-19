@@ -27,7 +27,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 use pocketmine\level\sound\DoorSound;
 
-class FenceGate extends Transparent{
+class FenceGate extends Transparent {
 
 	protected $id = self::FENCE_GATE;
 
@@ -39,11 +39,11 @@ class FenceGate extends Transparent{
 		return "Oak Fence Gate";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 2;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -51,8 +51,33 @@ class FenceGate extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		$this->meta = ($player instanceof Player ? ($player->getDirection() - 1) & 0x03 : 0);
+		$this->getLevel()->setBlock($block, $this, true, true);
 
-	protected function recalculateBoundingBox() {
+		return true;
+	}
+
+	public function getDrops(Item $item) : array{
+		return [
+			[$this->id, 0, 1],
+		];
+	}
+
+	public function onActivate(Item $item, Player $player = null){
+		$this->meta = (($this->meta ^ 0x04) & ~0x02);
+
+		if($player !== null){
+			$this->meta |= (($player->getDirection() - 1) & 0x02);
+		}
+
+		$this->getLevel()->setBlock($this, $this, true);
+		$this->level->addSound(new DoorSound($this));
+
+		return true;
+	}
+
+	protected function recalculateBoundingBox(){
 
 		if(($this->getDamage() & 0x04) > 0){
 			return null;
@@ -78,30 +103,5 @@ class FenceGate extends Transparent{
 				$this->z + 1
 			);
 		}
-	}
-
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-        $this->meta = ($player instanceof Player ? ($player->getDirection() - 1) & 0x03 : 0);
-		$this->getLevel()->setBlock($block, $this, true, true);
-
-		return true;
-	}
-
-	public function getDrops(Item $item) : array {
-		return [
-			[$this->id, 0, 1],
-		];
-	}
-
-	public function onActivate(Item $item, Player $player = null){
-        $this->meta = (($this->meta ^ 0x04) & ~0x02);
-
-        if($player !== null){
-            $this->meta |= (($player->getDirection() - 1) & 0x02);
-        }
-
-		$this->getLevel()->setBlock($this, $this, true);
-		$this->level->addSound(new DoorSound($this));
-		return true;
 	}
 }

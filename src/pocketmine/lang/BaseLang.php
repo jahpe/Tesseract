@@ -24,7 +24,7 @@ namespace pocketmine\lang;
 use pocketmine\event\TextContainer;
 use pocketmine\event\TranslationContainer;
 
-class BaseLang{
+class BaseLang {
 
 	const FALLBACK_LANGUAGE = "eng";
 
@@ -43,14 +43,6 @@ class BaseLang{
 
 		$this->loadLang($path . $this->langName . ".ini", $this->lang);
 		$this->loadLang($path . $fallback . ".ini", $this->fallbackLang);
-	}
-
-	public function getName() : string{
-		return $this->get("language.name");
-	}
-
-	public function getLang(){
-		return $this->langName;
 	}
 
 	protected function loadLang($path, array &$d){
@@ -78,47 +70,8 @@ class BaseLang{
 		}
 	}
 
-    /**
-     * @param string $str
-     * @param string[] $params
-     *
-     * @param null $onlyPrefix
-     * @return string
-     */
-	public function translateString($str, array $params = [], $onlyPrefix = null){
-		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
-
-		foreach($params as $i => $p){
-			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
-		}
-
-		return str_replace("%0", "", $baseText); //fixes a client bug where %0 in translation will cause freeze
-	}
-
-	public function translate(TextContainer $c){
-		if($c instanceof TranslationContainer){
-			$baseText = $this->internalGet($c->getText());
-			$baseText = $this->parseTranslation($baseText !== null ? $baseText : $c->getText());
-
-			foreach($c->getParameters() as $i => $p){
-				$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
-			}
-		}else{
-			$baseText = $this->parseTranslation($c->getText());
-		}
-
-		return $baseText;
-	}
-
-	public function internalGet($id){
-		if(isset($this->lang[$id])){
-			return $this->lang[$id];
-		}elseif(isset($this->fallbackLang[$id])){
-			return $this->fallbackLang[$id];
-		}
-
-		return null;
+	public function getName() : string{
+		return $this->get("language.name");
 	}
 
 	public function get($id){
@@ -129,6 +82,29 @@ class BaseLang{
 		}
 
 		return $id;
+	}
+
+	public function getLang(){
+		return $this->langName;
+	}
+
+	/**
+	 * @param string   $str
+	 * @param string[] $params
+	 *
+	 * @param null     $onlyPrefix
+	 *
+	 * @return string
+	 */
+	public function translateString($str, array $params = [], $onlyPrefix = null){
+		$baseText = $this->get($str);
+		$baseText = $this->parseTranslation(($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
+
+		foreach($params as $i => $p){
+			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
+		}
+
+		return str_replace("%0", "", $baseText); //fixes a client bug where %0 in translation will cause freeze
 	}
 
 	protected function parseTranslation($text, $onlyPrefix = null){
@@ -178,5 +154,30 @@ class BaseLang{
 		}
 
 		return $newString;
+	}
+
+	public function internalGet($id){
+		if(isset($this->lang[$id])){
+			return $this->lang[$id];
+		}elseif(isset($this->fallbackLang[$id])){
+			return $this->fallbackLang[$id];
+		}
+
+		return null;
+	}
+
+	public function translate(TextContainer $c){
+		if($c instanceof TranslationContainer){
+			$baseText = $this->internalGet($c->getText());
+			$baseText = $this->parseTranslation($baseText !== null ? $baseText : $c->getText());
+
+			foreach($c->getParameters() as $i => $p){
+				$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
+			}
+		}else{
+			$baseText = $this->parseTranslation($c->getText());
+		}
+
+		return $baseText;
 	}
 }

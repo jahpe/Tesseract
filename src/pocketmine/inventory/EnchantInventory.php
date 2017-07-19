@@ -33,7 +33,7 @@ use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\tile\EnchantTable;
 
-class EnchantInventory extends TemporaryInventory{
+class EnchantInventory extends TemporaryInventory {
 	private $bookshelfAmount = 0;
 
 	private $levels = [];
@@ -44,13 +44,6 @@ class EnchantInventory extends TemporaryInventory{
 		parent::__construct(new FakeBlockMenu($this, $pos), InventoryType::get(InventoryType::ENCHANT_TABLE));
 	}
 
-	/**
-	 * @return InventoryHolder|EnchantTable
-     */
-	public function getHolder(){
-		return $this->holder;
-	}
-	
 	public function getResultSlotIndex(){
 		return -1; //enchanting tables don't have result slots, they modify the item in the target slot instead
 	}
@@ -77,8 +70,33 @@ class EnchantInventory extends TemporaryInventory{
 		}
 	}
 
-	private function randomFloat($min = 0, $max = 1){
-		return $min + mt_rand() / mt_getrandmax() * ($max - $min);
+	public function countBookshelf() : int{
+		if($this->getHolder()->getLevel()->getServer()->countBookshelf){
+			$count = 0;
+			$pos = $this->getHolder();
+			$offsets = [[2, 0], [-2, 0], [0, 2], [0, -2], [2, 1], [2, -1], [-2, 1], [-2, 1], [1, 2], [-1, 2], [1, -2], [-1, -2]];
+			for($i = 0; $i < 3; $i++){
+				foreach($offsets as $offset){
+					if($pos->getLevel()->getBlockIdAt($pos->x + $offset[0], $pos->y + $i, $pos->z + $offset[1]) == Block::BOOKSHELF){
+						$count++;
+					}
+					if($count >= 15){
+						break 2;
+					}
+				}
+			}
+
+			return $count;
+		}else{
+			return mt_rand(0, 15);
+		}
+	}
+
+	/**
+	 * @return InventoryHolder|EnchantTable
+	 */
+	public function getHolder(){
+		return $this->holder;
 	}
 
 	public function onSlotChange($index, $before, $send){
@@ -175,94 +193,14 @@ class EnchantInventory extends TemporaryInventory{
 		}
 	}
 
-	public function onClose(Player $who){
-		parent::onClose($who);
-
-		$level = $this->getHolder()->getLevel();
-		for($i = 0; $i < 2; ++$i){
-			if($level instanceof Level) $level->dropItem($this->getHolder()->add(0.5, 0.5, 0.5), $this->getItem($i));
-			$this->clear($i);
-		}
-
-		if(count($this->getViewers()) === 0){
-			$this->levels = null;
-			$this->entries = null;
-			$this->bookshelfAmount = 0;
-		}
-	}
-
-	/**
-	 * @param Enchantment[] $ent1
-	 * @param Enchantment[] $ent2
-	 *
-	 * @return bool
-	 */
-	public function checkEnts(array $ent1, array $ent2){
-		foreach($ent1 as $enchantment){
-			$hasResult = false;
-			foreach($ent2 as $enchantment1){
-				if($enchantment->equals($enchantment1)){
-					$hasResult = true;
-					continue;
-				}
-			}
-			if(!$hasResult){
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public function onEnchant(Player $who, Item $before, Item $after){
-		$result = ($before->getId() === Item::BOOK) ? new EnchantedBook() : $before;
-		if(!$before->hasEnchantments() and $after->hasEnchantments() and $after->getId() == $result->getId() and
-			$this->levels != null and $this->entries != null
-		){
-			$enchantments = $after->getEnchantments();
-			for($i = 0; $i < 3; $i++){
-				if($this->checkEnts($enchantments, $this->entries[$i]->getEnchantments())){
-					$lapis = $this->getItem(1);
-					$level = $who->getXpLevel();
-					$cost = $this->entries[$i]->getCost();
-					if($lapis->getId() == Item::DYE and $lapis->getDamage() == Dye::BLUE and $lapis->getCount() > $i and $level >= $cost){
-						foreach($enchantments as $enchantment){
-							$result->addEnchantment($enchantment);
-						}
-						$this->setItem(0, $result);
-						$lapis->setCount($lapis->getCount() - $i - 1);
-						$this->setItem(1, $lapis);
-						$who->takeXpLevel($i + 1);
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	public function countBookshelf() : int{
-		if($this->getHolder()->getLevel()->getServer()->countBookshelf){
-			$count = 0;
-			$pos = $this->getHolder();
-			$offsets = [[2, 0], [-2, 0], [0, 2], [0, -2], [2, 1], [2, -1], [-2, 1], [-2, 1], [1, 2], [-1, 2], [1, -2], [-1, -2]];
-			for($i = 0; $i < 3; $i++){
-				foreach($offsets as $offset){
-					if($pos->getLevel()->getBlockIdAt($pos->x + $offset[0], $pos->y + $i, $pos->z + $offset[1]) == Block::BOOKSHELF){
-						$count++;
-					}
-					if($count >= 15){
-						break 2;
-					}
-				}
-			}
-			return $count;
-		}else{
-			return mt_rand(0, 15);
-		}
+	private function randomFloat($min = 0, $max = 1){
+		return $min + mt_rand() / mt_getrandmax() * ($max - $min);
 	}
 
 	/**
 	 * @param Enchantment   $enchantment
 	 * @param Enchantment[] $enchantments
+	 *
 	 * @return Enchantment[]
 	 */
 	public function removeConflictEnchantment(Enchantment $enchantment, array $enchantments){
@@ -299,6 +237,72 @@ class EnchantInventory extends TemporaryInventory{
 				$result[] = $enchantment;
 			}
 		}
+
 		return $result;
+	}
+
+	public function onClose(Player $who){
+		parent::onClose($who);
+
+		$level = $this->getHolder()->getLevel();
+		for($i = 0; $i < 2; ++$i){
+			if($level instanceof Level) $level->dropItem($this->getHolder()->add(0.5, 0.5, 0.5), $this->getItem($i));
+			$this->clear($i);
+		}
+
+		if(count($this->getViewers()) === 0){
+			$this->levels = null;
+			$this->entries = null;
+			$this->bookshelfAmount = 0;
+		}
+	}
+
+	public function onEnchant(Player $who, Item $before, Item $after){
+		$result = ($before->getId() === Item::BOOK) ? new EnchantedBook() : $before;
+		if(!$before->hasEnchantments() and $after->hasEnchantments() and $after->getId() == $result->getId() and
+			$this->levels != null and $this->entries != null
+		){
+			$enchantments = $after->getEnchantments();
+			for($i = 0; $i < 3; $i++){
+				if($this->checkEnts($enchantments, $this->entries[$i]->getEnchantments())){
+					$lapis = $this->getItem(1);
+					$level = $who->getXpLevel();
+					$cost = $this->entries[$i]->getCost();
+					if($lapis->getId() == Item::DYE and $lapis->getDamage() == Dye::BLUE and $lapis->getCount() > $i and $level >= $cost){
+						foreach($enchantments as $enchantment){
+							$result->addEnchantment($enchantment);
+						}
+						$this->setItem(0, $result);
+						$lapis->setCount($lapis->getCount() - $i - 1);
+						$this->setItem(1, $lapis);
+						$who->takeXpLevel($i + 1);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param Enchantment[] $ent1
+	 * @param Enchantment[] $ent2
+	 *
+	 * @return bool
+	 */
+	public function checkEnts(array $ent1, array $ent2){
+		foreach($ent1 as $enchantment){
+			$hasResult = false;
+			foreach($ent2 as $enchantment1){
+				if($enchantment->equals($enchantment1)){
+					$hasResult = true;
+					continue;
+				}
+			}
+			if(!$hasResult){
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

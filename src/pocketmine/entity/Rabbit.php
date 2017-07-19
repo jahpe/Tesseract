@@ -31,7 +31,7 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
-class Rabbit extends Animal{
+class Rabbit extends Animal {
 	const NETWORK_ID = 18;
 
 	const DATA_RABBIT_TYPE = 18;
@@ -51,11 +51,6 @@ class Rabbit extends Animal{
 
 	public $dropExp = [1, 3];
 
-	public function initEntity(){
-		$this->setMaxHealth(3);
-		parent::initEntity();
-	}
-
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->RabbitType)){
 			$nbt->RabbitType = new ByteTag("RabbitType", $this->getRandomRabbitType());
@@ -67,15 +62,21 @@ class Rabbit extends Animal{
 
 	public function getRandomRabbitType() : int{
 		$arr = [0, 1, 2, 3, 4, 5, 99];
-		return $arr[mt_rand(0, count($arr) - 1)];
-	}
 
-	public function setRabbitType(int $type){
-		$this->namedtag->RabbitType = new ByteTag("RabbitType", $type);
+		return $arr[mt_rand(0, count($arr) - 1)];
 	}
 
 	public function getRabbitType() : int{
 		return (int) $this->namedtag["RabbitType"];
+	}
+
+	public function initEntity(){
+		$this->setMaxHealth(3);
+		parent::initEntity();
+	}
+
+	public function setRabbitType(int $type){
+		$this->namedtag->RabbitType = new ByteTag("RabbitType", $type);
 	}
 
 	public function getName() : string{
@@ -116,6 +117,7 @@ class Rabbit extends Animal{
 		if(mt_rand(1, 200) <= (5 + 2 * $lootingL)){
 			$drops[] = ItemItem::get(ItemItem::RABBIT_FOOT, 0, 1);
 		}
+
 		return $drops;
 	}
 

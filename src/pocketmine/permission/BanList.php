@@ -24,7 +24,7 @@ namespace pocketmine\permission;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
-class BanList{
+class BanList {
 
 	/** @var BanEntry[] */
 	private $list = [];
@@ -43,26 +43,20 @@ class BanList{
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function isEnabled(){
-		return $this->enabled === true;
-	}
-
-	/**
-	 * @param bool $flag
-	 */
-	public function setEnabled($flag){
-		$this->enabled = (bool) $flag;
-	}
-
-	/**
 	 * @return BanEntry[]
 	 */
 	public function getEntries(){
 		$this->removeExpired();
 
 		return $this->list;
+	}
+
+	public function removeExpired(){
+		foreach($this->list as $name => $entry){
+			if($entry->hasExpired()){
+				unset($this->list[$name]);
+			}
+		}
 	}
 
 	/**
@@ -82,11 +76,43 @@ class BanList{
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function isEnabled(){
+		return $this->enabled === true;
+	}
+
+	/**
+	 * @param bool $flag
+	 */
+	public function setEnabled($flag){
+		$this->enabled = (bool) $flag;
+	}
+
+	/**
 	 * @param BanEntry $entry
 	 */
 	public function add(BanEntry $entry){
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
+	}
+
+	public function save($flag = true){
+		$this->removeExpired();
+		$fp = @fopen($this->file, "w");
+		if(is_resource($fp)){
+			if($flag === true){
+				fwrite($fp, "# Updated " . strftime("%x %H:%M", time()) . " by " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . "\n");
+				fwrite($fp, "# victim name | ban date | banned by | banned until | reason\n\n");
+			}
+
+			foreach($this->list as $entry){
+				fwrite($fp, $entry->getString() . "\n");
+			}
+			fclose($fp);
+		}else{
+			MainLogger::getLogger()->error("Could not save ban list");
+		}
 	}
 
 	/**
@@ -106,8 +132,9 @@ class BanList{
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
 		if(($player = Server::getInstance()->getPlayerExact($target)) instanceof Player){
-        	$player->kick($reason);
+			$player->kick($reason);
 		}
+
 		return $entry;
 	}
 
@@ -119,14 +146,6 @@ class BanList{
 		if(isset($this->list[$name])){
 			unset($this->list[$name]);
 			$this->save();
-		}
-	}
-
-	public function removeExpired(){
-		foreach($this->list as $name => $entry){
-			if($entry->hasExpired()){
-				unset($this->list[$name]);
-			}
 		}
 	}
 
@@ -145,24 +164,6 @@ class BanList{
 			fclose($fp);
 		}else{
 			MainLogger::getLogger()->error("Could not load ban list");
-		}
-	}
-
-	public function save($flag = true){
-		$this->removeExpired();
-		$fp = @fopen($this->file, "w");
-		if(is_resource($fp)){
-			if($flag === true){
-				fwrite($fp, "# Updated " . strftime("%x %H:%M", time()) . " by " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . "\n");
-				fwrite($fp, "# victim name | ban date | banned by | banned until | reason\n\n");
-			}
-
-			foreach($this->list as $entry){
-				fwrite($fp, $entry->getString() . "\n");
-			}
-			fclose($fp);
-		}else{
-			MainLogger::getLogger()->error("Could not save ban list");
 		}
 	}
 

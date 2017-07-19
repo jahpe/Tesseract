@@ -30,20 +30,22 @@ use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\AddEntityPacket;
 
 
-class FishingHook extends Projectile{
+class FishingHook extends Projectile {
 	const NETWORK_ID = 77;
 
 	public $width = 0.25;
 	public $length = 0.25;
 	public $height = 0.25;
-
-	protected $gravity = 0.1;
-	protected $drag = 0.05;
-
 	public $data = 0;
 	public $attractTimer = 100;
 	public $coughtTimer = 0;
 	public $damageRod = false;
+	protected $gravity = 0.1;
+	protected $drag = 0.05;
+
+	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
+		parent::__construct($level, $nbt, $shootingEntity);
+	}
 
 	public function initEntity(){
 		parent::initEntity();
@@ -55,16 +57,12 @@ class FishingHook extends Projectile{
 		// $this->setDataProperty(FallingSand::DATA_BLOCK_INFO, self::DATA_TYPE_INT, $this->getData());
 	}
 
-	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
-		parent::__construct($level, $nbt, $shootingEntity);
+	public function getData(){
+		return $this->data;
 	}
 
 	public function setData($id){
 		$this->data = $id;
-	}
-
-	public function getData(){
-		return $this->data;
 	}
 
 	public function onUpdate($currentTick){
@@ -108,20 +106,20 @@ class FishingHook extends Projectile{
 		return $hasUpdate;
 	}
 
-	public function fishBites(){
-		if($this->shootingEntity instanceof Player){
-			$pk = new EntityEventPacket();
-			$pk->eid = $this->shootingEntity->getId();//$this or $this->shootingEntity
-			$pk->event = EntityEventPacket::FISH_HOOK_HOOK;
-			$this->server->broadcastPacket($this->shootingEntity->hasSpawned, $pk);
-		}
-	}
-
 	public function attractFish(){
 		if($this->shootingEntity instanceof Player){
 			$pk = new EntityEventPacket();
 			$pk->eid = $this->shootingEntity->getId();//$this or $this->shootingEntity
 			$pk->event = EntityEventPacket::FISH_HOOK_BUBBLE;
+			$this->server->broadcastPacket($this->shootingEntity->hasSpawned, $pk);
+		}
+	}
+
+	public function fishBites(){
+		if($this->shootingEntity instanceof Player){
+			$pk = new EntityEventPacket();
+			$pk->eid = $this->shootingEntity->getId();//$this or $this->shootingEntity
+			$pk->event = EntityEventPacket::FISH_HOOK_HOOK;
 			$this->server->broadcastPacket($this->shootingEntity->hasSpawned, $pk);
 		}
 	}

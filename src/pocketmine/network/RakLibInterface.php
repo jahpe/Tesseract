@@ -34,7 +34,7 @@ use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 
-class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
+class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 	/** @var Server */
 	private $server;
@@ -150,10 +150,20 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		}
 	}
 
+	private function getPacket($buffer){
+		$pid = ord($buffer{0});
+		if(($data = $this->network->getPacket($pid)) === null){
+			return null;
+		}
+		$data->setBuffer($buffer, 1);
+
+		return $data;
+	}
+
 	public function blockAddress($address, $timeout = 300){
 		$this->interface->blockAddress($address, $timeout);
 	}
-	
+
 	public function unblockAddress($address){
 		$this->interface->unblockAddress($address);
 	}
@@ -172,18 +182,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 
 	public function setName($name){
 
-		if($this->server->isDServerEnabled()){
-			if($this->server->dserverConfig["motdMaxPlayers"] > 0) $pc = $this->server->dserverConfig["motdMaxPlayers"];
-			elseif($this->server->dserverConfig["motdAllPlayers"]) $pc = $this->server->getDServerMaxPlayers();
-			else $pc = $this->server->getMaxPlayers();
 
-			if($this->server->dserverConfig["motdPlayers"]) $poc = $this->server->getDServerOnlinePlayers();
-			else $poc = count($this->server->getOnlinePlayers());
-		}else{
 			$info = $this->server->getQueryInformation();
 			$pc = $info->getMaxPlayerCount();
 			$poc = $info->getPlayerCount();
-		}
 
 		$this->interface->sendOption("name",
 			"MCPE;" . rtrim(addcslashes($name, ";"), '\\') . ";" .
@@ -210,7 +212,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$identifier = $this->identifiers[$h];
 			if(!$packet->isEncoded){
 				$packet->encode();
-                $packet->isEncoded = true;
+				$packet->isEncoded = true;
 			}
 
 			if($packet instanceof BatchPacket){
@@ -235,23 +237,15 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				}
 
 				$this->interface->sendEncapsulated($identifier, $pk, ($needACK === true ? RakLib::FLAG_NEED_ACK : 0) | ($immediate === true ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
+
 				return $pk->identifierACK;
 			}else{
 				$this->server->batchPackets([$player], [$packet], true);
+
 				return null;
 			}
 		}
 
 		return null;
-	}
-
-	private function getPacket($buffer){
-		$pid = ord($buffer{0});
-		if(($data = $this->network->getPacket($pid)) === null){
-			return null;
-		}
-		$data->setBuffer($buffer, 1);
-
-		return $data;
 	}
 }

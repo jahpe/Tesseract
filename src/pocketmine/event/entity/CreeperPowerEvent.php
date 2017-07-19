@@ -25,13 +25,11 @@ use pocketmine\entity\Creeper;
 use pocketmine\event\Cancellable;
 use pocketmine\entity\Lightning;
 
-class CreeperPowerEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
+class CreeperPowerEvent extends EntityEvent implements Cancellable {
 	const CAUSE_SET_ON = 0;
 	const CAUSE_SET_OFF = 1;
 	const CAUSE_LIGHTNING = 2;
-
+	public static $handlerList = null;
 	/** @var  Lightning */
 	private $lightning;
 
@@ -53,7 +51,7 @@ class CreeperPowerEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "CreeperPowerEvent";
 	}

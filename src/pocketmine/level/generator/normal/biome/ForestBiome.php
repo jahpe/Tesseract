@@ -26,7 +26,7 @@ use pocketmine\level\generator\normal\populator\Mushroom;
 use pocketmine\level\generator\normal\populator\TallGrass;
 use pocketmine\level\generator\normal\populator\Tree;
 
-class ForestBiome extends GrassyBiome{
+class ForestBiome extends GrassyBiome {
 
 	const TYPE_NORMAL = 0;
 	const TYPE_BIRCH = 1;
@@ -46,7 +46,7 @@ class ForestBiome extends GrassyBiome{
 		$tallGrass->setBaseAmount(3);
 
 		$this->addPopulator($tallGrass);
-		
+
 		$mushroom = new Mushroom();
 		$this->addPopulator($mushroom);
 

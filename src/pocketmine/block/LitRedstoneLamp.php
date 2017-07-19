@@ -25,7 +25,7 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
 
-class LitRedstoneLamp extends Solid{
+class LitRedstoneLamp extends Solid {
 	protected $id = self::LIT_REDSTONE_LAMP;
 
 	public function __construct($meta = 0){
@@ -36,7 +36,7 @@ class LitRedstoneLamp extends Solid{
 		return "Lit Redstone Lamp";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.3;
 	}
 
@@ -45,9 +45,9 @@ class LitRedstoneLamp extends Solid{
 	}
 
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
-			[Item::REDSTONE_LAMP, 0 ,1],
+			[Item::REDSTONE_LAMP, 0, 1],
 		];
 	}
 }

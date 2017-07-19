@@ -26,7 +26,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 
-class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
+class EntityInventoryChangeEvent extends EntityEvent implements Cancellable {
 
 	public static $handlerList = null;
 
@@ -59,7 +59,7 @@ class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "EntityInventoryChangeEvent";
 	}

@@ -28,7 +28,7 @@ use pocketmine\level\sound\ExpPickupSound;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class XpCommand extends VanillaCommand{
+class XpCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(
@@ -47,6 +47,7 @@ class XpCommand extends VanillaCommand{
 		if(count($args) < 2){
 			if($sender instanceof ConsoleCommandSender){
 				$sender->sendMessage("You must specify a target player in the console");
+
 				return true;
 			}
 			$player = $sender;
@@ -57,6 +58,7 @@ class XpCommand extends VanillaCommand{
 			$name = $player->getName();
 			if(count($args) < 1){
 				$player->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+
 				return false;
 			}
 			if(strcasecmp(substr($args[0], -1), "L") == 0){ //Set Experience Level(with "L" after args[0])
@@ -65,10 +67,12 @@ class XpCommand extends VanillaCommand{
 					$player->addXpLevel((int) $level);
 					$sender->sendMessage(new TranslationContainer("%commands.xp.success.levels", [$level, $name]));
 					$player->getLevel()->addSound(new ExpPickupSound($player, mt_rand(0, 1000))); //TODO: Find the level-up sound
+
 					return true;
 				}elseif($level < 0){
 					$player->takeXpLevel((int) -$level);
 					$sender->sendMessage(new TranslationContainer("%commands.xp.success.negative.levels", [-$level, $name]));
+
 					return true;
 				}
 			}else{
@@ -76,19 +80,24 @@ class XpCommand extends VanillaCommand{
 					$player->addXp((int) $args[0]);
 					$player->getLevel()->addSound(new ExpPickupSound($player, mt_rand(0, 1000)));
 					$sender->sendMessage(new TranslationContainer("%commands.xp.success", [$name, $args[0]]));
+
 					return true;
 				}elseif($xp < 0){ //Stupid, but this lines up with vanilla behaviour, so...
 					$sender->sendMessage(new TranslationContainer("%commands.xp.failure.withdrawXp"));
+
 					return true;
 				}
 			}
 			//This statement will only be reached if the command failed
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+
 			return false;
 		}else{
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+
 			return false;
 		}
+
 		return false;
 	}
 }

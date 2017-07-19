@@ -25,7 +25,7 @@ use pocketmine\block\Block;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
-class PlayerBucketFillEvent extends PlayerBucketEvent{
+class PlayerBucketFillEvent extends PlayerBucketEvent {
 
 	public static $handlerList = null;
 
@@ -35,7 +35,7 @@ class PlayerBucketFillEvent extends PlayerBucketEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerBucketFillEvent";
 	}

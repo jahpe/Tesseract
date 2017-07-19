@@ -28,7 +28,7 @@ use pocketmine\Player;
 use pocketmine\item\Item as ItemItem;
 
 
-class PolarBear extends Monster{
+class PolarBear extends Monster {
 	const NETWORK_ID = 28;
 
 	public $width = 1.3;
@@ -39,9 +39,10 @@ class PolarBear extends Monster{
 	public $gravity = 0.3;
 
 	public $dropExp = [5, 5];
-	
+
 	public function getName() : string{
 		$this->setMaxHealth(30);
+
 		return "Polar Bear";
 	}
 
@@ -68,12 +69,13 @@ class PolarBear extends Monster{
 		$drops = [];
 		if($cause instanceof EntityDamageByEntityEvent and $cause->getDamager() instanceof Player){
 			$drops = [];
-			if (mt_rand(1, 4) === 1) {
+			if(mt_rand(1, 4) === 1){
 				$drops[] = ItemItem::get(ItemItem::RAW_SALMON, 0, mt_rand(0, 2));//yes.. 0,2
 			}else{
 				$drops[] = ItemItem::get(ItemItem::RAW_FISH, 0, mt_rand(0, 2));//yes.. 0,2
 			}
 		}
+
 		return $drops;
 	}
 }

@@ -28,7 +28,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\VectorIterator;
 use pocketmine\utils\Random;
 
-class BigTree extends Tree{
+class BigTree extends Tree {
 	public $overridable = [
 		Block::AIR => true,
 		Block::LEAVES => true,
@@ -58,9 +58,26 @@ class BigTree extends Tree{
 			if($availableSpace != -1){
 				$this->totalHeight = $availableSpace;
 			}
+
 			return true;
 		}
+
 		return false;
+	}
+
+	private function getAvailableBlockSpace(ChunkManager $level, Vector3 $from, Vector3 $to){
+		$count = 0;
+		$iter = new VectorIterator($level, $from, $to);
+		while($iter->valid()){
+			$iter->next();
+			$pos = $iter->current();
+			if(!isset($this->overridable[$level->getBlockIdAt($pos->x, $pos->y, $pos->z)])){
+				return $count;
+			}
+			$count++;
+		}
+
+		return -1;
 	}
 
 	public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
@@ -77,7 +94,7 @@ class BigTree extends Tree{
 				$this->generateGroupLayer($level, $groupX, $yy, $groupZ, $this->getLeafGroupLayerSize($yy - $groupY));
 			}
 		}
-		$trunk = new VectorIterator($level, new Vector3($x, $y -1, $z), new Vector3($x, $y + $this->trunkHeight, $z));
+		$trunk = new VectorIterator($level, new Vector3($x, $y - 1, $z), new Vector3($x, $y + $this->trunkHeight, $z));
 		while($trunk->valid()){
 			$trunk->next();
 			$pos = $trunk->current();
@@ -132,14 +149,21 @@ class BigTree extends Tree{
 			}
 			$groupY--;
 		}
+
 		return $groups;
 	}
 
-	private function getLeafGroupLayerSize(int $y){
-		if($y >= 0 and $y < $this->leafDistanceLimit){
-			return (int) (($y != ($this->leafDistanceLimit - 1)) ? 3 : 2);
+	private function getRoughLayerSize(int $layer) : float{
+		$halfHeight = $this->totalHeight / 2;
+		if($layer < ($this->totalHeight / 3)){
+			return -1;
+		}elseif($layer == $halfHeight){
+			return $halfHeight / 4;
+		}elseif($layer >= $this->totalHeight or $layer <= 0){
+			return 0;
+		}else{
+			return sqrt($halfHeight * $halfHeight - ($layer - $halfHeight) * ($layer - $halfHeight)) / 2;
 		}
-		return -1;
 	}
 
 	private function generateGroupLayer(ChunkManager $level, int $x, int $y, int $z, int $size){
@@ -156,17 +180,12 @@ class BigTree extends Tree{
 		}
 	}
 
-	private function getRoughLayerSize(int $layer) : float {
-		$halfHeight = $this->totalHeight / 2;
-		if($layer < ($this->totalHeight / 3)){
-			return -1;
-		}elseif($layer == $halfHeight){
-			return $halfHeight / 4;
-		}elseif($layer >= $this->totalHeight or $layer <= 0){
-			return 0;
-		}else{
-			return sqrt($halfHeight * $halfHeight - ($layer - $halfHeight) * ($layer - $halfHeight)) / 2;
+	private function getLeafGroupLayerSize(int $y){
+		if($y >= 0 and $y < $this->leafDistanceLimit){
+			return (int) (($y != ($this->leafDistanceLimit - 1)) ? 3 : 2);
 		}
+
+		return -1;
 	}
 
 	private function generateBranches(ChunkManager $level, int $x, int $y, int $z, array $groups){
@@ -183,19 +202,5 @@ class BigTree extends Tree{
 				}
 			}
 		}
-	}
-
-	private function getAvailableBlockSpace(ChunkManager $level, Vector3 $from, Vector3 $to){
-		$count = 0;
-		$iter = new VectorIterator($level, $from, $to);
-		while($iter->valid()){
-			$iter->next();
-			$pos = $iter->current();
-			if(!isset($this->overridable[$level->getBlockIdAt($pos->x, $pos->y, $pos->z)])){
-				return $count;
-			}
-			$count++;
-		}
-		return -1;
 	}
 }

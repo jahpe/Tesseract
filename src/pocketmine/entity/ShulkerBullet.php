@@ -26,7 +26,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class ShulkerBullet extends Projectile{
+class ShulkerBullet extends Projectile {
 	const NETWORK_ID = 76;
 
 	public $width = 0.25;

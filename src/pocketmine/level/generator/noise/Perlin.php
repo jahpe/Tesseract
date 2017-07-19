@@ -23,7 +23,7 @@ namespace pocketmine\level\generator\noise;
 
 use pocketmine\utils\Random;
 
-class Perlin extends Noise{
+class Perlin extends Noise {
 	public static $grad3 = [
 		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
@@ -56,6 +56,10 @@ class Perlin extends Noise{
 			$this->perm[$i + 256] = $this->perm[$i];
 		}
 
+	}
+
+	public function getNoise2D($x, $y){
+		return $this->getNoise3D($x, $y, 0);
 	}
 
 	public function getNoise3D($x, $y, $z){
@@ -140,9 +144,5 @@ class Perlin extends Noise{
 			)
 		);
 		*/
-	}
-
-	public function getNoise2D($x, $y){
-		return $this->getNoise3D($x, $y, 0);
 	}
 }

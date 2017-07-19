@@ -82,13 +82,13 @@ use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 
-class SimpleCommandMap implements CommandMap{
+class SimpleCommandMap implements CommandMap {
 
 	/**
 	 * @var Command[]
 	 */
 	protected $knownCommands = [];
-	
+
 	/**
 	 * @var bool[]
 	 */
@@ -162,19 +162,12 @@ class SimpleCommandMap implements CommandMap{
 		}
 	}
 
-
-	public function registerAll($fallbackPrefix, array $commands){
-		foreach($commands as $command){
-			$this->register($fallbackPrefix, $command);
-		}
-	}
-
 	public function register($fallbackPrefix, Command $command, $label = null, $overrideConfig = false){
 		if($label === null){
 			$label = $command->getName();
 		}
 		$label = strtolower(trim($label));
-		
+
 		//Check if command was disabled in config and for override
 		if(!(($this->commandConfig[$label] ?? $this->commandConfig["default"] ?? true) or $overrideConfig)){
 			return false;
@@ -219,40 +212,10 @@ class SimpleCommandMap implements CommandMap{
 		return true;
 	}
 
-	private function dispatchAdvanced(CommandSender $sender, Command $command, $label, array $args, $offset = 0){
-		if(isset($args[$offset])){
-			$argsTemp = $args;
-			switch($args[$offset]){
-				case "@a":
-					$p = $this->server->getOnlinePlayers();
-					if(count($p) <= 0){
-						$sender->sendMessage(TextFormat::RED . "No players online"); //TODO: add language
-					}else{
-						foreach($p as $player){
-							$argsTemp[$offset] = $player->getName();
-							$this->dispatchAdvanced($sender, $command, $label, $argsTemp, $offset + 1);
-						}
-					}
-					break;
-				case "@r":
-					$players = $this->server->getOnlinePlayers();
-					if(count($players) > 0){
-						$argsTemp[$offset] = $players[array_rand($players)]->getName();
-						$this->dispatchAdvanced($sender, $command, $label, $argsTemp, $offset + 1);
-					}
-					break;
-				case "@p":
-					if($sender instanceof Player){
-						$argsTemp[$offset] = $sender->getName();
-						$this->dispatchAdvanced($sender, $command, $label, $argsTemp, $offset + 1);
-					}else{
-						$sender->sendMessage(TextFormat::RED . "You must be a player!"); //TODO: add language
-					}
-					break;
-				default:
-					$this->dispatchAdvanced($sender, $command, $label, $argsTemp, $offset + 1);
-			}
-		}else $command->execute($sender, $label, $args);
+	public function registerAll($fallbackPrefix, array $commands){
+		foreach($commands as $command){
+			$this->register($fallbackPrefix, $command);
+		}
 	}
 
 	public function dispatch(CommandSender $sender, $commandLine){
@@ -289,20 +252,56 @@ class SimpleCommandMap implements CommandMap{
 		return true;
 	}
 
-	public function clearCommands(){
-		foreach($this->knownCommands as $command){
-			$command->unregister($this);
-		}
-		$this->knownCommands = [];
-		$this->setDefaultCommands();
-	}
-
 	public function getCommand($name){
 		if(isset($this->knownCommands[$name])){
 			return $this->knownCommands[$name];
 		}
 
 		return null;
+	}
+
+	private function dispatchAdvanced(CommandSender $sender, Command $command, $label, array $args, $offset = 0){
+		if(isset($args[$offset])){
+			$argsTemp = $args;
+			switch($args[$offset]){
+				case "@a":
+					$p = $this->server->getOnlinePlayers();
+					if(count($p) <= 0){
+						$sender->sendMessage(TextFormat::RED . "No players online"); //TODO: add language
+					}else{
+						foreach($p as $player){
+							$argsTemp[$offset] = $player->getName();
+							$this->dispatchAdvanced($sender, $command, $label, $argsTemp, $offset + 1);
+						}
+					}
+					break;
+				case "@r":
+					$players = $this->server->getOnlinePlayers();
+					if(count($players) > 0){
+						$argsTemp[$offset] = $players[array_rand($players)]->getName();
+						$this->dispatchAdvanced($sender, $command, $label, $argsTemp, $offset + 1);
+					}
+					break;
+				case "@p":
+					if($sender instanceof Player){
+						$argsTemp[$offset] = $sender->getName();
+						$this->dispatchAdvanced($sender, $command, $label, $argsTemp, $offset + 1);
+					}else{
+						$sender->sendMessage(TextFormat::RED . "You must be a player!"); //TODO: add language
+					}
+					break;
+				default:
+					$this->dispatchAdvanced($sender, $command, $label, $argsTemp, $offset + 1);
+			}
+		}else $command->execute($sender, $label, $args);
+	}
+
+	public function clearCommands(){
+		foreach($this->knownCommands as $command){
+			$command->unregister($this);
+		}
+		$this->knownCommands = [];
+		$this->setDefaultCommands();
 	}
 
 	/**

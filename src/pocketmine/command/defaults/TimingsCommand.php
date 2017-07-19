@@ -26,7 +26,7 @@ use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
 
 
-class TimingsCommand extends VanillaCommand{
+class TimingsCommand extends VanillaCommand {
 
 	public static $timingStart = 0;
 
@@ -61,6 +61,7 @@ class TimingsCommand extends VanillaCommand{
 		}elseif($mode === "off"){
 			$sender->getServer()->getPluginManager()->setUseTimings(false);
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.disable"));
+
 			return true;
 		}
 

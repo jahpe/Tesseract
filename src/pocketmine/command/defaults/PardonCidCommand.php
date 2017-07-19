@@ -26,7 +26,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 
 
-class PardonCidCommand extends VanillaCommand{
+class PardonCidCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(
@@ -44,6 +44,7 @@ class PardonCidCommand extends VanillaCommand{
 
 		if(count($args) !== 1){
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+
 			return false;
 		}
 

@@ -19,7 +19,7 @@
  *
 */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace pocketmine\level\format\io\region;
 
@@ -37,9 +37,13 @@ use pocketmine\utils\MainLogger;
  * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
  * is XZY instead of YZX for more performance loading and saving worlds.
  */
-class PMAnvil extends Anvil{
+class PMAnvil extends Anvil {
 
 	const REGION_FILE_EXTENSION = "mcapm";
+
+	public static function getProviderName() : string{
+		return "pmanvil";
+	}
 
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
@@ -60,10 +64,10 @@ class PMAnvil extends Anvil{
 				continue;
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
-				"Y"          => new ByteTag("Y", $y),
-				"Blocks"     => new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
-				"Data"       => new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
-				"SkyLight"   => new ByteArrayTag("SkyLight",   $subChunk->getSkyLightArray()),
+				"Y" => new ByteTag("Y", $y),
+				"Blocks" => new ByteArrayTag("Blocks", $subChunk->getBlockIdArray()),
+				"Data" => new ByteArrayTag("Data", $subChunk->getBlockDataArray()),
+				"SkyLight" => new ByteArrayTag("SkyLight", $subChunk->getSkyLightArray()),
 				"BlockLight" => new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
 			]);
 		}
@@ -140,14 +144,12 @@ class PMAnvil extends Anvil{
 			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
 			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
 			$result->setGenerated(true);
+
 			return $result;
 		}catch(\Throwable $e){
 			MainLogger::getLogger()->logException($e);
+
 			return null;
 		}
-	}
-
-	public static function getProviderName() : string{
-		return "pmanvil";
 	}
 }

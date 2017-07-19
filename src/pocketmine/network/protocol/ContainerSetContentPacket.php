@@ -42,6 +42,7 @@ class ContainerSetContentPacket extends DataPacket {
 	public function clean(){
 		$this->slots = [];
 		$this->hotbar = [];
+
 		return parent::clean();
 	}
 

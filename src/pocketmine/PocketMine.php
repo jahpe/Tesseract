@@ -65,10 +65,11 @@ namespace {
 }
 
 namespace pocketmine {
+
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
 
-    use pocketmine\utils\Terminal;
+	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
@@ -172,7 +173,7 @@ namespace pocketmine {
 			$default_timezone = timezone_name_from_abbr($timezone);
 			ini_set("date.timezone", $default_timezone);
 			date_default_timezone_set($default_timezone);
-		} else {
+		}else{
 			date_default_timezone_set($timezone);
 		}
 	}
@@ -247,6 +248,7 @@ namespace pocketmine {
 					$filename = readlink('/etc/localtime');
 					if(strpos($filename, '/usr/share/zoneinfo/') === 0){
 						$timezone = substr($filename, 20);
+
 						return trim($timezone);
 					}
 				}
@@ -320,7 +322,7 @@ namespace pocketmine {
 				if(function_exists("posix_kill")){
 					posix_kill($pid, SIGKILL);
 				}else{
-					exec("kill -9 " . ((int)$pid) . " > /dev/null 2>&1");
+					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
 				}
 		}
 	}
@@ -340,6 +342,7 @@ namespace pocketmine {
 		if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
 			return ((int) $m[1]) - ($includeCurrent ? 3 : 4); //$value + zval call + extra call
 		}
+
 		return -1;
 	}
 
@@ -411,7 +414,7 @@ namespace pocketmine {
 			++$errors;
 		}
 	}
-	
+
 	if(extension_loaded("xdebug")){
 		$logger->warning("
 

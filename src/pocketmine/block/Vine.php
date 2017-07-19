@@ -28,7 +28,7 @@ use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
-class Vine extends Transparent{
+class Vine extends Transparent {
 
 	protected $id = self::VINE;
 
@@ -44,7 +44,7 @@ class Vine extends Transparent{
 		return "Vines";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.2;
 	}
 
@@ -60,7 +60,54 @@ class Vine extends Transparent{
 		$entity->resetFallDistance();
 	}
 
-	protected function recalculateBoundingBox() {
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		if(!$target->isTransparent() and $target->isSolid()){
+			$faces = [
+				0 => 0,
+				1 => 0,
+				2 => 1,
+				3 => 4,
+				4 => 8,
+				5 => 2,
+			];
+			if(isset($faces[$face])){
+				$this->meta = $faces[$face];
+				$this->getLevel()->setBlock($block, $this, true, true);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function onUpdate($type){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
+			/*if($this->getSide(0)->getId() === self::AIR){ //Replace with common break method
+				Server::getInstance()->api->entity->drop($this, Item::get(LADDER, 0, 1));
+				$this->getLevel()->setBlock($this, new Air(), true, true, true);
+				return Level::BLOCK_UPDATE_NORMAL;
+			}*/
+		}
+
+		return false;
+	}
+
+	public function getDrops(Item $item) : array{
+		if($item->isShears()){
+			return [
+				[$this->id, 0, 1],
+			];
+		}else{
+			return [];
+		}
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_SHEARS;
+	}
+
+	protected function recalculateBoundingBox(){
 
 		$f1 = 1;
 		$f2 = 1;
@@ -118,53 +165,5 @@ class Vine extends Transparent{
 			$this->y + $f5,
 			$this->z + $f6
 		);
-	}
-
-
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if(!$target->isTransparent() and $target->isSolid()){
-			$faces = [
-				0 => 0,
-				1 => 0,
-				2 => 1,
-				3 => 4,
-				4 => 8,
-				5 => 2,
-			];
-			if(isset($faces[$face])){
-				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($block, $this, true, true);
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			/*if($this->getSide(0)->getId() === self::AIR){ //Replace with common break method
-				Server::getInstance()->api->entity->drop($this, Item::get(LADDER, 0, 1));
-				$this->getLevel()->setBlock($this, new Air(), true, true, true);
-				return Level::BLOCK_UPDATE_NORMAL;
-			}*/
-		}
-
-		return false;
-	}
-
-	public function getDrops(Item $item) : array {
-		if($item->isShears()){
-			return [
-				[$this->id, 0, 1],
-			];
-		}else{
-			return [];
-		}
-	}
-
-	public function getToolType(){
-		return Tool::TYPE_SHEARS;
 	}
 }

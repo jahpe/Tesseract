@@ -23,7 +23,7 @@ namespace pocketmine\level;
 
 use pocketmine\math\Vector3;
 
-class Location extends Position{
+class Location extends Position {
 
 	public $yaw;
 	public $pitch;
@@ -79,6 +79,7 @@ class Location extends Position{
 			$this->pitch = $pos->pitch;
 		}
 		parent::fromObjectAdd($pos, $x, $y, $z);
+
 		return $this;
 	}
 

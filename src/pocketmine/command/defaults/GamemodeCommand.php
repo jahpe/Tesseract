@@ -28,7 +28,7 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
-class GamemodeCommand extends VanillaCommand{
+class GamemodeCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(
@@ -83,6 +83,7 @@ class GamemodeCommand extends VanillaCommand{
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.other", [$target->getName(), Server::getGamemodeString($gameMode)]));
 			}
 		}
+
 		return true;
 	}
 }

@@ -24,7 +24,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerPickupExpOrbEvent extends PlayerEvent implements Cancellable{
+class PlayerPickupExpOrbEvent extends PlayerEvent implements Cancellable {
 
 	public static $handlerList = null;
 
@@ -45,7 +45,7 @@ class PlayerPickupExpOrbEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerPickupExpOrbEvent";
 	}

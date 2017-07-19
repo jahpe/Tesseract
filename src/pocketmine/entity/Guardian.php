@@ -32,7 +32,7 @@ use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\Player;
 
 
-class Guardian extends WaterAnimal implements Ageable{
+class Guardian extends WaterAnimal implements Ageable {
 	const NETWORK_ID = 49;
 
 	public $width = 0.95;
@@ -72,11 +72,6 @@ class Guardian extends WaterAnimal implements Ageable{
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
 	}
-
-	private function generateRandomDirection(){
-		return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
-	}
-
 
 	public function onUpdate($currentTick){
 		if($this->closed !== false){
@@ -147,6 +142,9 @@ class Guardian extends WaterAnimal implements Ageable{
 		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
 	}
 
+	private function generateRandomDirection(){
+		return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
+	}
 
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
@@ -169,6 +167,7 @@ class Guardian extends WaterAnimal implements Ageable{
 	public function getDrops(){
 		$drops = array(ItemItem::get(ItemItem::PRISMARINE_SHARD, 0, mt_rand(1, 2)));
 		$drops[] = ItemItem::get(ItemItem::RAW_FISH, 0, mt_rand(0, 1));
+
 		return $drops;
 	}
 }

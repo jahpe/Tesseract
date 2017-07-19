@@ -26,7 +26,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 use pocketmine\level\generator\populator\VariableAmountPopulator;
 
-class MossStone extends VariableAmountPopulator{
+class MossStone extends VariableAmountPopulator {
 	/** @var ChunkManager */
 	private $level;
 
@@ -45,11 +45,6 @@ class MossStone extends VariableAmountPopulator{
 		}
 	}
 
-	private function canMossStoneStay($x, $y, $z){
-		$b = $this->level->getBlockIdAt($x, $y, $z);
-		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::PODZOL;
-	}
-
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
@@ -59,5 +54,11 @@ class MossStone extends VariableAmountPopulator{
 		}
 
 		return $y === 0 ? -1 : ++$y;
+	}
+
+	private function canMossStoneStay($x, $y, $z){
+		$b = $this->level->getBlockIdAt($x, $y, $z);
+
+		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::PODZOL;
 	}
 }

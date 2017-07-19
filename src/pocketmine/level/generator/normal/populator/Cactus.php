@@ -20,19 +20,21 @@
 */
 
 namespace pocketmine\level\generator\normal\populator;
+
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\normal\object\CactusStack;
 use pocketmine\level\generator\populator\VariableAmountPopulator;
 use pocketmine\utils\Random;
 
-class Cactus extends VariableAmountPopulator{
+class Cactus extends VariableAmountPopulator {
 	/** @var ChunkManager */
 	private $level;
+
 	public function __construct(){
 		parent::__construct(2, 1);
 	}
-	
+
 	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
 		$this->level = $level;
 		$amount = $this->getAmount($random);
@@ -47,7 +49,7 @@ class Cactus extends VariableAmountPopulator{
 			}
 		}
 	}
-	
+
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
@@ -55,6 +57,7 @@ class Cactus extends VariableAmountPopulator{
 				break;
 			}
 		}
+
 		return $y === 0 ? -1 : ++$y;
 	}
 }

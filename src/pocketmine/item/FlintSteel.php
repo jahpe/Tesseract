@@ -17,6 +17,7 @@
  * 
  *
 */
+
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
@@ -27,7 +28,7 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\math\Vector3;
 
-class FlintSteel extends Tool{
+class FlintSteel extends Tool {
 	/** @var Vector3 */
 	private $temporalVector = null;
 
@@ -82,6 +83,7 @@ class FlintSteel extends Tool{
 							$this->useOn($block, 2);
 							$player->getInventory()->setItemInHand($this);
 						}
+
 						return true;
 					}
 				}
@@ -123,6 +125,7 @@ class FlintSteel extends Tool{
 							$this->useOn($block, 2);
 							$player->getInventory()->setItemInHand($this);
 						}
+
 						return true;
 					}
 				}

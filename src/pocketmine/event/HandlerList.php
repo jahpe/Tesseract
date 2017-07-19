@@ -24,27 +24,50 @@ namespace pocketmine\event;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\RegisteredListener;
 
-class HandlerList{
-
-	/**
-	 * @var RegisteredListener[]
-	 */
-	private $handlers = null;
-
-	/**
-	 * @var RegisteredListener[][]
-	 */
-	private $handlerSlots = [];
+class HandlerList {
 
 	/**
 	 * @var HandlerList[]
 	 */
 	private static $allLists = [];
+	/**
+	 * @var RegisteredListener[]
+	 */
+	private $handlers = null;
+	/**
+	 * @var RegisteredListener[][]
+	 */
+	private $handlerSlots = [];
+
+	public function __construct(){
+		$this->handlerSlots = [
+			EventPriority::LOWEST => [],
+			EventPriority::LOW => [],
+			EventPriority::NORMAL => [],
+			EventPriority::HIGH => [],
+			EventPriority::HIGHEST => [],
+			EventPriority::MONITOR => []
+		];
+		self::$allLists[] = $this;
+	}
 
 	public static function bakeAll(){
 		foreach(self::$allLists as $h){
 			$h->bake();
 		}
+	}
+
+	public function bake(){
+		if($this->handlers !== null){
+			return;
+		}
+		$entries = [];
+		foreach($this->handlerSlots as $list){
+			foreach($list as $hash => $listener){
+				$entries[$hash] = $listener;
+			}
+		}
+		$this->handlers = $entries;
 	}
 
 	/**
@@ -65,43 +88,6 @@ class HandlerList{
 				}
 				$h->handlers = null;
 			}
-		}
-	}
-
-	public function __construct(){
-		$this->handlerSlots = [
-			EventPriority::LOWEST => [],
-			EventPriority::LOW => [],
-			EventPriority::NORMAL => [],
-			EventPriority::HIGH => [],
-			EventPriority::HIGHEST => [],
-			EventPriority::MONITOR => []
-		];
-		self::$allLists[] = $this;
-	}
-
-	/**
-	 * @param RegisteredListener $listener
-	 *
-	 * @throws \Throwable
-	 */
-	public function register(RegisteredListener $listener){
-		if($listener->getPriority() < EventPriority::MONITOR or $listener->getPriority() > EventPriority::LOWEST){
-			return;
-		}
-		if(isset($this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)])){
-			throw new \InvalidStateException("This listener is already registered to priority " . $listener->getPriority());
-		}
-		$this->handlers = null;
-		$this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)] = $listener;
-	}
-
-	/**
-	 * @param RegisteredListener[] $listeners
-	 */
-	public function registerAll(array $listeners){
-		foreach($listeners as $listener){
-			$this->register($listener);
 		}
 	}
 
@@ -132,17 +118,36 @@ class HandlerList{
 		}
 	}
 
-	public function bake(){
-		if($this->handlers !== null){
+	/**
+	 * @return HandlerList[]
+	 */
+	public static function getHandlerLists(){
+		return self::$allLists;
+	}
+
+	/**
+	 * @param RegisteredListener[] $listeners
+	 */
+	public function registerAll(array $listeners){
+		foreach($listeners as $listener){
+			$this->register($listener);
+		}
+	}
+
+	/**
+	 * @param RegisteredListener $listener
+	 *
+	 * @throws \Throwable
+	 */
+	public function register(RegisteredListener $listener){
+		if($listener->getPriority() < EventPriority::MONITOR or $listener->getPriority() > EventPriority::LOWEST){
 			return;
 		}
-		$entries = [];
-		foreach($this->handlerSlots as $list){
-			foreach($list as $hash => $listener){
-				$entries[$hash] = $listener;
-			}
+		if(isset($this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)])){
+			throw new \InvalidStateException("This listener is already registered to priority " . $listener->getPriority());
 		}
-		$this->handlers = $entries;
+		$this->handlers = null;
+		$this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)] = $listener;
 	}
 
 	/**
@@ -167,13 +172,6 @@ class HandlerList{
 
 			return $handlers;
 		}
-	}
-
-	/**
-	 * @return HandlerList[]
-	 */
-	public static function getHandlerLists(){
-		return self::$allLists;
 	}
 
 }

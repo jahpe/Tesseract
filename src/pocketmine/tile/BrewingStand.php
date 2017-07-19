@@ -34,11 +34,8 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 use pocketmine\Server;
 
-class BrewingStand extends Spawnable implements InventoryHolder, Container, Nameable{
+class BrewingStand extends Spawnable implements InventoryHolder, Container, Nameable {
 	const MAX_BREW_TIME = 400;
-	/** @var BrewingInventory */
-	protected $inventory;
-
 	public static $ingredients = [
 		Item::NETHER_WART => 0,
 		Item::GLOWSTONE_DUST => 0,
@@ -58,6 +55,8 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 
 		Item::GUNPOWDER => 0,
 	];
+	/** @var BrewingInventory */
+	protected $inventory;
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->CookedTime) or !($nbt->CookedTime instanceof ShortTag)){
@@ -77,45 +76,27 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		}*/
 	}
 
-	public function getName() : string{
-		return $this->hasName() ? $this->namedtag->CustomName->getValue() : "Brewing Stand";
-	}
-
-	public function hasName(){
-		return isset($this->namedtag->CustomName);
-	}
-
-	public function setName($str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-	public function close(){
-		if(!$this->closed){
-			foreach($this->getInventory()->getViewers() as $player){
-				$player->removeWindow($this->getInventory());
-			}
-			parent::close();
-		}
-	}
-
-	public function saveNBT(){
-		$this->namedtag->Items = new ListTag("Items", []);
-		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
-		for($index = 0; $index < $this->getSize(); ++$index){
-			$this->setItem($index, $this->inventory->getItem($index));
-		}
-	}
-
 	/**
 	 * @return int
 	 */
 	public function getSize(){
 		return 4;
+	}
+
+	/**
+	 * This method should not be used by plugins, use the Inventory
+	 *
+	 * @param int $index
+	 *
+	 * @return Item
+	 */
+	public function getItem($index){
+		$i = $this->getSlotIndex($index);
+		if($i < 0){
+			return Item::get(Item::AIR, 0, 0);
+		}else{
+			return Item::nbtDeserialize($this->namedtag->Items[$i]);
+		}
 	}
 
 	/**
@@ -133,19 +114,50 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		return -1;
 	}
 
+	public function getName() : string{
+		return $this->hasName() ? $this->namedtag->CustomName->getValue() : "Brewing Stand";
+	}
+
+	public function hasName(){
+		return isset($this->namedtag->CustomName);
+	}
+
+	public function setName($str){
+		if($str === ""){
+			unset($this->namedtag->CustomName);
+
+			return;
+		}
+
+		$this->namedtag->CustomName = new StringTag("CustomName", $str);
+	}
+
+	public function close(){
+		if(!$this->closed){
+			foreach($this->getInventory()->getViewers() as $player){
+				$player->removeWindow($this->getInventory());
+			}
+			parent::close();
+		}
+	}
+
 	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int $index
-	 *
-	 * @return Item
+	 * @return BrewingInventory
 	 */
-	public function getItem($index){
-		$i = $this->getSlotIndex($index);
-		if($i < 0){
-			return Item::get(Item::AIR, 0, 0);
-		}else{
-			return Item::nbtDeserialize($this->namedtag->Items[$i]);
+	public function getInventory(){
+		return $this->inventory;
+	}
+
+	public function updateSurface(){
+		$this->saveNBT();
+		$this->onChanged();
+	}
+
+	public function saveNBT(){
+		$this->namedtag->Items = new ListTag("Items", []);
+		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
+		for($index = 0; $index < $this->getSize(); ++$index){
+			$this->setItem($index, $this->inventory->getItem($index));
 		}
 	}
 
@@ -176,27 +188,6 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		}
 
 		return true;
-	}
-
-	/**
-	 * @return BrewingInventory
-	 */
-	public function getInventory(){
-		return $this->inventory;
-	}
-
-	public function checkIngredient(Item $item){
-		if(isset(self::$ingredients[$item->getId()])){
-			if(self::$ingredients[$item->getId()] === $item->getDamage()){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public function updateSurface(){
-		$this->saveNBT();
-		$this->onChanged();
 	}
 
 	public function onUpdate(){
@@ -291,6 +282,16 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		return $ret;
 	}
 
+	public function checkIngredient(Item $item){
+		if(isset(self::$ingredients[$item->getId()])){
+			if(self::$ingredients[$item->getId()] === $item->getDamage()){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public function getSpawnCompound(){
 		$nbt = new CompoundTag("", [
 			new StringTag("id", Tile::BREWING_STAND),
@@ -304,6 +305,7 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		if($this->hasName()){
 			$nbt->CustomName = $this->namedtag->CustomName;
 		}
+
 		return $nbt;
 	}
 }

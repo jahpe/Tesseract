@@ -24,7 +24,7 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
 
-class EntityDeathEvent extends EntityEvent{
+class EntityDeathEvent extends EntityEvent {
 	public static $handlerList = null;
 
 	/** @var Item[] */
@@ -63,7 +63,7 @@ class EntityDeathEvent extends EntityEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "EntityDeathEvent";
 	}

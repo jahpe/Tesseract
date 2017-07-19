@@ -28,7 +28,7 @@ use pocketmine\Server;
 /**
  * Handles different types of plugins
  */
-class PharPluginLoader implements PluginLoader{
+class PharPluginLoader implements PluginLoader {
 
 	/** @var Server */
 	private $server;
@@ -93,15 +93,6 @@ class PharPluginLoader implements PluginLoader{
 	}
 
 	/**
-	 * Returns the filename patterns that this loader accepts
-	 *
-	 * @return array|string
-     */
-	public function getPluginFilters(){
-		return "/\\.phar$/i";
-	}
-
-	/**
 	 * @param PluginBase        $plugin
 	 * @param PluginDescription $description
 	 * @param string            $dataFolder
@@ -110,6 +101,15 @@ class PharPluginLoader implements PluginLoader{
 	private function initPlugin(PluginBase $plugin, PluginDescription $description, $dataFolder, $file){
 		$plugin->init($this, $this->server, $description, $dataFolder, $file);
 		$plugin->onLoad();
+	}
+
+	/**
+	 * Returns the filename patterns that this loader accepts
+	 *
+	 * @return array|string
+	 */
+	public function getPluginFilters(){
+		return "/\\.phar$/i";
 	}
 
 	/**

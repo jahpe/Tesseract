@@ -24,13 +24,11 @@ namespace pocketmine\event\player;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerUseFishingRodEvent extends PlayerEvent implements Cancellable{
-
-	public static $handlerList = null;
+class PlayerUseFishingRodEvent extends PlayerEvent implements Cancellable {
 
 	const ACTION_START_FISHING = 0;
 	const ACTION_STOP_FISHING = 1;
-
+	public static $handlerList = null;
 	private $action;
 
 	public function __construct(Player $player, int $action = PlayerUseFishingRodEvent::ACTION_START_FISHING){
@@ -44,7 +42,7 @@ class PlayerUseFishingRodEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerUseFishingRodEvent";
 	}

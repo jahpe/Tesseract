@@ -24,7 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class StartGamePacket extends DataPacket{
+class StartGamePacket extends DataPacket {
 
 	const NETWORK_ID = Info::START_GAME_PACKET;
 
@@ -77,7 +77,8 @@ class StartGamePacket extends DataPacket{
 		$this->lightningLevel = $this->getLFloat();
 		$this->commandsEnabled = $this->getBool();
 		$this->isTexturePacksRequired = $this->getBool();
-		/*$gameRulesCount = */$this->getUnsignedVarInt(); //TODO
+		/*$gameRulesCount = */
+		$this->getUnsignedVarInt(); //TODO
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();

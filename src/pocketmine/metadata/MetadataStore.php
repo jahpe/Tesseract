@@ -22,12 +22,13 @@
 /**
  * Saves extra data on runtime for different items
  */
+
 namespace pocketmine\metadata;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 
-abstract class MetadataStore{
+abstract class MetadataStore {
 	/** @var \WeakMap[] */
 	private $metadataMap;
 
@@ -57,6 +58,19 @@ abstract class MetadataStore{
 	}
 
 	/**
+	 * Creates a unique name for the object receiving metadata by combining
+	 * unique data from the subject with a metadataKey.
+	 *
+	 * @param Metadatable $subject
+	 * @param string      $metadataKey
+	 *
+	 * @return string
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public abstract function disambiguate(Metadatable $subject, $metadataKey);
+
+	/**
 	 * Returns all metadata values attached to an object. If multiple
 	 * have attached metadata, each will value will be included.
 	 *
@@ -64,7 +78,7 @@ abstract class MetadataStore{
 	 * @param string $metadataKey
 	 *
 	 * @return MetadataValue[]|\WeakMap
-     *
+	 *
 	 * @throws \Exception
 	 */
 	public function getMetadata($subject, $metadataKey){
@@ -124,17 +138,4 @@ abstract class MetadataStore{
 			}
 		}
 	}
-
-	/**
-	 * Creates a unique name for the object receiving metadata by combining
-	 * unique data from the subject with a metadataKey.
-	 *
-	 * @param Metadatable $subject
-	 * @param string      $metadataKey
-	 *
-	 * @return string
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public abstract function disambiguate(Metadatable $subject, $metadataKey);
 }

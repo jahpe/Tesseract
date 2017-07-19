@@ -33,7 +33,7 @@ use pocketmine\tile\Tile;
 use pocketmine\tile\BrewingStand as TileBrewingStand;
 use pocketmine\math\Vector3;
 
-class BrewingStand extends Transparent{
+class BrewingStand extends Transparent {
 
 	protected $id = self::BREWING_STAND_BLOCK;
 
@@ -66,14 +66,15 @@ class BrewingStand extends Transparent{
 
 			return true;
 		}
+
 		return false;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.5;
 	}
 
@@ -112,14 +113,16 @@ class BrewingStand extends Transparent{
 			}
 			$player->addWindow($brewingStand->getInventory());
 		}
+
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		$drops = [];
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			$drops[] = [Item::BREWING_STAND, 0, 1];
 		}
+
 		return $drops;
 	}
 }

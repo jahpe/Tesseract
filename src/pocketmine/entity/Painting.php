@@ -14,7 +14,7 @@ use pocketmine\Player;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\block\Block;
 
-class Painting extends Hanging{
+class Painting extends Hanging {
 	const NETWORK_ID = 83;
 
 	private $motive;
@@ -48,11 +48,11 @@ class Painting extends Hanging{
 		parent::spawnTo($player);
 	}
 
-	protected function updateMovement(){
-		//Nothing to update, paintings cannot move.
-	}
-
 	public function getDrops(){
 		return [ItemItem::get(ItemItem::PAINTING, 0, 1)];
+	}
+
+	protected function updateMovement(){
+		//Nothing to update, paintings cannot move.
 	}
 }

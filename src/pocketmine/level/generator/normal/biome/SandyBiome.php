@@ -26,7 +26,7 @@ use pocketmine\block\Block;
 use pocketmine\level\generator\normal\populator\Cactus;
 use pocketmine\level\generator\normal\populator\DeadBush;
 
-class SandyBiome extends GrassyBiome{
+class SandyBiome extends GrassyBiome {
 
 	public function __construct(){
 		parent::__construct();

@@ -25,7 +25,7 @@ namespace pocketmine\network\protocol;
 
 use pocketmine\resourcepacks\ResourcePackInfoEntry;
 
-class ResourcePacksInfoPacket extends DataPacket{
+class ResourcePacksInfoPacket extends DataPacket {
 
 	const NETWORK_ID = Info::RESOURCE_PACKS_INFO_PACKET;
 

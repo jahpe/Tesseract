@@ -29,8 +29,11 @@ use pocketmine\level\particle\SmokeParticle;
 use pocketmine\level\sound\FizzSound;
 use pocketmine\math\Vector3;
 
-abstract class Liquid extends Transparent{
+abstract class Liquid extends Transparent {
 
+	public $adjacentSources = 0;
+	public $isOptimalFlowDirection = [0, 0, 0, 0];
+	public $flowCost = [0, 0, 0, 0];
 	/** @var Vector3 */
 	private $temporalVector = null;
 
@@ -50,10 +53,6 @@ abstract class Liquid extends Transparent{
 		return false;
 	}
 
-	public $adjacentSources = 0;
-	public $isOptimalFlowDirection = [0, 0, 0, 0];
-	public $flowCost = [0, 0, 0, 0];
-
 	public function getFluidHeightPercent(){
 		$d = $this->meta;
 		if($d >= 8){
@@ -63,34 +62,11 @@ abstract class Liquid extends Transparent{
 		return ($d + 1) / 9;
 	}
 
-	protected function getFlowDecay(Vector3 $pos){
-		if(!($pos instanceof Block)){
-			$pos = $this->getLevel()->getBlock($pos);
-		}
-
-		if($pos->getId() !== $this->getId()){
-			return -1;
-		}else{
-			return $pos->getDamage();
-		}
-	}
-
-	protected function getEffectiveFlowDecay(Vector3 $pos){
-		if(!($pos instanceof Block)){
-			$pos = $this->getLevel()->getBlock($pos);
-		}
-
-		if($pos->getId() !== $this->getId()){
-			return -1;
-		}
-
-		$decay = $pos->getDamage();
-
-		if($decay >= 8){
-			$decay = 0;
-		}
-
-		return $decay;
+	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
+		$flow = $this->getFlowVector();
+		$vector->x += $flow->x;
+		$vector->y += $flow->y;
+		$vector->z += $flow->z;
 	}
 
 	public function getFlowVector(){
@@ -172,21 +148,22 @@ abstract class Liquid extends Transparent{
 		return $vector->normalize();
 	}
 
-	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
-		$flow = $this->getFlowVector();
-		$vector->x += $flow->x;
-		$vector->y += $flow->y;
-		$vector->z += $flow->z;
-	}
-
-	public function tickRate() : int{
-		if($this instanceof Water){
-			return 5;
-		}elseif($this instanceof Lava){
-			return 30;
+	protected function getEffectiveFlowDecay(Vector3 $pos){
+		if(!($pos instanceof Block)){
+			$pos = $this->getLevel()->getBlock($pos);
 		}
 
-		return 0;
+		if($pos->getId() !== $this->getId()){
+			return -1;
+		}
+
+		$decay = $pos->getDamage();
+
+		if($decay >= 8){
+			$decay = 0;
+		}
+
+		return $decay;
 	}
 
 	public function onUpdate($type){
@@ -261,6 +238,7 @@ abstract class Liquid extends Transparent{
 				if($this instanceof Lava and $bottomBlock instanceof Water){
 					$this->getLevel()->setBlock($bottomBlock, Block::get(Item::STONE), true);
 					$this->triggerLavaMixEffects($bottomBlock);
+
 					return;
 				}
 
@@ -284,6 +262,7 @@ abstract class Liquid extends Transparent{
 
 				if($l >= 8){
 					$this->checkForHarden();
+
 					return;
 				}
 
@@ -309,6 +288,73 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
+	private function checkForHarden(){
+		if($this instanceof Lava){
+			$colliding = false;
+			for($side = 0; $side <= 5 and !$colliding; ++$side){
+				$colliding = $this->getSide($side) instanceof Water;
+			}
+
+			if($colliding){
+				if($this->getDamage() === 0){
+					$this->getLevel()->setBlock($this, Block::get(Item::OBSIDIAN), true);
+				}elseif($this->getDamage() <= 4){
+					$this->getLevel()->setBlock($this, Block::get(Item::COBBLESTONE), true);
+				}
+				$this->triggerLavaMixEffects($this);
+			}
+		}
+	}
+
+	/**
+	 * Creates fizzing sound and smoke. Used when lava flows over block or mixes with water.
+	 *
+	 * @param Vector3 $pos
+	 */
+	protected function triggerLavaMixEffects(Vector3 $pos){
+		$this->getLevel()->addSound(new FizzSound($pos->add(0.5, 0.5, 0.5), 2.5 + mt_rand(0, 1000) / 1000 * 0.8));
+
+		for($i = 0; $i < 8; ++$i){
+			$this->getLevel()->addParticle(new SmokeParticle($pos->add(mt_rand(0, 80) / 100, 0.5, mt_rand(0, 80) / 100)));
+		}
+	}
+
+	public function tickRate() : int{
+		if($this instanceof Water){
+			return 5;
+		}elseif($this instanceof Lava){
+			return 30;
+		}
+
+		return 0;
+	}
+
+	protected function getFlowDecay(Vector3 $pos){
+		if(!($pos instanceof Block)){
+			$pos = $this->getLevel()->getBlock($pos);
+		}
+
+		if($pos->getId() !== $this->getId()){
+			return -1;
+		}else{
+			return $pos->getDamage();
+		}
+	}
+
+	private function getSmallestFlowDecay(Vector3 $pos, $decay){
+		$blockDecay = $this->getFlowDecay($pos);
+
+		if($blockDecay < 0){
+			return $decay;
+		}elseif($blockDecay === 0){
+			++$this->adjacentSources;
+		}elseif($blockDecay >= 8){
+			$blockDecay = 0;
+		}
+
+		return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
+	}
+
 	private function flowIntoBlock(Block $block, $newFlowDecay){
 		if($block->canBeFlowedInto()){
 			if($block instanceof Lava){
@@ -320,58 +366,6 @@ abstract class Liquid extends Transparent{
 			$this->getLevel()->setBlock($block, Block::get($this->getId(), $newFlowDecay), true);
 			$this->getLevel()->scheduleUpdate($block, $this->tickRate());
 		}
-	}
-
-	private function calculateFlowCost(Block $block, $accumulatedCost, $previousDirection){
-		$cost = 1000;
-
-		for($j = 0; $j < 4; ++$j){
-			if(
-				($j === 0 and $previousDirection === 1) or
-				($j === 1 and $previousDirection === 0) or
-				($j === 2 and $previousDirection === 3) or
-				($j === 3 and $previousDirection === 2)
-			){
-				$x = $block->x;
-				$y = $block->y;
-				$z = $block->z;
-
-				if($j === 0){
-					--$x;
-				}elseif($j === 1){
-					++$x;
-				}elseif($j === 2){
-					--$z;
-				}elseif($j === 3){
-					++$z;
-				}
-				$blockSide = $this->getLevel()->getBlock($this->temporalVector->setComponents($x, $y, $z));
-
-				if(!$blockSide->canBeFlowedInto() and !($blockSide instanceof Liquid)){
-					continue;
-				}elseif($blockSide instanceof Liquid and $blockSide->getDamage() === 0){
-					continue;
-				}elseif($this->getLevel()->getBlock($this->temporalVector->setComponents($x, $y - 1, $z))->canBeFlowedInto()){
-					return $accumulatedCost;
-				}
-
-				if($accumulatedCost >= 4){
-					continue;
-				}
-
-				$realCost = $this->calculateFlowCost($blockSide, $accumulatedCost + 1, $j);
-
-				if($realCost < $cost){
-					$cost = $realCost;
-				}
-			}
-		}
-
-		return $cost;
-	}
-
-	public function getHardness() {
-		return 100;
 	}
 
 	private function getOptimalFlowDirections(){
@@ -423,56 +417,63 @@ abstract class Liquid extends Transparent{
 		return $this->isOptimalFlowDirection;
 	}
 
-	private function getSmallestFlowDecay(Vector3 $pos, $decay){
-		$blockDecay = $this->getFlowDecay($pos);
+	private function calculateFlowCost(Block $block, $accumulatedCost, $previousDirection){
+		$cost = 1000;
 
-		if($blockDecay < 0){
-			return $decay;
-		}elseif($blockDecay === 0){
-			++$this->adjacentSources;
-		}elseif($blockDecay >= 8){
-			$blockDecay = 0;
+		for($j = 0; $j < 4; ++$j){
+			if(
+				($j === 0 and $previousDirection === 1) or
+				($j === 1 and $previousDirection === 0) or
+				($j === 2 and $previousDirection === 3) or
+				($j === 3 and $previousDirection === 2)
+			){
+				$x = $block->x;
+				$y = $block->y;
+				$z = $block->z;
+
+				if($j === 0){
+					--$x;
+				}elseif($j === 1){
+					++$x;
+				}elseif($j === 2){
+					--$z;
+				}elseif($j === 3){
+					++$z;
+				}
+				$blockSide = $this->getLevel()->getBlock($this->temporalVector->setComponents($x, $y, $z));
+
+				if(!$blockSide->canBeFlowedInto() and !($blockSide instanceof Liquid)){
+					continue;
+				}elseif($blockSide instanceof Liquid and $blockSide->getDamage() === 0){
+					continue;
+				}elseif($this->getLevel()->getBlock($this->temporalVector->setComponents($x, $y - 1, $z))->canBeFlowedInto()){
+					return $accumulatedCost;
+				}
+
+				if($accumulatedCost >= 4){
+					continue;
+				}
+
+				$realCost = $this->calculateFlowCost($blockSide, $accumulatedCost + 1, $j);
+
+				if($realCost < $cost){
+					$cost = $realCost;
+				}
+			}
 		}
 
-		return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
+		return $cost;
 	}
 
-	private function checkForHarden(){
-		if($this instanceof Lava){
-			$colliding = false;
-			for($side = 0; $side <= 5 and !$colliding; ++$side){
-				$colliding = $this->getSide($side) instanceof Water;
-			}
-
-			if($colliding){
-				if($this->getDamage() === 0){
-					$this->getLevel()->setBlock($this, Block::get(Item::OBSIDIAN), true);
-				}elseif($this->getDamage() <= 4){
-					$this->getLevel()->setBlock($this, Block::get(Item::COBBLESTONE), true);
-				}
-				$this->triggerLavaMixEffects($this);
-			}
-		}
+	public function getHardness(){
+		return 100;
 	}
 
 	public function getBoundingBox(){
 		return null;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [];
-	}
-
-	/**
-	 * Creates fizzing sound and smoke. Used when lava flows over block or mixes with water.
-	 *
-	 * @param Vector3 $pos
-	 */
-	protected function triggerLavaMixEffects(Vector3 $pos){
-		$this->getLevel()->addSound(new FizzSound($pos->add(0.5, 0.5, 0.5), 2.5 + mt_rand(0, 1000) / 1000 * 0.8));
-
-		for($i = 0; $i < 8; ++$i){
-			$this->getLevel()->addParticle(new SmokeParticle($pos->add(mt_rand(0, 80) / 100, 0.5, mt_rand(0, 80) / 100)));
-		}
 	}
 }

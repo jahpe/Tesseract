@@ -27,7 +27,7 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class OpCommand extends VanillaCommand{
+class OpCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(
@@ -57,6 +57,7 @@ class OpCommand extends VanillaCommand{
 			$player->sendMessage(TextFormat::GRAY . "You are now op!");
 		}
 		$player->setOp(true);
+
 		return true;
 	}
 }

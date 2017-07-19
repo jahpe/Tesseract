@@ -23,16 +23,16 @@
  * Implementation of the UT3 Query Protocol (GameSpot)
  * Source: http://wiki.unrealadmin.org/UT3_query_protocol
  */
+
 namespace pocketmine\network\query;
 
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 
-class QueryHandler{
-	private $server, $lastToken, $token, $longData, $shortData, $timeout;
-
+class QueryHandler {
 	const HANDSHAKE = 9;
 	const STATISTICS = 0;
+	private $server, $lastToken, $token, $longData, $shortData, $timeout;
 
 	public function __construct(){
 		$this->server = Server::getInstance();
@@ -55,20 +55,16 @@ class QueryHandler{
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
 	}
 
-	public function regenerateInfo(){
-		$ev = $this->server->getQueryInformation();
-		$this->longData = $ev->getLongQuery();
-		$this->shortData = $ev->getShortQuery();
-		$this->timeout = microtime(true) + $ev->getTimeout();
-	}
-
 	public function regenerateToken(){
 		$this->lastToken = $this->token;
 		$this->token = random_bytes(16);
 	}
 
-	public static function getTokenString($token, $salt){
-		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
+	public function regenerateInfo(){
+		$ev = $this->server->getQueryInformation();
+		$this->longData = $ev->getLongQuery();
+		$this->shortData = $ev->getShortQuery();
+		$this->timeout = microtime(true) + $ev->getTimeout();
 	}
 
 	public function handle($address, $port, $packet){
@@ -106,6 +102,10 @@ class QueryHandler{
 				$this->server->getNetwork()->sendPacket($address, $port, $reply);
 				break;
 		}
+	}
+
+	public static function getTokenString($token, $salt){
+		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
 }

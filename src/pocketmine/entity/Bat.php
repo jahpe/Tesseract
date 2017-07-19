@@ -27,7 +27,7 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
-class Bat extends FlyingAnimal{
+class Bat extends FlyingAnimal {
 
 	const NETWORK_ID = 19;
 
@@ -39,15 +39,6 @@ class Bat extends FlyingAnimal{
 
 	public $flySpeed = 0.8;
 	public $switchDirectionTicks = 100;
-
-	public function getName() : string {
-		return "Bat";
-	}
-
-	public function initEntity(){
-		$this->setMaxHealth(6);
-		parent::initEntity();
-	}
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->isResting)){
@@ -62,14 +53,24 @@ class Bat extends FlyingAnimal{
 		return (int) $this->namedtag["isResting"];
 	}
 
+	public function getName() : string{
+		return "Bat";
+	}
+
+	public function initEntity(){
+		$this->setMaxHealth(6);
+		parent::initEntity();
+	}
+
 	public function setResting(bool $resting){
 		$this->namedtag->isResting = new ByteTag("isResting", $resting ? 1 : 0);
 	}
 
 	public function onUpdate($currentTick){
-		if ($this->age > 20 * 60 * 10) {
+		if($this->age > 20 * 60 * 10){
 			$this->kill();
 		}
+
 		return parent::onUpdate($currentTick);
 	}
 

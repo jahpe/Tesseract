@@ -28,14 +28,12 @@ use pocketmine\math\Vector3;
 /**
  * This class performs ray tracing and iterates along blocks on a line
  */
-class BlockIterator implements \Iterator{
+class BlockIterator implements \Iterator {
 
+private static $gridSize = 16777216;
 	/** @var Level */
 	private $level;
-	private $maxDistance;
-
-	private static $gridSize = 16777216; //1 << 24
-
+	private $maxDistance; //1 << 24
 	private $end = false;
 
 	/** @var \SplFixedArray<Block>[3] */
@@ -172,83 +170,44 @@ class BlockIterator implements \Iterator{
 		$this->maxDistanceInt = round($maxDistance / (sqrt($mainDirection ** 2 + $secondDirection ** 2 + $thirdDirection ** 2) / $mainDirection));
 	}
 
-	private function blockEquals(Block $a, Block $b){
-		return $a->x === $b->x and $a->y === $b->y and $a->z === $b->z;
+	private function getXLength(Vector3 $direction){
+		return abs($direction->x);
 	}
 
 	private function getXFace(Vector3 $direction){
 		return (($direction->x) > 0) ? Vector3::SIDE_EAST : Vector3::SIDE_WEST;
 	}
 
-	private function getYFace(Vector3 $direction){
-		return (($direction->y) > 0) ? Vector3::SIDE_UP : Vector3::SIDE_DOWN;
-	}
-
-	private function getZFace(Vector3 $direction){
-		return (($direction->z) > 0) ? Vector3::SIDE_SOUTH : Vector3::SIDE_NORTH;
-	}
-
-	private function getXLength(Vector3 $direction){
-		return abs($direction->x);
-	}
-
-	private function getYLength(Vector3 $direction){
-		return abs($direction->y);
-	}
-
-	private function getZLength(Vector3 $direction){
-		return abs($direction->z);
+	private function getXPosition(Vector3 $direction, Vector3 $position, Block $block){
+		return $this->getPosition($direction->x, $position->x, $block->x);
 	}
 
 	private function getPosition($direction, $position, $blockPosition){
 		return $direction > 0 ? ($position - $blockPosition) : ($blockPosition + 1 - $position);
 	}
 
-	private function getXPosition(Vector3 $direction, Vector3 $position, Block $block){
-		return $this->getPosition($direction->x, $position->x, $block->x);
+	private function getYFace(Vector3 $direction){
+		return (($direction->y) > 0) ? Vector3::SIDE_UP : Vector3::SIDE_DOWN;
+	}
+
+	private function getYLength(Vector3 $direction){
+		return abs($direction->y);
 	}
 
 	private function getYPosition(Vector3 $direction, Vector3 $position, Block $block){
 		return $this->getPosition($direction->y, $position->y, $block->y);
 	}
 
+	private function getZFace(Vector3 $direction){
+		return (($direction->z) > 0) ? Vector3::SIDE_SOUTH : Vector3::SIDE_NORTH;
+	}
+
+	private function getZLength(Vector3 $direction){
+		return abs($direction->z);
+	}
+
 	private function getZPosition(Vector3 $direction, Vector3 $position, Block $block){
 		return $this->getPosition($direction->z, $position->z, $block->z);
-	}
-
-	public function next(){
-		$this->scan();
-
-		if($this->currentBlock <= -1){
-			throw new \OutOfBoundsException;
-		}else{
-			$this->currentBlockObject = $this->blockQueue[$this->currentBlock--];
-		}
-	}
-
-	/**
-	 * @return Block
-	 *
-	 * @throws \OutOfBoundsException
-	 */
-	public function current(){
-		if($this->currentBlockObject === null){
-			throw new \OutOfBoundsException;
-		}
-		return $this->currentBlockObject;
-	}
-
-	public function rewind(){
-		throw new \InvalidStateException("BlockIterator doesn't support rewind()");
-	}
-
-	public function key(){
-		return $this->currentBlock - 1;
-	}
-
-	public function valid(){
-		$this->scan();
-		return $this->currentBlock !== -1;
 	}
 
 	private function scan(){
@@ -258,6 +217,7 @@ class BlockIterator implements \Iterator{
 
 		if($this->maxDistance !== 0 and $this->currentDistance > $this->maxDistanceInt){
 			$this->end = true;
+
 			return;
 		}
 
@@ -298,5 +258,46 @@ class BlockIterator implements \Iterator{
 			$this->blockQueue[0] = $this->blockQueue[0]->getSide($this->mainFace);
 			$this->currentBlock = 0;
 		}
+	}
+
+	private function blockEquals(Block $a, Block $b){
+		return $a->x === $b->x and $a->y === $b->y and $a->z === $b->z;
+	}
+
+	public function next(){
+		$this->scan();
+
+		if($this->currentBlock <= -1){
+			throw new \OutOfBoundsException;
+		}else{
+			$this->currentBlockObject = $this->blockQueue[$this->currentBlock--];
+		}
+	}
+
+	/**
+	 * @return Block
+	 *
+	 * @throws \OutOfBoundsException
+	 */
+	public function current(){
+		if($this->currentBlockObject === null){
+			throw new \OutOfBoundsException;
+		}
+
+		return $this->currentBlockObject;
+	}
+
+	public function rewind(){
+		throw new \InvalidStateException("BlockIterator doesn't support rewind()");
+	}
+
+	public function key(){
+		return $this->currentBlock - 1;
+	}
+
+	public function valid(){
+		$this->scan();
+
+		return $this->currentBlock !== -1;
 	}
 }

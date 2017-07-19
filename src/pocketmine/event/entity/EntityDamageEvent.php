@@ -29,16 +29,13 @@ use pocketmine\Player;
 use pocketmine\item\Item;
 use pocketmine\item\enchantment\Enchantment;
 
-class EntityDamageEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
+class EntityDamageEvent extends EntityEvent implements Cancellable {
 	const MODIFIER_BASE = 0;
 	const MODIFIER_RESISTANCE = 1;
 	const MODIFIER_ARMOR = 2;
 	const MODIFIER_PROTECTION = 3;
 	const MODIFIER_STRENGTH = 4;
 	const MODIFIER_WEAKNESS = 5;
-
 	const CAUSE_CONTACT = 0;
 	const CAUSE_ENTITY_ATTACK = 1;
 	const CAUSE_PROJECTILE = 2;
@@ -55,10 +52,8 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	const CAUSE_MAGIC = 13;
 	const CAUSE_CUSTOM = 14;
 	const CAUSE_STARVATION = 15;
-
 	const CAUSE_LIGHTNING = 16;
-
-
+	public static $handlerList = null;
 	private $cause;
 	private $EPF = 0;
 	private $fireProtectL = 0;
@@ -187,6 +182,18 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
+	 * @param float $damage
+	 * @param int   $type
+	 *
+	 * Notice:If you want to add/reduce the damage without reducing by Armor or effect. set a new Damage using setDamage
+	 * Notice:If you want to add/reduce the damage within reducing by Armor of effect. Plz change the MODIFIER_BASE
+	 * Notice:If you want to add/reduce the damage by multiplying. Plz use this function.
+	 */
+	public function setRateDamage($damage, $type = self::MODIFIER_BASE){
+		$this->rateModifiers[$type] = $damage;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getCause(){
@@ -202,6 +209,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		if(isset($this->originals[$type])){
 			return $this->originals[$type];
 		}
+
 		return 0;
 	}
 
@@ -237,19 +245,8 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		if(isset($this->rateModifiers[$type])){
 			return $this->rateModifiers[$type];
 		}
-		return 1;
-	}
 
-	/**
-	 * @param float $damage
-	 * @param int   $type
-	 *
-	 * Notice:If you want to add/reduce the damage without reducing by Armor or effect. set a new Damage using setDamage
-	 * Notice:If you want to add/reduce the damage within reducing by Armor of effect. Plz change the MODIFIER_BASE
-	 * Notice:If you want to add/reduce the damage by multiplying. Plz use this function.
-	 */
-	public function setRateDamage($damage, $type = self::MODIFIER_BASE){
-		$this->rateModifiers[$type] = $damage;
+		return 1;
 	}
 
 	/**
@@ -274,12 +271,13 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 				$damage += $d;
 			}
 		}
+
 		return $damage;
 	}
 
 	/**
 	 * @return array|Item
-     * notice: $usedArmors $index->$cost
+	 * notice: $usedArmors $index->$cost
 	 * $index: the $index of ArmorInventory
 	 * $cost:  the num of durability cost
 	 */
@@ -307,8 +305,10 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 					}
 				}
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -334,13 +334,14 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 			return false;
 		}else{
 			$this->usedArmors[$this->thornsArmor] = 3;
+
 			return true;
 		}
 	}
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "EntityDamageEvent";
 	}

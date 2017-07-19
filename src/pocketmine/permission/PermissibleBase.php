@@ -26,7 +26,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\Server;
 
-class PermissibleBase implements Permissible{
+class PermissibleBase implements Permissible {
 	/** @var ServerOperator */
 	private $opable = null;
 
@@ -59,17 +59,6 @@ class PermissibleBase implements Permissible{
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function isOp(){
-		if($this->opable === null){
-			return false;
-		}else{
-			return $this->opable->isOp();
-		}
-	}
-
-	/**
 	 * @param bool $value
 	 *
 	 * @throws \Throwable
@@ -80,15 +69,6 @@ class PermissibleBase implements Permissible{
 		}else{
 			$this->opable->setOp($value);
 		}
-	}
-
-	/**
-	 * @param Permission|string $name
-	 *
-	 * @return bool
-	 */
-	public function isPermissionSet($name){
-		return isset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
 	}
 
 	/**
@@ -113,6 +93,26 @@ class PermissibleBase implements Permissible{
 			return Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_TRUE or ($this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_OP) or (!$this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_NOT_OP);
 		}
 
+	}
+
+	/**
+	 * @param Permission|string $name
+	 *
+	 * @return bool
+	 */
+	public function isPermissionSet($name){
+		return isset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isOp(){
+		if($this->opable === null){
+			return false;
+		}else{
+			return $this->opable->isOp();
+		}
 	}
 
 	/**
@@ -142,28 +142,6 @@ class PermissibleBase implements Permissible{
 		$this->recalculatePermissions();
 
 		return $result;
-	}
-
-	/**
-	 * @param PermissionAttachment $attachment
-	 *
-	 * @throws \Throwable
-	 */
-	public function removeAttachment(PermissionAttachment $attachment){
-		if($attachment === null){
-			throw new \InvalidStateException("Attachment cannot be null");
-		}
-
-		if(isset($this->attachments[spl_object_hash($attachment)])){
-			unset($this->attachments[spl_object_hash($attachment)]);
-			if(($ex = $attachment->getRemovalCallback()) !== null){
-				$ex->attachmentRemoved($attachment);
-			}
-
-			$this->recalculatePermissions();
-
-		}
-
 	}
 
 	public function recalculatePermissions(){
@@ -214,6 +192,28 @@ class PermissibleBase implements Permissible{
 				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);
 			}
 		}
+	}
+
+	/**
+	 * @param PermissionAttachment $attachment
+	 *
+	 * @throws \Throwable
+	 */
+	public function removeAttachment(PermissionAttachment $attachment){
+		if($attachment === null){
+			throw new \InvalidStateException("Attachment cannot be null");
+		}
+
+		if(isset($this->attachments[spl_object_hash($attachment)])){
+			unset($this->attachments[spl_object_hash($attachment)]);
+			if(($ex = $attachment->getRemovalCallback()) !== null){
+				$ex->attachmentRemoved($attachment);
+			}
+
+			$this->recalculatePermissions();
+
+		}
+
 	}
 
 	/**

@@ -29,7 +29,7 @@ use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
-class Bucket extends Item{
+class Bucket extends Item {
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::BUCKET, $meta, $count, "Bucket");
 	}
@@ -62,6 +62,7 @@ class Bucket extends Item{
 					if($player->isSurvival()){
 						$player->getInventory()->setItemInHand($ev->getItem());
 					}
+
 					return true;
 				}else{
 					$player->getInventory()->sendContents($player);
@@ -80,6 +81,7 @@ class Bucket extends Item{
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());
 				}
+
 				return true;
 			}else{
 				$player->getInventory()->sendContents($player);

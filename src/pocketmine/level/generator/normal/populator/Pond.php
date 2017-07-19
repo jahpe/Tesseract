@@ -26,7 +26,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
 
-class Pond extends Populator{
+class Pond extends Populator {
 	private $waterOdd = 4;
 	private $lavaOdd = 4;
 	private $lavaSurfaceOdd = 4;

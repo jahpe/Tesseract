@@ -24,7 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class SetEntityMotionPacket extends DataPacket{
+class SetEntityMotionPacket extends DataPacket {
 
 	const NETWORK_ID = Info::SET_ENTITY_MOTION_PACKET;
 
@@ -35,6 +35,7 @@ class SetEntityMotionPacket extends DataPacket{
 
 	public function clean(){
 		$this->entities = [];
+
 		return parent::clean();
 	}
 

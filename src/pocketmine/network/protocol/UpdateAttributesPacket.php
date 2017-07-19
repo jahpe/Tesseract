@@ -17,6 +17,7 @@
  * 
  *
 */
+
 namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
@@ -24,7 +25,7 @@ namespace pocketmine\network\protocol;
 use pocketmine\entity\Attribute;
 
 
-class UpdateAttributesPacket extends DataPacket{
+class UpdateAttributesPacket extends DataPacket {
 
 	const NETWORK_ID = Info::UPDATE_ATTRIBUTES_PACKET;
 

@@ -35,15 +35,14 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
 
-abstract class Projectile extends Entity{
+abstract class Projectile extends Entity {
 
 	const DATA_SHOOTER_ID = 17;
 
 	/** @var Entity */
 	public $shootingEntity = null;
-	protected $damage = 0;
-
 	public $hadCollision = false;
+	protected $damage = 0;
 
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
 		$this->shootingEntity = $shootingEntity;
@@ -57,17 +56,6 @@ abstract class Projectile extends Entity{
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
 			parent::attack($damage, $source);
 		}
-	}
-
-	protected function initEntity(){
-		parent::initEntity();
-
-		$this->setMaxHealth(1);
-		$this->setHealth(1);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
-		}
-
 	}
 
 	public function canCollideWith(Entity $entity){
@@ -172,6 +160,7 @@ abstract class Projectile extends Entity{
 					}
 
 					$this->kill();
+
 					return true;
 				}
 			}
@@ -202,6 +191,17 @@ abstract class Projectile extends Entity{
 		}
 
 		return $hasUpdate;
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
+
+		$this->setMaxHealth(1);
+		$this->setHealth(1);
+		if(isset($this->namedtag->Age)){
+			$this->age = $this->namedtag["Age"];
+		}
+
 	}
 
 }

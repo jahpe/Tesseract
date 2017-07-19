@@ -28,7 +28,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
-class ConsoleCommandSender implements CommandSender{
+class ConsoleCommandSender implements CommandSender {
 
 	private $perm;
 
@@ -93,13 +93,6 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @return \pocketmine\Server
-	 */
-	public function getServer(){
-		return Server::getInstance();
-	}
-
-	/**
 	 * @param string $message
 	 */
 	public function sendMessage($message){
@@ -112,6 +105,13 @@ class ConsoleCommandSender implements CommandSender{
 		foreach(explode("\n", trim($message)) as $line){
 			MainLogger::getLogger()->info($line);
 		}
+	}
+
+	/**
+	 * @return \pocketmine\Server
+	 */
+	public function getServer(){
+		return Server::getInstance();
 	}
 
 	/**

@@ -26,7 +26,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\entity\Effect;
 
-class EntityEffectAddEvent extends EntityEvent implements Cancellable{
+class EntityEffectAddEvent extends EntityEvent implements Cancellable {
 
 	public static $handlerList = null;
 

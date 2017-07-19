@@ -30,7 +30,7 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\utils\TextFormat;
 
 
-class EnchantCommand extends VanillaCommand{
+class EnchantCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(
@@ -48,6 +48,7 @@ class EnchantCommand extends VanillaCommand{
 
 		if(count($args) < 2){
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+
 			return true;
 		}
 
@@ -55,6 +56,7 @@ class EnchantCommand extends VanillaCommand{
 
 		if($player === null){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+
 			return true;
 		}
 
@@ -65,7 +67,8 @@ class EnchantCommand extends VanillaCommand{
 		if($enchantment->getId() === Enchantment::TYPE_INVALID){
 			$enchantment = Enchantment::getEnchantmentByName($enchantId);
 			if($enchantment->getId() === Enchantment::TYPE_INVALID){
-	    		$sender->sendMessage(new TranslationContainer("commands.enchant.notFound", [$enchantment->getId()]));
+				$sender->sendMessage(new TranslationContainer("commands.enchant.notFound", [$enchantment->getId()]));
+
 				return true;
 			}
 		}
@@ -73,6 +76,7 @@ class EnchantCommand extends VanillaCommand{
 		$maxLevel = Enchantment::getEnchantMaxLevel($id);
 		if($enchantLevel > $maxLevel or $enchantLevel <= 0){
 			$sender->sendMessage(new TranslationContainer("commands.enchant.maxLevel", [$maxLevel]));
+
 			return true;
 		}
 		$enchantment->setLevel($enchantLevel);
@@ -81,11 +85,13 @@ class EnchantCommand extends VanillaCommand{
 
 		if($item->getId() <= 0){
 			$sender->sendMessage(new TranslationContainer("commands.enchant.noItem"));
+
 			return true;
 		}
-		
+
 		if(Enchantment::getEnchantAbility($item) === 0){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.enchant.cantEnchant"));
+
 			return true;
 		}
 
@@ -94,6 +100,7 @@ class EnchantCommand extends VanillaCommand{
 
 
 		self::broadcastCommandMessage($sender, new TranslationContainer("%commands.enchant.success"));
+
 		return true;
 	}
 }

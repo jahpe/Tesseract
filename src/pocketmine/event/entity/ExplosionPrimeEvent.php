@@ -27,7 +27,7 @@ use pocketmine\event\Cancellable;
 /**
  * Called when a entity decides to explode
  */
-class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
+class ExplosionPrimeEvent extends EntityEvent implements Cancellable {
 
 	public static $handlerList = null;
 
@@ -82,7 +82,7 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "ExplosionPrimeEvent";
 	}

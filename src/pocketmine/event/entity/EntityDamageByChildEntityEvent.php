@@ -23,7 +23,7 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 
-class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
+class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent {
 
 	/** @var Entity */
 	private $childEntity;
@@ -50,7 +50,7 @@ class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "EntityDamageByChildEntityEvent";
 	}

@@ -27,7 +27,7 @@ use pocketmine\metadata\Metadatable;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\plugin\Plugin;
 
-class OfflinePlayer implements IPlayer, Metadatable{
+class OfflinePlayer implements IPlayer, Metadatable {
 
 	private $name;
 	private $server;
@@ -47,20 +47,20 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		}
 	}
 
-	public function isOnline(){
-		return $this->getPlayer() !== null;
-	}
-
 	public function getName() : string{
 		return $this->name;
 	}
 
-	public function getServer(){
-		return $this->server;
+	public function isOnline(){
+		return $this->getPlayer() !== null;
 	}
 
-	public function isOp(){
-		return $this->server->isOp(strtolower($this->getName()));
+	public function getPlayer(){
+		return $this->server->getPlayerExact($this->getName());
+	}
+
+	public function getServer(){
+		return $this->server;
 	}
 
 	public function setOp($value){
@@ -73,6 +73,10 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		}else{
 			$this->server->removeOp(strtolower($this->getName()));
 		}
+	}
+
+	public function isOp(){
+		return $this->server->isOp(strtolower($this->getName()));
 	}
 
 	public function isBanned(){
@@ -97,10 +101,6 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		}else{
 			$this->server->removeWhitelist(strtolower($this->getName()));
 		}
-	}
-
-	public function getPlayer(){
-		return $this->server->getPlayerExact($this->getName());
 	}
 
 	public function getFirstPlayed(){

@@ -24,7 +24,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
-class SeaLantern extends Transparent{
+class SeaLantern extends Transparent {
 
 	protected $id = self::SEA_LANTERN;
 
@@ -37,14 +37,14 @@ class SeaLantern extends Transparent{
 	}
 
 	public function getName() : string{
-        return "Sea Lantern";
+		return "Sea Lantern";
 	}
 
 	public function getHardness(){
 		return 0.3;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::PRISMARINE_CRYSTALS, 0, 3],
 		];

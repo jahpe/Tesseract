@@ -23,10 +23,10 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
 
-class Fish extends Food{
-	
+class Fish extends Food {
+
 	//Wrong! All wrong! TODO: Fix
-	
+
 	const FISH_FISH = 0;
 	const FISH_SALMON = 1;
 	const FISH_CLOWNFISH = 2;
@@ -54,6 +54,7 @@ class Fish extends Food{
 		}elseif($this->meta === self::FISH_PUFFERFISH){
 			return 1.2;
 		}
+
 		return 0;
 	}
 
@@ -67,6 +68,7 @@ class Fish extends Food{
 		}elseif($this->meta === self::FISH_PUFFERFISH){
 			return 0.2;
 		}
+
 		return 0;
 	}
 

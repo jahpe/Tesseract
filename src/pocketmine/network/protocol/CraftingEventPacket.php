@@ -24,7 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class CraftingEventPacket extends DataPacket{
+class CraftingEventPacket extends DataPacket {
 
 	const NETWORK_ID = Info::CRAFTING_EVENT_PACKET;
 
@@ -37,6 +37,7 @@ class CraftingEventPacket extends DataPacket{
 	public function clean(){
 		$this->input = [];
 		$this->output = [];
+
 		return parent::clean();
 	}
 

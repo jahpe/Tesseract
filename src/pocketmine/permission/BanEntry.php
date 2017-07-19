@@ -23,7 +23,7 @@ namespace pocketmine\permission;
 
 use pocketmine\utils\MainLogger;
 
-class BanEntry{
+class BanEntry {
 	public static $format = "Y-m-d H:i:s O";
 
 	private $name;
@@ -37,66 +37,6 @@ class BanEntry{
 	public function __construct($name){
 		$this->name = strtolower($name);
 		$this->creationDate = new \DateTime();
-	}
-
-	public function getName() : string{
-		return $this->name;
-	}
-
-	public function getCreated(){
-		return $this->creationDate;
-	}
-
-	public function setCreated(\DateTime $date){
-		$this->creationDate = $date;
-	}
-
-	public function getSource(){
-		return $this->source;
-	}
-
-	public function setSource($source){
-		$this->source = $source;
-	}
-
-	public function getExpires(){
-		return $this->expirationDate;
-	}
-
-	/**
-	 * @param \DateTime $date
-	 */
-	public function setExpires($date){
-		$this->expirationDate = $date;
-	}
-
-	public function hasExpired(){
-		$now = new \DateTime();
-
-		return $this->expirationDate === null ? false : $this->expirationDate < $now;
-	}
-
-	public function getReason(){
-		return $this->reason;
-	}
-
-	public function setReason($reason){
-		$this->reason = $reason;
-	}
-
-	public function getString(){
-		$str = "";
-		$str .= $this->getName();
-		$str .= "|";
-		$str .= $this->getCreated()->format(self::$format);
-		$str .= "|";
-		$str .= $this->getSource();
-		$str .= "|";
-		$str .= $this->getExpires() === null ? "Forever" : $this->getExpires()->format(self::$format);
-		$str .= "|";
-		$str .= $this->getReason();
-
-		return $str;
 	}
 
 	/**
@@ -114,6 +54,7 @@ class BanEntry{
 				$datetime = \DateTime::createFromFormat(self::$format, array_shift($str));
 				if(!($datetime instanceof \DateTime)){
 					MainLogger::getLogger()->alert("Error parsing date for BanEntry for player \"" . $entry->getName() . "\", the format may be invalid!");
+
 					return $entry;
 				}
 				$entry->setCreated($datetime);
@@ -133,5 +74,65 @@ class BanEntry{
 
 			return $entry;
 		}
+	}
+
+	public function setCreated(\DateTime $date){
+		$this->creationDate = $date;
+	}
+
+	/**
+	 * @param \DateTime $date
+	 */
+	public function setExpires($date){
+		$this->expirationDate = $date;
+	}
+
+	public function hasExpired(){
+		$now = new \DateTime();
+
+		return $this->expirationDate === null ? false : $this->expirationDate < $now;
+	}
+
+	public function getString(){
+		$str = "";
+		$str .= $this->getName();
+		$str .= "|";
+		$str .= $this->getCreated()->format(self::$format);
+		$str .= "|";
+		$str .= $this->getSource();
+		$str .= "|";
+		$str .= $this->getExpires() === null ? "Forever" : $this->getExpires()->format(self::$format);
+		$str .= "|";
+		$str .= $this->getReason();
+
+		return $str;
+	}
+
+	public function getName() : string{
+		return $this->name;
+	}
+
+	public function getCreated(){
+		return $this->creationDate;
+	}
+
+	public function getSource(){
+		return $this->source;
+	}
+
+	public function setSource($source){
+		$this->source = $source;
+	}
+
+	public function getExpires(){
+		return $this->expirationDate;
+	}
+
+	public function getReason(){
+		return $this->reason;
+	}
+
+	public function setReason($reason){
+		$this->reason = $reason;
 	}
 }

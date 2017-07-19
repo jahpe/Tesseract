@@ -26,7 +26,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\populator\VariableAmountPopulator;
 use pocketmine\utils\Random;
 
-class TallGrass extends VariableAmountPopulator{
+class TallGrass extends VariableAmountPopulator {
 	/** @var ChunkManager */
 	private $level;
 
@@ -45,11 +45,6 @@ class TallGrass extends VariableAmountPopulator{
 		}
 	}
 
-	private function canTallGrassStay($x, $y, $z){
-		$b = $this->level->getBlockIdAt($x, $y, $z);
-		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::GRASS;
-	}
-
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
@@ -59,5 +54,11 @@ class TallGrass extends VariableAmountPopulator{
 		}
 
 		return $y === 0 ? -1 : ++$y;
+	}
+
+	private function canTallGrassStay($x, $y, $z){
+		$b = $this->level->getBlockIdAt($x, $y, $z);
+
+		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::GRASS;
 	}
 }

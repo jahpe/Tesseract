@@ -26,8 +26,8 @@ use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
-class Slab extends Transparent{
-	
+class Slab extends Transparent {
+
 	const STONE = 0;
 	const SANDSTONE = 1;
 	const WOODEN = 2;
@@ -44,7 +44,7 @@ class Slab extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 2;
 	}
 
@@ -59,6 +59,7 @@ class Slab extends Transparent{
 			6 => "Quartz",
 			7 => "Purpur",
 		];
+
 		return (($this->meta & 0x08) > 0 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
 	}
 
@@ -67,6 +68,7 @@ class Slab extends Transparent{
 		if($type == self::WOODEN){
 			return 5;
 		}
+
 		return 0;
 	}
 
@@ -75,30 +77,8 @@ class Slab extends Transparent{
 		if($type == self::WOODEN){
 			return 5;
 		}
+
 		return 0;
-	}
-
-	protected function recalculateBoundingBox() {
-
-		if(($this->meta & 0x08) > 0){
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y + 0.5,
-				$this->z,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1
-			);
-		}else{
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z,
-				$this->x + 1,
-				$this->y + 0.5,
-				$this->z + 1
-			);
-		}
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
@@ -150,7 +130,7 @@ class Slab extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
 				[$this->id, $this->meta & 0x07, 1],
@@ -160,9 +140,30 @@ class Slab extends Transparent{
 		}
 	}
 
-
-
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
+	}
+
+	protected function recalculateBoundingBox(){
+
+		if(($this->meta & 0x08) > 0){
+			return new AxisAlignedBB(
+				$this->x,
+				$this->y + 0.5,
+				$this->z,
+				$this->x + 1,
+				$this->y + 1,
+				$this->z + 1
+			);
+		}else{
+			return new AxisAlignedBB(
+				$this->x,
+				$this->y,
+				$this->z,
+				$this->x + 1,
+				$this->y + 0.5,
+				$this->z + 1
+			);
+		}
 	}
 }

@@ -27,24 +27,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\BlockEntityDataPacket;
 use pocketmine\Player;
 
-abstract class Spawnable extends Tile{
-
-	public function spawnTo(Player $player){
-		if($this->closed){
-			return false;
-		}
-
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		$nbt->setData($this->getSpawnCompound());
-		$pk = new BlockEntityDataPacket();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->namedtag = $nbt->write(true);
-		$player->dataPacket($pk);
-
-		return true;
-	}
+abstract class Spawnable extends Tile {
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
@@ -63,13 +46,21 @@ abstract class Spawnable extends Tile{
 		}
 	}
 
-	protected function onChanged(){
-		$this->spawnToAll();
-
-		if($this->chunk !== null){
-			$this->chunk->setChanged();
-			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
+	public function spawnTo(Player $player){
+		if($this->closed){
+			return false;
 		}
+
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		$nbt->setData($this->getSpawnCompound());
+		$pk = new BlockEntityDataPacket();
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->namedtag = $nbt->write(true);
+		$player->dataPacket($pk);
+
+		return true;
 	}
 
 	/**
@@ -88,5 +79,14 @@ abstract class Spawnable extends Tile{
 	 */
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
 		return false;
+	}
+
+	protected function onChanged(){
+		$this->spawnToAll();
+
+		if($this->chunk !== null){
+			$this->chunk->setChanged();
+			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
+		}
 	}
 }

@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\level\format\Chunk;
 use pocketmine\math\Vector3;
 
-class SimpleChunkManager implements ChunkManager{
+class SimpleChunkManager implements ChunkManager {
 
 	/** @var Chunk[] */
 	protected $chunks = [];
@@ -45,22 +45,6 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	/**
-	 * Gets the raw block id.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int 0-255
-	 */
-	public function getBlockIdAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			return $chunk->getBlockId($x & 0xf, $y & Level::Y_MASK, $z & 0xf);
-		}
-		return 0;
-	}
-
-	/**
 	 * Sets the raw block id.
 	 *
 	 * @param int $x
@@ -72,6 +56,16 @@ class SimpleChunkManager implements ChunkManager{
 		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
 			$chunk->setBlockId($x & 0xf, $y & Level::Y_MASK, $z & 0xf, $id);
 		}
+	}
+
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return Chunk|null
+	 */
+	public function getChunk(int $chunkX, int $chunkZ){
+		return isset($this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)]) ? $this->chunks[$index] : null;
 	}
 
 	/**
@@ -87,6 +81,7 @@ class SimpleChunkManager implements ChunkManager{
 		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
 			return $chunk->getBlockData($x & 0xf, $y & Level::Y_MASK, $z & 0xf);
 		}
+
 		return 0;
 	}
 
@@ -105,38 +100,8 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	/**
-	 * Gets the raw block light level
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int 0-15
-	 */
-	public function getBlockLightAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			return $chunk->getBlockLight($x & 0x0f, $y & 0x7f, $z & 0x0f);
-		}
-		return 0;
-	}
-
-	/**
-	 * Sets the raw block light level.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $level 0-15
-	 */
-	public function setBlockLightAt(int $x, int $y, int $z, int $level){
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			$chunk->setBlockLight($x & 0x0f, $y & 0x7f, $z & 0x0f, $level & 0x0f);
-		}
-	}
-
-	/**
 	 * Updates the light around the block
-	 * 
+	 *
 	 * @param $x
 	 * @param $y
 	 * @param $z
@@ -193,6 +158,54 @@ class SimpleChunkManager implements ChunkManager{
 		}
 	}
 
+	/**
+	 * Gets the raw block light level
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return int 0-15
+	 */
+	public function getBlockLightAt(int $x, int $y, int $z) : int{
+		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+			return $chunk->getBlockLight($x & 0x0f, $y & 0x7f, $z & 0x0f);
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Gets the raw block id.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return int 0-255
+	 */
+	public function getBlockIdAt(int $x, int $y, int $z) : int{
+		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+			return $chunk->getBlockId($x & 0xf, $y & Level::Y_MASK, $z & 0xf);
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Sets the raw block light level.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 * @param int $level 0-15
+	 */
+	public function setBlockLightAt(int $x, int $y, int $z, int $level){
+		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+			$chunk->setBlockLight($x & 0x0f, $y & 0x7f, $z & 0x0f, $level & 0x0f);
+		}
+	}
+
 	private function computeRemoveBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited){
 		$current = $this->getBlockLightAt($x, $y, $z);
 
@@ -229,16 +242,6 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
-	 */
-	public function getChunk(int $chunkX, int $chunkZ){
-		return isset($this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)]) ? $this->chunks[$index] : null;
-	}
-
-	/**
 	 * @param int   $chunkX
 	 * @param int   $chunkZ
 	 * @param Chunk $chunk
@@ -246,6 +249,7 @@ class SimpleChunkManager implements ChunkManager{
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null){
 		if($chunk === null){
 			unset($this->chunks[Level::chunkHash($chunkX, $chunkZ)]);
+
 			return;
 		}
 		$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;

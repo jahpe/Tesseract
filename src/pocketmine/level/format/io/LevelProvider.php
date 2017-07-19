@@ -19,7 +19,7 @@
  *
 */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace pocketmine\level\format\io;
 
@@ -27,7 +27,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
-interface LevelProvider{
+interface LevelProvider {
 
 	/**
 	 * @param Level  $level
@@ -41,18 +41,6 @@ interface LevelProvider{
 	 * @return string
 	 */
 	public static function getProviderName() : string;
-
-	/**
-	 * Gets the build height limit of this world
-	 *
-	 * @return int
-	 */
-	public function getWorldHeight() : int;
-
-	/**
-	 * @return string
-	 */
-	public function getPath() : string;
 
 	/**
 	 * Tells if the path is a valid level.
@@ -74,6 +62,18 @@ interface LevelProvider{
 	 * @param array[]    $options
 	 */
 	public static function generate(string $path, string $name, $seed, string $generator, array $options = []);
+
+	/**
+	 * Gets the build height limit of this world
+	 *
+	 * @return int
+	 */
+	public function getWorldHeight() : int;
+
+	/**
+	 * @return string
+	 */
+	public function getPath() : string;
 
 	/**
 	 * Returns the generator name

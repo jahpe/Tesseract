@@ -24,10 +24,8 @@ namespace pocketmine\block;
 
 use pocketmine\item\Tool;
 
-class StainedClay extends Solid{
+class StainedClay extends Solid {
 
-	protected $id = self::STAINED_CLAY;
-	
 	const CLAY_WHITE = 0;
 	const CLAY_ORANGE = 1;
 	const CLAY_MAGENTA = 2;
@@ -44,12 +42,13 @@ class StainedClay extends Solid{
 	const CLAY_GREEN = 13;
 	const CLAY_RED = 14;
 	const CLAY_BLACK = 15;
+	protected $id = self::STAINED_CLAY;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 1.25;
 	}
 
@@ -76,6 +75,7 @@ class StainedClay extends Solid{
 			14 => "Red Stained Clay",
 			15 => "Black Stained Clay",
 		];
+
 		return $names[$this->meta & 0x0f];
 	}
 

@@ -21,7 +21,7 @@
 
 namespace pocketmine\event;
 
-class TranslationContainer extends TextContainer{
+class TranslationContainer extends TextContainer {
 
 	/** @var string[] $params */
 	protected $params = [];
@@ -34,6 +34,18 @@ class TranslationContainer extends TextContainer{
 		parent::__construct($text);
 
 		$this->setParameters($params);
+	}
+
+	/**
+	 * @param string[] $params
+	 */
+	public function setParameters(array $params){
+		$i = 0;
+		foreach($params as $str){
+			$this->params[$i] = (string) $str;
+
+			++$i;
+		}
 	}
 
 	/**
@@ -62,17 +74,5 @@ class TranslationContainer extends TextContainer{
 		}
 
 		$this->params[(int) $i] = $str;
-	}
-
-	/**
-	 * @param string[] $params
-	 */
-	public function setParameters(array $params){
-		$i = 0;
-		foreach($params as $str){
-			$this->params[$i] = (string) $str;
-
-			++$i;
-		}
 	}
 }

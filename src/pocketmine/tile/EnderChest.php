@@ -27,20 +27,17 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 
-class EnderChest extends Spawnable implements Nameable{
+class EnderChest extends Spawnable implements Nameable {
 
 
 	public function getName() : string{
 		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Ender Chest";
 	}
 
-	public function hasName(){
-		return isset($this->namedtag->CustomName);
-	}
-
 	public function setName($str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);
+
 			return;
 		}
 
@@ -60,5 +57,9 @@ class EnderChest extends Spawnable implements Nameable{
 		}
 
 		return $enderchest;
+	}
+
+	public function hasName(){
+		return isset($this->namedtag->CustomName);
 	}
 }

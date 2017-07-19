@@ -25,10 +25,10 @@ use pocketmine\Thread;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
-class CommandReader extends Thread{
-	private $readline;
+class CommandReader extends Thread {
 	/** @var \Threaded */
 	protected $buffer;
+	private $readline;
 	private $shutdown = false;
 	private $stdin;
 	/** @var MainLogger */
@@ -45,28 +45,6 @@ class CommandReader extends Thread{
 		$this->logger = $logger;
 		$this->buffer = new \Threaded;
 		$this->start();
-	}
-
-	public function shutdown(){
-		$this->shutdown = true;
-	}
-
-	private function readline_callback($line){
-		if($line !== ""){
-			$this->buffer[] = $line;
-			readline_add_history($line);
-		}
-	}
-
-	private function readLine(){
-		if(!$this->readline){
-			$line = trim(fgets($this->stdin));
-			if($line !== ""){
-				$this->buffer[] = $line;
-			}
-		}else{
-			readline_callback_read_char();
-		}
 	}
 
 	/**
@@ -88,6 +66,10 @@ class CommandReader extends Thread{
 		if(Utils::getOS() !== "win"){
 			parent::quit();
 		}
+	}
+
+	public function shutdown(){
+		$this->shutdown = true;
 	}
 
 	public function run(){
@@ -122,7 +104,25 @@ class CommandReader extends Thread{
 		}
 	}
 
+	private function readLine(){
+		if(!$this->readline){
+			$line = trim(fgets($this->stdin));
+			if($line !== ""){
+				$this->buffer[] = $line;
+			}
+		}else{
+			readline_callback_read_char();
+		}
+	}
+
 	public function getThreadName(){
 		return "Console";
+	}
+
+	private function readline_callback($line){
+		if($line !== ""){
+			$this->buffer[] = $line;
+			readline_add_history($line);
+		}
 	}
 }

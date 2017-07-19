@@ -24,7 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class PlayerListPacket extends DataPacket{
+class PlayerListPacket extends DataPacket {
 
 	const NETWORK_ID = Info::PLAYER_LIST_PACKET;
 
@@ -38,6 +38,7 @@ class PlayerListPacket extends DataPacket{
 
 	public function clean(){
 		$this->entries = [];
+
 		return parent::clean();
 	}
 

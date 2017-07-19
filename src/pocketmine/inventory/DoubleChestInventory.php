@@ -29,7 +29,7 @@ use pocketmine\Player;
 
 use pocketmine\tile\Chest;
 
-class DoubleChestInventory extends ChestInventory implements InventoryHolder{
+class DoubleChestInventory extends ChestInventory implements InventoryHolder {
 	/** @var ChestInventory */
 	private $left;
 	/** @var ChestInventory */
@@ -50,18 +50,6 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		return $this->left->getHolder();
 	}
 
-	public function getItem($index){
-		return $index < $this->left->getSize() ? $this->left->getItem($index) : $this->right->getItem($index - $this->right->getSize());
-	}
-
-	public function setItem($index, Item $item){
-		return $index < $this->left->getSize() ? $this->left->setItem($index, $item) : $this->right->setItem($index - $this->right->getSize(), $item);
-	}
-
-	public function clear($index){
-		return $index < $this->left->getSize() ? $this->left->clear($index) : $this->right->clear($index - $this->right->getSize());
-	}
-
 	public function getContents(){
 		$contents = [];
 		for($i = 0; $i < $this->getSize(); ++$i){
@@ -69,6 +57,10 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		}
 
 		return $contents;
+	}
+
+	public function getItem($index){
+		return $index < $this->left->getSize() ? $this->left->getItem($index) : $this->right->getItem($index - $this->right->getSize());
 	}
 
 	/**
@@ -82,7 +74,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 
 		for($i = 0; $i < $this->size; ++$i){
 			if(!isset($items[$i])){
-				if ($i < $this->left->size){
+				if($i < $this->left->size){
 					if(isset($this->left->slots[$i])){
 						$this->clear($i);
 					}
@@ -93,6 +85,14 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 				$this->clear($i);
 			}
 		}
+	}
+
+	public function clear($index){
+		return $index < $this->left->getSize() ? $this->left->clear($index) : $this->right->clear($index - $this->right->getSize());
+	}
+
+	public function setItem($index, Item $item){
+		return $index < $this->left->getSize() ? $this->left->setItem($index, $item) : $this->right->setItem($index - $this->right->getSize(), $item);
 	}
 
 	public function onOpen(Player $who){

@@ -37,7 +37,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class FallingSand extends Entity{
+class FallingSand extends Entity {
 	const NETWORK_ID = 66;
 
 	const DATA_BLOCK_INFO = 20;
@@ -45,34 +45,11 @@ class FallingSand extends Entity{
 	public $width = 0.98;
 	public $length = 0.98;
 	public $height = 0.98;
-
+	public $canCollide = false;
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 	protected $blockId = 0;
 	protected $damage;
-
-	public $canCollide = false;
-
-	protected function initEntity(){
-		parent::initEntity();
-		if(isset($this->namedtag->TileID)){
-			$this->blockId = $this->namedtag["TileID"];
-		}elseif(isset($this->namedtag->Tile)){
-			$this->blockId = $this->namedtag["Tile"];
-			$this->namedtag["TileID"] = new IntTag("TileID", $this->blockId);
-		}
-
-		if(isset($this->namedtag->Data)){
-			$this->damage = $this->namedtag["Data"];
-		}
-
-		if($this->blockId === 0){
-			$this->close();
-			return;
-		}
-
-		$this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
-	}
 
 	public function canCollideWith(Entity $entity){
 		return false;
@@ -169,14 +146,6 @@ class FallingSand extends Entity{
 		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
 	}
 
-	public function getBlock(){
-		return $this->blockId;
-	}
-
-	public function getDamage(){
-		return $this->damage;
-	}
-
 	public function saveNBT(){
 		$this->namedtag->TileID = new IntTag("TileID", $this->blockId);
 		$this->namedtag->Data = new ByteTag("Data", $this->damage);
@@ -198,5 +167,35 @@ class FallingSand extends Entity{
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
+		if(isset($this->namedtag->TileID)){
+			$this->blockId = $this->namedtag["TileID"];
+		}elseif(isset($this->namedtag->Tile)){
+			$this->blockId = $this->namedtag["Tile"];
+			$this->namedtag["TileID"] = new IntTag("TileID", $this->blockId);
+		}
+
+		if(isset($this->namedtag->Data)){
+			$this->damage = $this->namedtag["Data"];
+		}
+
+		if($this->blockId === 0){
+			$this->close();
+
+			return;
+		}
+
+		$this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
+	}
+
+	public function getBlock(){
+		return $this->blockId;
+	}
+
+	public function getDamage(){
+		return $this->damage;
 	}
 }

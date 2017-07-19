@@ -25,9 +25,9 @@ use pocketmine\level\ChunkManager;
 use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
 
-class Ore{
-	private $random;
+class Ore {
 	public $type;
+	private $random;
 
 	public function __construct(Random $random, OreType $type){
 		$this->type = $type;
@@ -79,7 +79,7 @@ class Ore{
 								$sizeZ = ($z + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 and (($level->getBlockIdAt($x, $y, $z) === 1) or ($level->getBlockIdAt($x, $y, $z) === 87)) ){
+								if(($sizeX + $sizeY + $sizeZ) < 1 and (($level->getBlockIdAt($x, $y, $z) === 1) or ($level->getBlockIdAt($x, $y, $z) === 87))){
 									$level->setBlockIdAt($x, $y, $z, $this->type->material->getId());
 									if($this->type->material->getDamage() !== 0){
 										$level->setBlockDataAt($x, $y, $z, $this->type->material->getDamage());

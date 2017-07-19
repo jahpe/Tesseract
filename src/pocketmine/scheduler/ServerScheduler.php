@@ -22,6 +22,7 @@
 /**
  * Task scheduling related classes
  */
+
 namespace pocketmine\scheduler;
 
 use pocketmine\plugin\Plugin;
@@ -29,7 +30,7 @@ use pocketmine\plugin\PluginException;
 use pocketmine\Server;
 use pocketmine\utils\ReversePriorityQueue;
 
-class ServerScheduler{
+class ServerScheduler {
 	public static $WORKERS = 2;
 	/**
 	 * @var ReversePriorityQueue<Task>
@@ -43,12 +44,10 @@ class ServerScheduler{
 
 	/** @var AsyncPool */
 	protected $asyncPool;
-
-	/** @var int */
-	private $ids = 1;
-
 	/** @var int */
 	protected $currentTick = 0;
+	/** @var int */
+	private $ids = 1;
 
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
@@ -62,6 +61,58 @@ class ServerScheduler{
 	 */
 	public function scheduleTask(Task $task){
 		return $this->addTask($task, -1, -1);
+	}
+
+	/**
+	 * @param Task $task
+	 * @param      $delay
+	 * @param      $period
+	 *
+	 * @return null|TaskHandler
+	 *
+	 * @throws PluginException
+	 */
+	private function addTask(Task $task, $delay, $period){
+		if($task instanceof PluginTask){
+			if(!($task->getOwner() instanceof Plugin)){
+				throw new PluginException("Invalid owner of PluginTask " . get_class($task));
+			}elseif(!$task->getOwner()->isEnabled()){
+				throw new PluginException("Plugin '" . $task->getOwner()->getName() . "' attempted to register a task while disabled");
+			}
+		}
+
+		if($delay <= 0){
+			$delay = -1;
+		}
+
+		if($period <= -1){
+			$period = -1;
+		}elseif($period < 1){
+			$period = 1;
+		}
+
+		return $this->handle(new TaskHandler(get_class($task), $task, $this->nextId(), $delay, $period));
+	}
+
+	private function handle(TaskHandler $handler){
+		if($handler->isDelayed()){
+			$nextRun = $this->currentTick + $handler->getDelay();
+		}else{
+			$nextRun = $this->currentTick;
+		}
+
+		$handler->setNextRun($nextRun);
+		$this->tasks[$handler->getTaskId()] = $handler;
+		$this->queue->insert($handler, $nextRun);
+
+		return $handler;
+	}
+
+	/**
+	 * @return int
+	 */
+	private function nextId(){
+		return $this->ids++;
 	}
 
 	/**
@@ -175,51 +226,6 @@ class ServerScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 * @param      $delay
-	 * @param      $period
-	 *
-	 * @return null|TaskHandler
-	 *
-	 * @throws PluginException
-	 */
-	private function addTask(Task $task, $delay, $period){
-		if($task instanceof PluginTask){
-			if(!($task->getOwner() instanceof Plugin)){
-				throw new PluginException("Invalid owner of PluginTask " . get_class($task));
-			}elseif(!$task->getOwner()->isEnabled()){
-				throw new PluginException("Plugin '" . $task->getOwner()->getName() . "' attempted to register a task while disabled");
-			}
-		}
-
-		if($delay <= 0){
-			$delay = -1;
-		}
-
-		if($period <= -1){
-			$period = -1;
-		}elseif($period < 1){
-			$period = 1;
-		}
-
-		return $this->handle(new TaskHandler(get_class($task), $task, $this->nextId(), $delay, $period));
-	}
-
-	private function handle(TaskHandler $handler){
-		if($handler->isDelayed()){
-			$nextRun = $this->currentTick + $handler->getDelay();
-		}else{
-			$nextRun = $this->currentTick;
-		}
-
-		$handler->setNextRun($nextRun);
-		$this->tasks[$handler->getTaskId()] = $handler;
-		$this->queue->insert($handler, $nextRun);
-
-		return $handler;
-	}
-
-	/**
 	 * @param int $currentTick
 	 */
 	public function mainThreadHeartbeat($currentTick){
@@ -254,13 +260,6 @@ class ServerScheduler{
 
 	private function isReady($currentTicks){
 		return count($this->tasks) > 0 and $this->queue->current()->getNextRun() <= $currentTicks;
-	}
-
-	/**
-	 * @return int
-	 */
-	private function nextId(){
-		return $this->ids++;
 	}
 
 }

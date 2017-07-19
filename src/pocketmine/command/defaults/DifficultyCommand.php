@@ -29,7 +29,7 @@ use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\Server;
 
 
-class DifficultyCommand extends VanillaCommand{
+class DifficultyCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(

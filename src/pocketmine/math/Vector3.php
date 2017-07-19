@@ -23,7 +23,7 @@ namespace pocketmine\math;
 
 use pocketmine\utils\Random;
 
-class Vector3{
+class Vector3 {
 
 	const SIDE_DOWN = 0;
 	const SIDE_UP = 1;
@@ -40,6 +40,29 @@ class Vector3{
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
+	}
+
+	public static function getOppositeSide($side){
+		switch((int) $side){
+			case Vector3::SIDE_DOWN:
+				return Vector3::SIDE_UP;
+			case Vector3::SIDE_UP:
+				return Vector3::SIDE_DOWN;
+			case Vector3::SIDE_NORTH:
+				return Vector3::SIDE_SOUTH;
+			case Vector3::SIDE_SOUTH:
+				return Vector3::SIDE_NORTH;
+			case Vector3::SIDE_WEST:
+				return Vector3::SIDE_EAST;
+			case Vector3::SIDE_EAST:
+				return Vector3::SIDE_WEST;
+			default:
+				return -1;
+		}
+	}
+
+	public static function createRandomDirection(Random $random){
+		return VectorMath::getDirection3D($random->nextFloat() * 2 * pi(), $random->nextFloat() * 2 * pi());
 	}
 
 	public function getX(){
@@ -93,11 +116,11 @@ class Vector3{
 	 *
 	 * @return Vector3
 	 */
-	public function add($x, $y = 0, $z = 0){
+	public function subtract($x = 0, $y = 0, $z = 0){
 		if($x instanceof Vector3){
-			return new Vector3($this->x + $x->x, $this->y + $x->y, $this->z + $x->z);
+			return $this->add(-$x->x, -$x->y, -$x->z);
 		}else{
-			return new Vector3($this->x + $x, $this->y + $y, $this->z + $z);
+			return $this->add(-$x, -$y, -$z);
 		}
 	}
 
@@ -108,20 +131,16 @@ class Vector3{
 	 *
 	 * @return Vector3
 	 */
-	public function subtract($x = 0, $y = 0, $z = 0){
+	public function add($x, $y = 0, $z = 0){
 		if($x instanceof Vector3){
-			return $this->add(-$x->x, -$x->y, -$x->z);
+			return new Vector3($this->x + $x->x, $this->y + $x->y, $this->z + $x->z);
 		}else{
-			return $this->add(-$x, -$y, -$z);
+			return new Vector3($this->x + $x, $this->y + $y, $this->z + $z);
 		}
 	}
 
 	public function multiply($number){
 		return new Vector3($this->x * $number, $this->y * $number, $this->z * $number);
-	}
-
-	public function divide($number){
-		return new Vector3($this->x / $number, $this->y / $number, $this->z / $number);
 	}
 
 	public function ceil(){
@@ -156,25 +175,6 @@ class Vector3{
 				return new Vector3($this->x + $step, $this->y, $this->z);
 			default:
 				return $this;
-		}
-	}
-
-	public static function getOppositeSide($side){
-		switch((int) $side){
-			case Vector3::SIDE_DOWN:
-				return Vector3::SIDE_UP;
-			case Vector3::SIDE_UP:
-				return Vector3::SIDE_DOWN;
-			case Vector3::SIDE_NORTH:
-				return Vector3::SIDE_SOUTH;
-			case Vector3::SIDE_SOUTH:
-				return Vector3::SIDE_NORTH;
-			case Vector3::SIDE_WEST:
-				return Vector3::SIDE_EAST;
-			case Vector3::SIDE_EAST:
-				return Vector3::SIDE_WEST;
-			default:
-				return -1;
 		}
 	}
 
@@ -214,6 +214,10 @@ class Vector3{
 		}
 
 		return new Vector3(0, 0, 0);
+	}
+
+	public function divide($number){
+		return new Vector3($this->x / $number, $this->y / $number, $this->z / $number);
 	}
 
 	public function dot(Vector3 $v){
@@ -324,6 +328,7 @@ class Vector3{
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
+
 		return $this;
 	}
 
@@ -339,14 +344,11 @@ class Vector3{
 		$this->x = $pos->x + $x;
 		$this->y = $pos->y + $y;
 		$this->z = $pos->z + $z;
+
 		return $this;
 	}
 
 	public function __toString(){
 		return "Vector3(x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
-	}
-
-	public static function createRandomDirection(Random $random){
-		return VectorMath::getDirection3D($random->nextFloat() * 2 * pi(), $random->nextFloat() * 2 * pi());
 	}
 }

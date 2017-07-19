@@ -26,7 +26,7 @@ use pocketmine\Server;
 use pocketmine\utils\UUID;
 use pocketmine\math\Vector2;
 
-class ShapedRecipe implements Recipe{
+class ShapedRecipe implements Recipe {
 	/** @var Item */
 	private $output;
 
@@ -84,6 +84,7 @@ class ShapedRecipe implements Recipe{
 
 	public function addIngredient($x, $y, Item $item){
 		$this->ingredients[$y][$x] = clone $item;
+
 		return $this;
 	}
 
@@ -131,25 +132,27 @@ class ShapedRecipe implements Recipe{
 	}
 
 	/**
- 	 * @return Item[]
- 	 */
- 	public function getIngredientList(){
- 		$ingredients = [];
- 		for ($x = 0; $x < 3; ++$x){
- 			for ($y = 0; $y < 3; ++$y){
- 				if (!empty($this->ingredients[$x][$y])){
- 					if ($this->ingredients[$x][$y]->getId() !== Item::AIR){
- 						$ingredients[] = clone $this->ingredients[$x][$y];
- 					}
- 				}
- 			}
- 		}
- 		return $ingredients;
- 	}
+	 * @return Item[]
+	 */
+	public function getIngredientList(){
+		$ingredients = [];
+		for($x = 0; $x < 3; ++$x){
+			for($y = 0; $y < 3; ++$y){
+				if(!empty($this->ingredients[$x][$y])){
+					if($this->ingredients[$x][$y]->getId() !== Item::AIR){
+						$ingredients[] = clone $this->ingredients[$x][$y];
+					}
+				}
+			}
+		}
+
+		return $ingredients;
+	}
 
 	/**
 	 * @param $x
 	 * @param $y
+	 *
 	 * @return null|Item
 	 */
 	public function getIngredient($x, $y){

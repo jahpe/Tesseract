@@ -23,7 +23,7 @@ namespace pocketmine\math;
 
 use pocketmine\level\MovingObjectPosition;
 
-class AxisAlignedBB{
+class AxisAlignedBB {
 
 	public $minX;
 	public $minY;
@@ -129,6 +129,7 @@ class AxisAlignedBB{
 		$this->maxX = $bb->maxX;
 		$this->maxY = $bb->maxY;
 		$this->maxZ = $bb->maxZ;
+
 		return $this;
 	}
 
@@ -230,18 +231,6 @@ class AxisAlignedBB{
 		return ($this->maxX - $this->minX + $this->maxY - $this->minY + $this->maxZ - $this->minZ) / 3;
 	}
 
-	public function isVectorInYZ(Vector3 $vector){
-		return $vector->y >= $this->minY and $vector->y <= $this->maxY and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
-	}
-
-	public function isVectorInXZ(Vector3 $vector){
-		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
-	}
-
-	public function isVectorInXY(Vector3 $vector){
-		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
-	}
-
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
 		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
 		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);
@@ -322,6 +311,18 @@ class AxisAlignedBB{
 		}
 
 		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
+	}
+
+	public function isVectorInYZ(Vector3 $vector){
+		return $vector->y >= $this->minY and $vector->y <= $this->maxY and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
+	}
+
+	public function isVectorInXZ(Vector3 $vector){
+		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
+	}
+
+	public function isVectorInXY(Vector3 $vector){
+		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
 	}
 
 	public function __toString(){

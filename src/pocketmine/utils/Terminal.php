@@ -21,7 +21,7 @@
 
 namespace pocketmine\utils;
 
-abstract class Terminal{
+abstract class Terminal {
 	public static $FORMAT_BOLD = "";
 	public static $FORMAT_OBFUSCATED = "";
 	public static $FORMAT_ITALIC = "";
@@ -49,6 +49,29 @@ abstract class Terminal{
 
 	private static $formattingCodes = null;
 
+	public static function init(){
+		if(!self::hasFormattingCodes()){
+			return;
+		}
+
+		switch(Utils::getOS()){
+			case "linux":
+			case "mac":
+			case "bsd":
+				self::getEscapeCodes();
+
+				return;
+
+			case "win":
+			case "android":
+				self::getFallbackEscapeCodes();
+
+				return;
+		}
+
+		//TODO: iOS
+	}
+
 	public static function hasFormattingCodes(){
 		if(self::$formattingCodes === null){
 			$opts = getopt("", ["enable-ansi", "disable-ansi"]);
@@ -60,33 +83,6 @@ abstract class Terminal{
 		}
 
 		return self::$formattingCodes;
-	}
-
-	protected static function getFallbackEscapeCodes(){
-		self::$FORMAT_BOLD = "\x1b[1m";
-		self::$FORMAT_OBFUSCATED = "";
-		self::$FORMAT_ITALIC = "\x1b[3m";
-		self::$FORMAT_UNDERLINE = "\x1b[4m";
-		self::$FORMAT_STRIKETHROUGH = "\x1b[9m";
-
-		self::$FORMAT_RESET = "\x1b[m";
-
-		self::$COLOR_BLACK = "\x1b[38;5;16m";
-		self::$COLOR_DARK_BLUE = "\x1b[38;5;19m";
-		self::$COLOR_DARK_GREEN = "\x1b[38;5;34m";
-		self::$COLOR_DARK_AQUA = "\x1b[38;5;37m";
-		self::$COLOR_DARK_RED = "\x1b[38;5;124m";
-		self::$COLOR_PURPLE = "\x1b[38;5;127m";
-		self::$COLOR_GOLD = "\x1b[38;5;214m";
-		self::$COLOR_GRAY = "\x1b[38;5;145m";
-		self::$COLOR_DARK_GRAY = "\x1b[38;5;59m";
-		self::$COLOR_BLUE = "\x1b[38;5;63m";
-		self::$COLOR_GREEN = "\x1b[38;5;83m";
-		self::$COLOR_AQUA = "\x1b[38;5;87m";
-		self::$COLOR_RED = "\x1b[38;5;203m";
-		self::$COLOR_LIGHT_PURPLE = "\x1b[38;5;207m";
-		self::$COLOR_YELLOW = "\x1b[38;5;227m";
-		self::$COLOR_WHITE = "\x1b[38;5;231m";
 	}
 
 	protected static function getEscapeCodes(){
@@ -128,25 +124,31 @@ abstract class Terminal{
 		}
 	}
 
-	public static function init(){
-		if(!self::hasFormattingCodes()){
-			return;
-		}
+	protected static function getFallbackEscapeCodes(){
+		self::$FORMAT_BOLD = "\x1b[1m";
+		self::$FORMAT_OBFUSCATED = "";
+		self::$FORMAT_ITALIC = "\x1b[3m";
+		self::$FORMAT_UNDERLINE = "\x1b[4m";
+		self::$FORMAT_STRIKETHROUGH = "\x1b[9m";
 
-		switch(Utils::getOS()){
-			case "linux":
-			case "mac":
-			case "bsd":
-				self::getEscapeCodes();
-				return;
+		self::$FORMAT_RESET = "\x1b[m";
 
-			case "win":
-			case "android":
-				self::getFallbackEscapeCodes();
-				return;
-		}
-
-		//TODO: iOS
+		self::$COLOR_BLACK = "\x1b[38;5;16m";
+		self::$COLOR_DARK_BLUE = "\x1b[38;5;19m";
+		self::$COLOR_DARK_GREEN = "\x1b[38;5;34m";
+		self::$COLOR_DARK_AQUA = "\x1b[38;5;37m";
+		self::$COLOR_DARK_RED = "\x1b[38;5;124m";
+		self::$COLOR_PURPLE = "\x1b[38;5;127m";
+		self::$COLOR_GOLD = "\x1b[38;5;214m";
+		self::$COLOR_GRAY = "\x1b[38;5;145m";
+		self::$COLOR_DARK_GRAY = "\x1b[38;5;59m";
+		self::$COLOR_BLUE = "\x1b[38;5;63m";
+		self::$COLOR_GREEN = "\x1b[38;5;83m";
+		self::$COLOR_AQUA = "\x1b[38;5;87m";
+		self::$COLOR_RED = "\x1b[38;5;203m";
+		self::$COLOR_LIGHT_PURPLE = "\x1b[38;5;207m";
+		self::$COLOR_YELLOW = "\x1b[38;5;227m";
+		self::$COLOR_WHITE = "\x1b[38;5;231m";
 	}
 
 }

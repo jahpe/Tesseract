@@ -31,7 +31,7 @@ use pocketmine\entity\Vehicle;
 /**
  * Called when a entity is spawned
  */
-class EntitySpawnEvent extends EntityEvent{
+class EntitySpawnEvent extends EntityEvent {
 
 	public static $handlerList = null;
 
@@ -96,7 +96,7 @@ class EntitySpawnEvent extends EntityEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "EntitySpawnEvent";
 	}

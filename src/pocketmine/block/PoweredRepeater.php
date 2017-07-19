@@ -25,10 +25,9 @@ use pocketmine\item\Item;
 
 
 class PoweredRepeater extends Solid {
-	protected $id = self::POWERED_REPEATER_BLOCK;
-
 	const ACTION_ACTIVATE = "Repeater Activate";
 	const ACTION_DEACTIVATE = "Repeater Deactivate";
+	protected $id = self::POWERED_REPEATER_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

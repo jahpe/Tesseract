@@ -28,7 +28,7 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 
 
-class FloatingTextParticle extends Particle{
+class FloatingTextParticle extends Particle {
 	//TODO: HACK!
 
 	protected $text;
@@ -38,8 +38,8 @@ class FloatingTextParticle extends Particle{
 
 	/**
 	 * @param Vector3 $pos
-	 * @param int $text
-	 * @param string $title
+	 * @param int     $text
+	 * @param string  $title
 	 */
 	public function __construct(Vector3 $pos, $text, $title = ""){
 		parent::__construct($pos->x, $pos->y, $pos->z);
@@ -51,22 +51,22 @@ class FloatingTextParticle extends Particle{
 		return $this->text;
 	}
 
-	public function getTitle(){
-		return $this->title;
-	}
-
 	public function setText($text){
 		$this->text = $text;
+	}
+
+	public function getTitle(){
+		return $this->title;
 	}
 
 	public function setTitle($title){
 		$this->title = $title;
 	}
-	
+
 	public function isInvisible(){
 		return $this->invisible;
 	}
-	
+
 	public function setInvisible($value = true){
 		$this->invisible = (bool) $value;
 	}
@@ -105,7 +105,7 @@ class FloatingTextParticle extends Particle{
 			$pk->metadata = [
 				Entity::DATA_FLAGS => [Entity::DATA_TYPE_LONG, $flags],
 				Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $this->title . ($this->text !== "" ? "\n" . $this->text : "")],
-            ];
+			];
 
 			$p[] = $pk;
 		}

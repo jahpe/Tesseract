@@ -26,7 +26,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class DragonFireBall extends Projectile{
+class DragonFireBall extends Projectile {
 	const NETWORK_ID = 79;
 
 	public $width = 0.25;

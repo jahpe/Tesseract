@@ -32,20 +32,16 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class PrimedTNT extends Entity implements Explosive{
+class PrimedTNT extends Entity implements Explosive {
 	const NETWORK_ID = 65;
 
 	public $width = 0.98;
 	public $length = 0.98;
 	public $height = 0.98;
-
+	public $canCollide = false;
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
-
 	protected $fuse;
-
-	public $canCollide = false;
-
 	private $dropItem = true;
 
 	public function __construct(Level $level, CompoundTag $nbt, bool $dropItem = true){
@@ -59,20 +55,6 @@ class PrimedTNT extends Entity implements Explosive{
 			parent::attack($damage, $source);
 		}
 	}
-
-	protected function initEntity(){
-		parent::initEntity();
-
-		if(isset($this->namedtag->Fuse)){
-			$this->fuse = $this->namedtag["Fuse"];
-		}else{
-			$this->fuse = 80;
-		}
-
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IGNITED, true);
-		$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
-	}
-
 
 	public function canCollideWith(Entity $entity){
 		return false;
@@ -163,5 +145,18 @@ class PrimedTNT extends Entity implements Explosive{
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
+
+		if(isset($this->namedtag->Fuse)){
+			$this->fuse = $this->namedtag["Fuse"];
+		}else{
+			$this->fuse = 80;
+		}
+
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IGNITED, true);
+		$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
 	}
 }

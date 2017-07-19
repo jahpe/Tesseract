@@ -27,7 +27,7 @@ use pocketmine\level\Level;
 /**
  * Called when a Chunk is loaded
  */
-class ChunkLoadEvent extends ChunkEvent{
+class ChunkLoadEvent extends ChunkEvent {
 
 	public static $handlerList = null;
 
@@ -47,7 +47,7 @@ class ChunkLoadEvent extends ChunkEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "ChunkLoadEvent";
 	}

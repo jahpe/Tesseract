@@ -42,8 +42,10 @@ use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
-class Nether extends Generator{
+class Nether extends Generator {
 
+	private static $GAUSSIAN_KERNEL = null;
+	private static $SMOOTH_SIZE = 2;
 	/** @var Populator[] */
 	private $populators = [];
 	/** @var ChunkManager */
@@ -55,14 +57,10 @@ class Nether extends Generator{
 	private $emptyAmplitude = 1;
 	private $density = 0.5;
 	private $bedrockDepth = 5;
-
 	/** @var Populator[] */
 	private $generationPopulators = [];
 	/** @var Simplex */
 	private $noiseBase;
-
-	private static $GAUSSIAN_KERNEL = null;
-	private static $SMOOTH_SIZE = 2;
 
 	public function __construct(array $options = []){
 		if(self::$GAUSSIAN_KERNEL === null){

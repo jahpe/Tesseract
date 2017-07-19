@@ -31,8 +31,8 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\protocol\BlockEventPacket;
 use pocketmine\Player;
 
-class EnderChestInventory extends ContainerInventory{
-	 
+class EnderChestInventory extends ContainerInventory {
+
 	private $owner;
 
 	public function __construct(Human $owner, $contents = null){
@@ -41,10 +41,10 @@ class EnderChestInventory extends ContainerInventory{
 
 		if($contents !== null){
 			if($contents instanceof ListTag){
- 			foreach($contents as $item){
- 				$this->setItem($item["Slot"], Item::nbtDeserialize($item));
- 			}
- 		}else{
+				foreach($contents as $item){
+					$this->setItem($item["Slot"], Item::nbtDeserialize($item));
+				}
+			}else{
 				throw new \InvalidArgumentException("Expecting ListTag, received " . gettype($contents));
 			}
 		}
@@ -53,13 +53,13 @@ class EnderChestInventory extends ContainerInventory{
 	public function getOwner(){
 		return $this->owner;
 	}
- 
+
 	public function openAt(Position $pos){
 		$this->getHolder()->setComponents($pos->x, $pos->y, $pos->z);
 		$this->getHolder()->setLevel($pos->getLevel());
 		$this->owner->addWindow($this);
 	}
- 
+
 	public function getHolder(){
 		return $this->holder;
 	}

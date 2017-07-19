@@ -27,7 +27,7 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class SayCommand extends VanillaCommand{
+class SayCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(
@@ -51,6 +51,7 @@ class SayCommand extends VanillaCommand{
 		}
 
 		$sender->getServer()->broadcastMessage(new TranslationContainer(TextFormat::LIGHT_PURPLE . "%chat.type.announcement", [$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()), TextFormat::LIGHT_PURPLE . implode(" ", $args)]));
+
 		return true;
 	}
 }

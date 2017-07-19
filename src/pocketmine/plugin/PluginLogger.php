@@ -24,12 +24,20 @@ namespace pocketmine\plugin;
 use LogLevel;
 use pocketmine\Server;
 
-class PluginLogger implements \AttachableLogger{
+class PluginLogger implements \AttachableLogger {
 
 	private $pluginName;
 
 	/** @var \LoggerAttachment[] */
 	private $attachments = [];
+
+	/**
+	 * @param Plugin $context
+	 */
+	public function __construct(Plugin $context){
+		$prefix = $context->getDescription()->getPrefix();
+		$this->pluginName = $prefix != null ? "[$prefix] " : "[" . $context->getDescription()->getName() . "] ";
+	}
 
 	public function addAttachment(\LoggerAttachment $attachment){
 		$this->attachments[spl_object_hash($attachment)] = $attachment;
@@ -47,16 +55,15 @@ class PluginLogger implements \AttachableLogger{
 		return $this->attachments;
 	}
 
-	/**
-	 * @param Plugin $context
-	 */
-	public function __construct(Plugin $context){
-		$prefix = $context->getDescription()->getPrefix();
-		$this->pluginName = $prefix != null ? "[$prefix] " : "[" . $context->getDescription()->getName() . "] ";
-	}
-
 	public function emergency($message){
 		$this->log(LogLevel::EMERGENCY, $message);
+	}
+
+	public function log($level, $message){
+		Server::getInstance()->getLogger()->log($level, $this->pluginName . $message);
+		foreach($this->attachments as $attachment){
+			$attachment->log($level, $message);
+		}
 	}
 
 	public function alert($message){
@@ -89,12 +96,5 @@ class PluginLogger implements \AttachableLogger{
 
 	public function logException(\Throwable $e, $trace = null){
 		Server::getInstance()->getLogger()->logException($e, $trace);
-	}
-
-	public function log($level, $message){
-		Server::getInstance()->getLogger()->log($level, $this->pluginName . $message);
-		foreach($this->attachments as $attachment){
-			$attachment->log($level, $message);
-		}
 	}
 }

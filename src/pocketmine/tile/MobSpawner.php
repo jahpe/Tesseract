@@ -35,7 +35,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\level\format\Chunk;
 use pocketmine\Player;
 
-class MobSpawner extends Spawnable{
+class MobSpawner extends Spawnable {
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->EntityId) or !($nbt->EntityId instanceof IntTag)){
@@ -72,66 +72,24 @@ class MobSpawner extends Spawnable{
 		$this->scheduleUpdate();
 	}
 
-	public function getSpawnCount(){
-		return $this->namedtag["SpawnCount"];
-	}
-
 	public function setSpawnCount(int $value){
 		$this->namedtag->SpawnCount->setValue($value);
-	}
-
-	public function getSpawnRange(){
-		return $this->namedtag["SpawnRange"];
 	}
 
 	public function setSpawnRange(int $value){
 		$this->namedtag->SpawnRange->setValue($value);
 	}
 
-	public function getMinSpawnDelay(){
-		return $this->namedtag["MinSpawnDelay"];
-	}
-
 	public function setMinSpawnDelay(int $value){
 		$this->namedtag->MinSpawnDelay->setValue($value);
-	}
-
-	public function getMaxSpawnDelay(){
-		return $this->namedtag["MaxSpawnDelay"];
 	}
 
 	public function setMaxSpawnDelay(int $value){
 		$this->namedtag->MaxSpawnDelay->setValue($value);
 	}
 
-	public function getDelay(){
-		return $this->namedtag["Delay"];
-	}
-
-	public function setDelay(int $value){
-		$this->namedtag->Delay->setValue($value);
-	}
-
 	public function getName() : string{
 		return "Monster Spawner";
-	}
-
-	public function canUpdate() : bool{
-		if($this->getEntityId() === 0) return false;
-		$hasPlayer = false;
-		$count = 0;
-		foreach($this->getLevel()->getEntities() as $e){
-			if($e instanceof Player){
-				if($e->distance($this->getBlock()) <= 15) $hasPlayer = true;
-			}
-			if($e::NETWORK_ID == $this->getEntityId()){
-				$count++;
-			}
-		}
-		if($hasPlayer and $count < 15){ // Spawn limit = 15
-			return true;
-		}
-		return false;
 	}
 
 	public function onUpdate(){
@@ -187,6 +145,49 @@ class MobSpawner extends Spawnable{
 		$this->timings->stopTiming();
 
 		return true;
+	}
+
+	public function canUpdate() : bool{
+		if($this->getEntityId() === 0) return false;
+		$hasPlayer = false;
+		$count = 0;
+		foreach($this->getLevel()->getEntities() as $e){
+			if($e instanceof Player){
+				if($e->distance($this->getBlock()) <= 15) $hasPlayer = true;
+			}
+			if($e::NETWORK_ID == $this->getEntityId()){
+				$count++;
+			}
+		}
+		if($hasPlayer and $count < 15){ // Spawn limit = 15
+			return true;
+		}
+
+		return false;
+	}
+
+	public function getDelay(){
+		return $this->namedtag["Delay"];
+	}
+
+	public function getSpawnCount(){
+		return $this->namedtag["SpawnCount"];
+	}
+
+	public function getSpawnRange(){
+		return $this->namedtag["SpawnRange"];
+	}
+
+	public function setDelay(int $value){
+		$this->namedtag->Delay->setValue($value);
+	}
+
+	public function getMinSpawnDelay(){
+		return $this->namedtag["MinSpawnDelay"];
+	}
+
+	public function getMaxSpawnDelay(){
+		return $this->namedtag["MaxSpawnDelay"];
 	}
 
 	public function getSpawnCompound(){

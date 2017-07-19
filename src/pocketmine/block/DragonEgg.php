@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
-class DragonEgg extends Solid{
+class DragonEgg extends Solid {
 
 	protected $id = self::DRAGON_EGG;
 
@@ -39,7 +39,7 @@ class DragonEgg extends Solid{
 	public function getHardness(){
 		return -1;
 	}
-	
+
 	public function getResistance(){
 		return 18000000;
 	}

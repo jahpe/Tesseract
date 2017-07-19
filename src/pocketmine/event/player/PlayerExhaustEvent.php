@@ -25,9 +25,7 @@ use pocketmine\entity\Human;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerExhaustEvent extends PlayerEvent implements Cancellable{
-
-	public static $handlerList = null;
+class PlayerExhaustEvent extends PlayerEvent implements Cancellable {
 
 	const CAUSE_ATTACK = 1;
 	const CAUSE_DAMAGE = 2;
@@ -39,9 +37,8 @@ class PlayerExhaustEvent extends PlayerEvent implements Cancellable{
 	const CAUSE_SWIMMING = 8;
 	const CAUSE_JUMPING = 10;
 	const CAUSE_CUSTOM = 11;
-
 	const CAUSE_FLAG_SPRINT = 0x10000;
-
+	public static $handlerList = null;
 	/** @var float */
 	private $amount;
 
@@ -67,7 +64,7 @@ class PlayerExhaustEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerExhaustEvent";
 	}

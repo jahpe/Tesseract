@@ -26,6 +26,7 @@
  * Implementation of the GeniRCON Protocol to allow full remote console access
  * Source: https://github.com/iTXTech/GeniRCON
  */
+
 namespace pocketmine\network\rcon;
 
 use pocketmine\command\RemoteConsoleCommandSender;
@@ -33,7 +34,7 @@ use pocketmine\event\server\RemoteServerCommandEvent;
 use pocketmine\utils\Utils;
 use pocketmine\Server;
 
-class RCON{
+class RCON {
 	const PROTOCOL_VERSION = 3;
 
 	/** @var Server */
@@ -60,6 +61,7 @@ class RCON{
 		if($this->socket === false or !socket_bind($this->socket, $interface, (int) $port) or !socket_listen($this->socket)){
 			$this->server->getLogger()->critical("RCON can't be started: " . socket_strerror(socket_last_error()));
 			$this->threads = 0;
+
 			return;
 		}
 		socket_set_block($this->socket);

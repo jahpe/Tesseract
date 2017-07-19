@@ -22,13 +22,15 @@
 /**
  * Various Utilities used around the code
  */
+
 namespace pocketmine\utils;
+
 use pocketmine\ThreadManager;
 
 /**
  * Big collection of functions
  */
-class Utils{
+class Utils {
 	public static $online = true;
 	public static $ip = false;
 	public static $os;
@@ -118,6 +120,47 @@ class Utils{
 	}
 
 	/**
+	 * Returns the current Operating System
+	 * Windows => win
+	 * MacOS => mac
+	 * iOS => ios
+	 * Android => android
+	 * Linux => Linux
+	 * BSD => bsd
+	 * Other => other
+	 *
+	 * @param bool $recalculate
+	 *
+	 * @return string
+	 */
+	public static function getOS($recalculate = false){
+		if(self::$os === null or $recalculate){
+			$uname = php_uname("s");
+			if(stripos($uname, "Darwin") !== false){
+				if(strpos(php_uname("m"), "iP") === 0){
+					self::$os = "ios";
+				}else{
+					self::$os = "mac";
+				}
+			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
+				self::$os = "win";
+			}elseif(stripos($uname, "Linux") !== false){
+				if(@file_exists("/system/build.prop")){
+					self::$os = "android";
+				}else{
+					self::$os = "linux";
+				}
+			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+				self::$os = "bsd";
+			}else{
+				self::$os = "other";
+			}
+		}
+
+		return self::$os;
+	}
+
+	/**
 	 * Gets the External IP using an external service, it is cached
 	 *
 	 * @param bool $force default false, force IP check even when cached
@@ -157,46 +200,36 @@ class Utils{
 
 	}
 
-    /**
-     * Returns the current Operating System
-     * Windows => win
-     * MacOS => mac
-     * iOS => ios
-     * Android => android
-     * Linux => Linux
-     * BSD => bsd
-     * Other => other
-     *
-     * @param bool $recalculate
-     * @return string
-     */
-	public static function getOS($recalculate = false){
-		if(self::$os === null or $recalculate){
-			$uname = php_uname("s");
-			if(stripos($uname, "Darwin") !== false){
-				if(strpos(php_uname("m"), "iP") === 0){
-					self::$os = "ios";
-				}else{
-					self::$os = "mac";
-				}
-			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
-				self::$os = "win";
-			}elseif(stripos($uname, "Linux") !== false){
-				if(@file_exists("/system/build.prop")){
-					self::$os = "android";
-				}else{
-					self::$os = "linux";
-				}
-			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
-				self::$os = "bsd";
-			}else{
-				self::$os = "other";
-			}
+	/**
+	 * GETs an URL using cURL
+	 *
+	 * @param       $page
+	 * @param int   $timeout default 10
+	 * @param array $extraHeaders
+	 *
+	 * @return bool|mixed
+	 */
+	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
+		if(Utils::$online === false){
+			return false;
 		}
-		
-		return self::$os;
-	}
 
+		$ch = curl_init($page);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"], $extraHeaders));
+		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
+		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
+		$ret = curl_exec($ch);
+		curl_close($ch);
+
+		return $ret;
+	}
 
 	public static function getRealMemoryUsage(){
 		$stack = 0;
@@ -256,6 +289,7 @@ class Utils{
 				return (int) $matches[1];
 			}
 		}
+
 		//TODO: more OS
 
 		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
@@ -294,6 +328,7 @@ class Utils{
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
 				break;
 		}
+
 		return $processors;
 	}
 
@@ -316,7 +351,6 @@ class Utils{
 		return $output;
 	}
 
-
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
 	 *
@@ -331,6 +365,18 @@ class Utils{
 
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
+
+	/*
+	public static function angle3D($pos1, $pos2){
+		$X = $pos1["x"] - $pos2["x"];
+		$Z = $pos1["z"] - $pos2["z"];
+		$dXZ = sqrt(pow($X, 2) + pow($Z, 2));
+		$Y = $pos1["y"] - $pos2["y"];
+		$hAngle = rad2deg(atan2($Z, $X) - M_PI_2);
+		$vAngle = rad2deg(-atan2($Y, $dXZ));
+
+		return array("yaw" => $hAngle, "pitch" => $vAngle);
+	}*/
 
 	/**
 	 * This function tries to get all the entropy available in PHP, and distills it to get a good RNG.
@@ -349,54 +395,11 @@ class Utils{
 	 */
 	public static function getRandomBytes($length = 16, $secure = true, $raw = true, $startEntropy = "", &$rounds = 0, &$drop = 0){
 		$raw_output = random_bytes($length);
-		if ($raw) {
+		if($raw){
 			return $raw_output;
-		} else {
+		}else{
 			return bin2hex($raw_output);
 		}
-	}
-
-	/*
-	public static function angle3D($pos1, $pos2){
-		$X = $pos1["x"] - $pos2["x"];
-		$Z = $pos1["z"] - $pos2["z"];
-		$dXZ = sqrt(pow($X, 2) + pow($Z, 2));
-		$Y = $pos1["y"] - $pos2["y"];
-		$hAngle = rad2deg(atan2($Z, $X) - M_PI_2);
-		$vAngle = rad2deg(-atan2($Y, $dXZ));
-
-		return array("yaw" => $hAngle, "pitch" => $vAngle);
-	}*/
-
-	/**
-	 * GETs an URL using cURL
-	 *
-	 * @param     $page
-	 * @param int $timeout default 10
-	 * @param array $extraHeaders
-	 *
-	 * @return bool|mixed
-	 */
-	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
-		if(Utils::$online === false){
-			return false;
-		}
-
-		$ch = curl_init($page);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"], $extraHeaders));
-		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
-		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
-		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
-		$ret = curl_exec($ch);
-		curl_close($ch);
-
-		return $ret;
 	}
 
 	/**
@@ -405,7 +408,7 @@ class Utils{
 	 * @param              $page
 	 * @param array|string $args
 	 * @param int          $timeout
-	 * @param array $extraHeaders
+	 * @param array        $extraHeaders
 	 *
 	 * @return bool|mixed
 	 */
@@ -449,6 +452,7 @@ class Utils{
 			}
 			$hash &= 0xFFFFFFFF;
 		}
+
 		return $hash;
 	}
 

@@ -24,7 +24,7 @@ namespace pocketmine\level\generator\biome;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\utils\Random;
 
-class BiomeSelector{
+class BiomeSelector {
 
 	/** @var Biome */
 	private $fallback;
@@ -45,7 +45,17 @@ class BiomeSelector{
 		$this->temperature = new Simplex($random, 2, 1 / 16, 1 / 512);
 		$this->rainfall = new Simplex($random, 2, 1 / 16, 1 / 512);
 	}
-	
+
+	public function recalculate(){
+		$this->map = new \SplFixedArray(64 * 64);
+
+		for($i = 0; $i < 64; ++$i){
+			for($j = 0; $j < 64; ++$j){
+				$this->map[$i + ($j << 6)] = $this->lookup($i / 63, $j / 63);
+			}
+		}
+	}
+
 	public function lookup($temperature, $rainfall){
 		if($rainfall < 0.25){
 			if($temperature < 0.7){
@@ -84,26 +94,8 @@ class BiomeSelector{
 		}
 	}
 
-	public function recalculate(){
-		$this->map = new \SplFixedArray(64 * 64);
-
-		for($i = 0; $i < 64; ++$i){
-			for($j = 0; $j < 64; ++$j){
-				$this->map[$i + ($j << 6)] = $this->lookup($i / 63, $j / 63);
-			}
-		}
-	}
-
 	public function addBiome(Biome $biome){
 		$this->biomes[$biome->getId()] = $biome;
-	}
-
-	public function getTemperature($x, $z){
-		return ($this->temperature->noise2D($x, $z, true) + 1) / 2;
-	}
-
-	public function getRainfall($x, $z){
-		return ($this->rainfall->noise2D($x, $z, true) + 1) / 2;
 	}
 
 	/**
@@ -117,6 +109,15 @@ class BiomeSelector{
 		$rainfall = (int) ($this->getRainfall($x, $z) * 63);
 
 		$biomeId = $this->map[$temperature + ($rainfall << 6)];
+
 		return isset($this->biomes[$biomeId]) ? $this->biomes[$biomeId] : $this->fallback;
+	}
+
+	public function getTemperature($x, $z){
+		return ($this->temperature->noise2D($x, $z, true) + 1) / 2;
+	}
+
+	public function getRainfall($x, $z){
+		return ($this->rainfall->noise2D($x, $z, true) + 1) / 2;
 	}
 }

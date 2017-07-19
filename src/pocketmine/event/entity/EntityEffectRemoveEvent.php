@@ -26,7 +26,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\entity\Effect;
 
-class EntityEffectRemoveEvent extends EntityEvent implements Cancellable{
+class EntityEffectRemoveEvent extends EntityEvent implements Cancellable {
 
 	public static $handlerList = null;
 
@@ -47,7 +47,7 @@ class EntityEffectRemoveEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "EntityEffectRemoveEvent";
 	}

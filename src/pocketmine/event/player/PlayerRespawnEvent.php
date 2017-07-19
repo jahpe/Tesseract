@@ -27,7 +27,7 @@ use pocketmine\Player;
 /**
  * Called when a player is respawned (or first time spawned)
  */
-class PlayerRespawnEvent extends PlayerEvent{
+class PlayerRespawnEvent extends PlayerEvent {
 
 	public static $handlerList = null;
 
@@ -59,7 +59,7 @@ class PlayerRespawnEvent extends PlayerEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerRespawnEvent";
 	}

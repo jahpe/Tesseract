@@ -29,7 +29,7 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\event\inventory\AnvilProcessEvent;
 
-class AnvilInventory extends TemporaryInventory{
+class AnvilInventory extends TemporaryInventory {
 
 	const TARGET = 0;
 	const SACRIFICE = 1;
@@ -38,17 +38,6 @@ class AnvilInventory extends TemporaryInventory{
 
 	public function __construct(Position $pos){
 		parent::__construct(new FakeBlockMenu($this, $pos), InventoryType::get(InventoryType::ANVIL));
-	}
-
-	/**
-	 * @return FakeBlockMenu|InventoryHolder
-     */
-	public function getHolder(){
-		return $this->holder;
-	}
-
-	public function getResultSlotIndex(){
-		return self::RESULT;
 	}
 
 	public function onRename(Player $player, Item $resultItem) : bool{
@@ -61,14 +50,9 @@ class AnvilInventory extends TemporaryInventory{
 			return false;
 		}
 		$player->takeXpLevel($resultItem->getRepairCost());
-		
+
 		$this->clearAll();
-		if(!$player->getServer()->allowInventoryCheats and !$player->isCreative()){
-			if(!$player->getFloatingInventory()->canAddItem($resultItem)){
-				return false;
-			}
-			$player->getFloatingInventory()->addItem($resultItem);
-		}
+
 		return true;
 	}
 
@@ -77,6 +61,7 @@ class AnvilInventory extends TemporaryInventory{
 		Server::getInstance()->getPluginManager()->callEvent($ev = new AnvilProcessEvent($this));
 		if($ev->isCancelled()){
 			$this->clearAll();
+
 			return false;
 		}
 		if($sacrifice instanceof EnchantedBook && $sacrifice->hasEnchantments()){ //Enchanted Books!
@@ -90,20 +75,19 @@ class AnvilInventory extends TemporaryInventory{
 			$player->takeXpLevel($resultItem->getRepairCost());
 
 			$this->clearAll();
-			if(!$player->getServer()->allowInventoryCheats and !$player->isCreative()){
-				if(!$player->getFloatingInventory()->canAddItem($resultItem)){
-					return false;
-				}
-				$player->getFloatingInventory()->addItem($resultItem);
-			}
 		}
 	}
 
-	public function processSlotChange(Transaction $transaction): bool{
+	public function processSlotChange(Transaction $transaction) : bool{
 		if($transaction->getSlot() === $this->getResultSlotIndex()){
 			return false;
 		}
+
 		return true;
+	}
+
+	public function getResultSlotIndex(){
+		return self::RESULT;
 	}
 
 	public function onSlotChange($index, $before, $send){
@@ -118,6 +102,13 @@ class AnvilInventory extends TemporaryInventory{
 		$this->clear(0);
 		$this->clear(1);
 		$this->clear(2);
+	}
+
+	/**
+	 * @return FakeBlockMenu|InventoryHolder
+	 */
+	public function getHolder(){
+		return $this->holder;
 	}
 
 }

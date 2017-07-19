@@ -23,7 +23,7 @@ namespace pocketmine;
 
 use pocketmine\permission\ServerOperator;
 
-interface IPlayer extends ServerOperator{
+interface IPlayer extends ServerOperator {
 
 	/**
 	 * @return bool

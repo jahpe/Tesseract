@@ -24,22 +24,11 @@ namespace pocketmine;
 /**
  * This class must be extended by all custom threading classes
  */
-abstract class Thread extends \Thread{
+abstract class Thread extends \Thread {
 
 	/** @var \ClassLoader */
 	protected $classLoader;
 	protected $isKilled = false;
-
-	public function getClassLoader(){
-		return $this->classLoader;
-	}
-
-	public function setClassLoader(\ClassLoader $loader = null){
-		if($loader === null){
-			$loader = Server::getInstance()->getLoader();
-		}
-		$this->classLoader = $loader;
-	}
 
 	public function registerClassLoader(){
 		if(!interface_exists("ClassLoader", false)){
@@ -59,10 +48,22 @@ abstract class Thread extends \Thread{
 			if($this->getClassLoader() === null){
 				$this->setClassLoader();
 			}
+
 			return parent::start($options);
 		}
 
 		return false;
+	}
+
+	public function getClassLoader(){
+		return $this->classLoader;
+	}
+
+	public function setClassLoader(\ClassLoader $loader = null){
+		if($loader === null){
+			$loader = Server::getInstance()->getLoader();
+		}
+		$this->classLoader = $loader;
 	}
 
 	/**

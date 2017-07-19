@@ -29,7 +29,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\object\Object;
 use pocketmine\utils\Random;
 
-class CactusStack extends Object{
+class CactusStack extends Object {
 	/** @var Random */
 	private $random;
 	private $baseHeight = 1;
@@ -49,7 +49,7 @@ class CactusStack extends Object{
 		$below = $level->getBlockIdAt($x, $y - 1, $z);
 		if($level->getBlockIdAt($x, $y, $z) == Block::AIR and
 			($below == Block::SAND or $below == Block::CACTUS) and (
-				$level->getBlockIdAt($x - 1, $y - 1 , $z) == Block::AIR and
+				$level->getBlockIdAt($x - 1, $y - 1, $z) == Block::AIR and
 				$level->getBlockIdAt($x + 1, $y - 1, $z) == Block::AIR and
 				$level->getBlockIdAt($x, $y - 1, $z - 1) == Block::AIR and
 				$level->getBlockIdAt($x, $y - 1, $z + 1) == Block::AIR
@@ -57,6 +57,7 @@ class CactusStack extends Object{
 		){
 			return true;
 		}
+
 		return false;
 	}
 

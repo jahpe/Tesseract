@@ -23,7 +23,7 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Item;
 
-class ItemSpawnEvent extends EntityEvent{
+class ItemSpawnEvent extends EntityEvent {
 
 	public static $handlerList = null;
 
@@ -44,7 +44,7 @@ class ItemSpawnEvent extends EntityEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "ItemSpawnEvent";
 	}

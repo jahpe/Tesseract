@@ -26,7 +26,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class EnderCrystal extends Vehicle{
+class EnderCrystal extends Vehicle {
 	const NETWORK_ID = 71;
 
 	public $height = 0.7;

@@ -24,7 +24,7 @@ namespace pocketmine\inventory;
 use pocketmine\Player;
 use pocketmine\item\Item;
 
-interface Transaction{
+interface Transaction {
 
 	//Transaction type constants
 	const TYPE_NORMAL = 0;
@@ -52,7 +52,8 @@ interface Transaction{
 
 	/**
 	 * @param Player $source
+	 *
 	 * @return bool
 	 */
-	public function execute(Player $source): bool;
+	public function execute(Player $source) : bool;
 }

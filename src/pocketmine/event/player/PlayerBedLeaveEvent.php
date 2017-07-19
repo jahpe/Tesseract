@@ -24,7 +24,7 @@ namespace pocketmine\event\player;
 use pocketmine\block\Block;
 use pocketmine\Player;
 
-class PlayerBedLeaveEvent extends PlayerEvent{
+class PlayerBedLeaveEvent extends PlayerEvent {
 
 	public static $handlerList = null;
 
@@ -41,7 +41,7 @@ class PlayerBedLeaveEvent extends PlayerEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerBedLeaveEvent";
 	}

@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\Player;
 use pocketmine\item\Item;
 
-class EndRod extends Flowable{
+class EndRod extends Flowable {
 
 	protected $id = self::END_ROD;
 
@@ -38,33 +38,34 @@ class EndRod extends Flowable{
 		return 14;
 	}
 
-	public function getName() : string {
+	public function getName() : string{
 		return "End Rod";
 	}
 
 	public function getResistance(){
-        return 0;
-    }
-	
+		return 0;
+	}
+
 	public function getHardness(){
-        return 0;
-    }
+		return 0;
+	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-			$faces = [
-				0 => 0,
-				1 => 1,
-				2 => 3,
-				3 => 2,
-				4 => 5,
-				5 => 4,
-			];
-			$this->meta = ($target->getId() === self::END_ROD && $faces[$face] == $target->getDamage()) ? Vector3::getOppositeSide($faces[$face]) : $faces[$face];
-			$this->getLevel()->setBlock($block, $this, true, true);
-			return true;
-		}
+		$faces = [
+			0 => 0,
+			1 => 1,
+			2 => 3,
+			3 => 2,
+			4 => 5,
+			5 => 4,
+		];
+		$this->meta = ($target->getId() === self::END_ROD && $faces[$face] == $target->getDamage()) ? Vector3::getOppositeSide($faces[$face]) : $faces[$face];
+		$this->getLevel()->setBlock($block, $this, true, true);
 
-	public function getDrops(Item $item) : array {
+		return true;
+	}
+
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, 0, 1],
 		];

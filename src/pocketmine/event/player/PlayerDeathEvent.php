@@ -26,7 +26,7 @@ use pocketmine\event\TextContainer;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
-class PlayerDeathEvent extends EntityDeathEvent{
+class PlayerDeathEvent extends EntityDeathEvent {
 
 	public static $handlerList = null;
 
@@ -47,14 +47,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	/**
 	 * @return \pocketmine\entity\Entity|Player
-     */
+	 */
 	public function getEntity(){
 		return $this->entity;
 	}
 
 	/**
 	 * @return \pocketmine\entity\Entity|Player
-     */
+	 */
 	public function getPlayer(){
 		return $this->entity;
 	}
@@ -91,7 +91,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerDeathEvent";
 	}

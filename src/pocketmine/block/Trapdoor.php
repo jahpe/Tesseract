@@ -27,7 +27,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 use pocketmine\level\sound\DoorSound;
 
-class Trapdoor extends Transparent{
+class Trapdoor extends Transparent {
 
 	protected $id = self::TRAPDOOR;
 
@@ -39,7 +39,7 @@ class Trapdoor extends Transparent{
 		return "Wooden Trapdoor";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 3;
 	}
 
@@ -47,11 +47,51 @@ class Trapdoor extends Transparent{
 		return 15;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
-	protected function recalculateBoundingBox() {
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		$directions = [
+			0 => 1,
+			1 => 3,
+			2 => 0,
+			3 => 2
+		];
+		if($player !== null){
+			$this->meta = $directions[$player->getDirection() & 0x03];
+		}
+		if(($fy > 0.5 and $face !== self::SIDE_UP) or $face === self::SIDE_DOWN){
+			$this->meta |= 0b00000100; //top half of block
+		}
+		$this->getLevel()->setBlock($block, $this, true, true);
+
+		return true;
+	}
+
+	public function getDrops(Item $item) : array{
+		return [
+			[$this->id, 0, 1],
+		];
+	}
+
+	public function isOpened(){
+		return (($this->meta & 0b00001000) === 0);
+	}
+
+	public function onActivate(Item $item, Player $player = \null){
+		$this->meta ^= 0b00001000;
+		$this->getLevel()->setBlock($this, $this, true);
+		$this->level->addSound(new DoorSound($this));
+
+		return true;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
+	}
+
+	protected function recalculateBoundingBox(){
 
 		$damage = $this->getDamage();
 
@@ -120,43 +160,5 @@ class Trapdoor extends Transparent{
 		}
 
 		return $bb;
-	}
-
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$directions = [
-			0 => 1,
-			1 => 3,
-			2 => 0,
-			3 => 2
-		];
-		if($player !== null){
-			$this->meta = $directions[$player->getDirection() & 0x03];
-		}
-		if(($fy > 0.5 and $face !== self::SIDE_UP) or $face === self::SIDE_DOWN){
-			$this->meta |= 0b00000100; //top half of block
-		}
-		$this->getLevel()->setBlock($block, $this, true, true);
-		return true;
-	}
-
-	public function getDrops(Item $item) : array {
-		return [
-			[$this->id, 0, 1],
-		];
-	}
-
-	public function isOpened(){
-		return (($this->meta & 0b00001000) === 0);
-	}
-
-	public function onActivate(Item $item, Player $player = \null){
-		$this->meta ^= 0b00001000;
-		$this->getLevel()->setBlock($this, $this, true);
-		$this->level->addSound(new DoorSound($this));
-		return true;
-	}
-
-	public function getToolType(){
-		return Tool::TYPE_AXE;
 	}
 }

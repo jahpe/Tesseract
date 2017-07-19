@@ -25,7 +25,7 @@ use pocketmine\level\generator\normal\populator\Mushroom;
 use pocketmine\level\generator\normal\populator\SugarCane;
 use pocketmine\level\generator\normal\populator\TallGrass;
 
-class RiverBiome extends WateryBiome{
+class RiverBiome extends WateryBiome {
 
 	public function __construct(){
 		parent::__construct();
@@ -35,7 +35,7 @@ class RiverBiome extends WateryBiome{
 		$tallGrass = new TallGrass();
 		$tallGrass->setBaseAmount(5);
 		$mushroom = new Mushroom();
- 
+
 		$this->addPopulator($mushroom);
 
 		$this->addPopulator($sugarcane);

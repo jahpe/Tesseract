@@ -30,7 +30,7 @@ use pocketmine\block\Flower as FlowerBlock;
 use pocketmine\level\generator\normal\populator\Flower;
 use pocketmine\level\generator\normal\populator\SugarCane;
 
-class PlainBiome extends GrassyBiome{
+class PlainBiome extends GrassyBiome {
 
 	public function __construct(){
 		parent::__construct();

@@ -27,7 +27,7 @@ use pocketmine\Player;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item as ItemItem;
 
-class Cow extends Animal{
+class Cow extends Animal {
 	const NETWORK_ID = 11;
 
 	public $width = 0.3;
@@ -35,11 +35,11 @@ class Cow extends Animal{
 	public $height = 1.8;
 
 	public $dropExp = [1, 3];
-	
+
 	public function getName() : string{
 		return "Cow";
 	}
-	
+
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->eid = $this->getId();
@@ -57,7 +57,7 @@ class Cow extends Animal{
 
 		parent::spawnTo($player);
 	}
-	
+
 	public function getDrops(){
 		$lootingL = 0;
 		$cause = $this->lastDamageCause;
@@ -70,6 +70,7 @@ class Cow extends Animal{
 		/*if ($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getEntity() instanceof Player) {
 			$drops[] = ItemItem::get(ItemItem::LEATHER, 0, mt_rand(0,2));
 		}*/
+
 		return $drops;
 	}
 }

@@ -26,30 +26,22 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class LeashKnot extends Entity{
+class LeashKnot extends Entity {
 	const NETWORK_ID = 88;
 
 	//TO-DO: Find the REAL width, length and height.
 	public $width = 0.98;
 	public $length = 0.98;
 	public $height = 0.98;
-
+	public $canCollide = false;
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
-
-	public $canCollide = false;
-
 	private $dropItem = true;
 
 	public function __construct(Level $level, CompoundTag $nbt, bool $dropItem = true){
 		parent::__construct($level, $nbt);
 		$this->dropItem = $dropItem;
 	}
-
-	protected function initEntity(){
-		parent::initEntity();
-	}
-
 
 	public function canCollideWith(Entity $entity){
 		return false;
@@ -69,5 +61,9 @@ class LeashKnot extends Entity{
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
 	}
 }

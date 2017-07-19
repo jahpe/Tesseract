@@ -29,7 +29,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class Bed extends Transparent{
+class Bed extends Transparent {
 
 	protected $id = self::BED_BLOCK;
 
@@ -37,11 +37,11 @@ class Bed extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.2;
 	}
 
@@ -49,21 +49,11 @@ class Bed extends Transparent{
 		return "Bed Block";
 	}
 
-	protected function recalculateBoundingBox() {
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 0.5625,
-			$this->z + 1
-		);
-	}
-
 	public function onActivate(Item $item, Player $player = null){
 		if($this->getLevel()->getDimension() == Level::DIMENSION_NETHER){
 			$explosion = new Explosion($this, 6, $this);
 			$explosion->explodeA();
+
 			return true;
 		}
 
@@ -73,6 +63,7 @@ class Bed extends Transparent{
 
 		if($player instanceof Player and !$isNight){
 			$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%message.bed.sleep.night"));
+
 			return true;
 		}
 
@@ -159,10 +150,21 @@ class Bed extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::BED, 0, 1],
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x,
+			$this->y,
+			$this->z,
+			$this->x + 1,
+			$this->y + 0.5625,
+			$this->z + 1
+		);
 	}
 
 }

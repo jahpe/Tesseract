@@ -26,7 +26,7 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\event\player\PlayerGlassBottleEvent;
 
-class GlassBottle extends Item{
+class GlassBottle extends Item {
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::GLASS_BOTTLE, $meta, $count, "Glass Bottle");
 	}
@@ -46,6 +46,7 @@ class GlassBottle extends Item{
 			}else{
 				if($this->count <= 1){
 					$player->getInventory()->setItemInHand(Item::get(Item::POTION, 0, 1));
+
 					return true;
 				}else{
 					$this->count--;
@@ -56,11 +57,13 @@ class GlassBottle extends Item{
 				}else{
 					$motion = $player->getDirectionVector()->multiply(0.4);
 					$position = clone $player->getPosition();
-					$player->getLevel()->dropItem($position->add(0 , 0.5, 0), Item::get(Item::POTION, 0, 1) , $motion, 40);
+					$player->getLevel()->dropItem($position->add(0, 0.5, 0), Item::get(Item::POTION, 0, 1), $motion, 40);
 				}
+
 				return true;
 			}
 		}
+
 		return false;
 	}
 }

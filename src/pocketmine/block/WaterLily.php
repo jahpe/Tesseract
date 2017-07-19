@@ -29,7 +29,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class WaterLily extends Flowable{
+class WaterLily extends Flowable {
 
 	protected $id = self::WATER_LILY;
 
@@ -45,7 +45,7 @@ class WaterLily extends Flowable{
 		return "Lily Pad";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0;
 	}
 
@@ -57,23 +57,12 @@ class WaterLily extends Flowable{
 		return true;
 	}
 
-	protected function recalculateBoundingBox() {
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x,
-			$this->y + 0.0625,
-			$this->z
-		);
-	}
-
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($target instanceof Water){
 			$up = $target->getSide(Vector3::SIDE_UP);
 			if($up->getId() === Block::AIR){
 				$this->getLevel()->setBlock($up, $this, true, true);
+
 				return true;
 			}
 		}
@@ -85,6 +74,7 @@ class WaterLily extends Flowable{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(!($this->getSide(0) instanceof Water)){
 				$this->getLevel()->useBreakOn($this);
+
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}
@@ -92,9 +82,20 @@ class WaterLily extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, 0, 1]
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x,
+			$this->y,
+			$this->z,
+			$this->x,
+			$this->y + 0.0625,
+			$this->z
+		);
 	}
 }

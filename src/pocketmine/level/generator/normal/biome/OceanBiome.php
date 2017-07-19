@@ -25,7 +25,7 @@ use pocketmine\level\generator\normal\populator\Mushroom;
 use pocketmine\level\generator\normal\populator\SugarCane;
 use pocketmine\level\generator\normal\populator\TallGrass;
 
-class OceanBiome extends WateryBiome{
+class OceanBiome extends WateryBiome {
 
 	public function __construct(){
 		parent::__construct();

@@ -28,7 +28,7 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 
 
-class PopulationTask extends AsyncTask{
+class PopulationTask extends AsyncTask {
 
 	public $state;
 	public $levelId;
@@ -67,6 +67,7 @@ class PopulationTask extends AsyncTask{
 		$generator = $this->getFromThreadStore("generation.level{$this->levelId}.generator");
 		if($manager === null or $generator === null){
 			$this->state = false;
+
 			return;
 		}
 
@@ -150,6 +151,7 @@ class PopulationTask extends AsyncTask{
 		if($level !== null){
 			if($this->state === false){
 				$level->registerGenerator();
+
 				return;
 			}
 

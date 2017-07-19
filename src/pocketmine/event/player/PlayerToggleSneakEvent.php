@@ -24,7 +24,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerToggleSneakEvent extends PlayerEvent implements Cancellable{
+class PlayerToggleSneakEvent extends PlayerEvent implements Cancellable {
 
 	public static $handlerList = null;
 
@@ -42,7 +42,7 @@ class PlayerToggleSneakEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerToggleSneakEvent";
 	}

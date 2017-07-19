@@ -19,7 +19,7 @@
  *
 */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace pocketmine\level\format\io\region;
 
@@ -28,13 +28,13 @@ use pocketmine\level\format\io\ChunkException;
 use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
 
-class RegionLoader{
+class RegionLoader {
 	const VERSION = 1;
 	const COMPRESSION_GZIP = 1;
 	const COMPRESSION_ZLIB = 2;
 	const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MiB)
 	public static $COMPRESSION_LEVEL = 7;
-
+	public $lastUsed;
 	protected $x;
 	protected $z;
 	protected $filePath;
@@ -43,8 +43,6 @@ class RegionLoader{
 	/** @var LevelProvider */
 	protected $levelProvider;
 	protected $locationTable = [];
-
-	public $lastUsed;
 
 	public function __construct(McRegion $level, int $regionX, int $regionZ, string $fileExtension = McRegion::REGION_FILE_EXTENSION){
 		$this->x = $regionX;
@@ -67,6 +65,39 @@ class RegionLoader{
 		$this->lastUsed = time();
 	}
 
+	protected function createBlank(){
+		fseek($this->filePointer, 0);
+		ftruncate($this->filePointer, 0);
+		$this->lastSector = 1;
+		$table = "";
+		for($i = 0; $i < 1024; ++$i){
+			$this->locationTable[$i] = [0, 0];
+			$table .= Binary::writeInt(0);
+		}
+
+		$time = time();
+		for($i = 0; $i < 1024; ++$i){
+			$this->locationTable[$i][2] = $time;
+			$table .= Binary::writeInt($time);
+		}
+
+		fwrite($this->filePointer, $table, 4096 * 2);
+	}
+
+	protected function loadLocationTable(){
+		fseek($this->filePointer, 0);
+		$this->lastSector = 1;
+
+		$data = unpack("N*", fread($this->filePointer, 4 * 1024 * 2)); //1024 records * 4 bytes * 2 times
+		for($i = 0; $i < 1024; ++$i){
+			$index = $data[$i + 1];
+			$this->locationTable[$i] = [$index >> 8, $index & 0xff, $data[1024 + $i + 1]];
+			if(($this->locationTable[$i][0] + $this->locationTable[$i][1] - 1) > $this->lastSector){
+				$this->lastSector = $this->locationTable[$i][0] + $this->locationTable[$i][1] - 1;
+			}
+		}
+	}
+
 	public function __destruct(){
 		if(is_resource($this->filePointer)){
 			$this->writeLocationTable();
@@ -74,8 +105,17 @@ class RegionLoader{
 		}
 	}
 
-	protected function isChunkGenerated(int $index) : bool{
-		return !($this->locationTable[$index][0] === 0 or $this->locationTable[$index][1] === 0);
+	private function writeLocationTable(){
+		$write = [];
+
+		for($i = 0; $i < 1024; ++$i){
+			$write[] = (($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1]);
+		}
+		for($i = 0; $i < 1024; ++$i){
+			$write[] = $this->locationTable[$i][2];
+		}
+		fseek($this->filePointer, 0);
+		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
 	}
 
 	public function readChunk(int $x, int $z){
@@ -100,6 +140,7 @@ class RegionLoader{
 				$this->locationTable[$index][1] = 1;
 				MainLogger::getLogger()->error("Corrupted chunk header detected");
 			}
+
 			return null;
 		}
 
@@ -109,6 +150,7 @@ class RegionLoader{
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			MainLogger::getLogger()->error("Invalid compression type");
+
 			return null;
 		}
 
@@ -117,18 +159,48 @@ class RegionLoader{
 			return $chunk;
 		}else{
 			MainLogger::getLogger()->error("Corrupted chunk detected");
+
 			return null;
 		}
+	}
+
+	protected static function getChunkOffset(int $x, int $z) : int{
+		return $x + ($z << 5);
+	}
+
+	protected function isChunkGenerated(int $index) : bool{
+		return !($this->locationTable[$index][0] === 0 or $this->locationTable[$index][1] === 0);
+	}
+
+	protected function writeLocationIndex($index){
+		fseek($this->filePointer, $index << 2);
+		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index][0] << 8) | $this->locationTable[$index][1]), 4);
+		fseek($this->filePointer, 4096 + ($index << 2));
+		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index][2]), 4);
 	}
 
 	public function chunkExists(int $x, int $z) : bool{
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
 	}
 
+	public function removeChunk(int $x, int $z){
+		$index = self::getChunkOffset($x, $z);
+		$this->locationTable[$index][0] = 0;
+		$this->locationTable[$index][1] = 0;
+	}
+
+	public function writeChunk(Chunk $chunk){
+		$this->lastUsed = time();
+		$chunkData = $this->levelProvider->nbtSerialize($chunk);
+		if($chunkData !== false){
+			$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunkData);
+		}
+	}
+
 	protected function saveChunk(int $x, int $z, string $chunkData){
 		$length = strlen($chunkData) + 1;
 		if($length + 4 > self::MAX_SECTOR_LENGTH){
-			throw new ChunkException("Chunk is too big! ".($length + 4)." > ".self::MAX_SECTOR_LENGTH);
+			throw new ChunkException("Chunk is too big! " . ($length + 4) . " > " . self::MAX_SECTOR_LENGTH);
 		}
 		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
@@ -152,22 +224,12 @@ class RegionLoader{
 		}
 	}
 
-	public function removeChunk(int $x, int $z){
-		$index = self::getChunkOffset($x, $z);
-		$this->locationTable[$index][0] = 0;
-		$this->locationTable[$index][1] = 0;
+	public function getX() : int{
+		return $this->x;
 	}
 
-	public function writeChunk(Chunk $chunk){
-		$this->lastUsed = time();
-		$chunkData = $this->levelProvider->nbtSerialize($chunk);
-		if($chunkData !== false){
-			$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunkData);
-		}
-	}
-
-	protected static function getChunkOffset(int $x, int $z) : int{
-		return $x + ($z << 5);
+	public function getZ() : int{
+		return $this->z;
 	}
 
 	public function close(){
@@ -248,68 +310,8 @@ class RegionLoader{
 			$lastSector = $sector;
 		}
 		ftruncate($this->filePointer, ($sector + 1) << 12); //Truncate to the end of file written
+
 		return $shift;
-	}
-
-	protected function loadLocationTable(){
-		fseek($this->filePointer, 0);
-		$this->lastSector = 1;
-
-		$data = unpack("N*", fread($this->filePointer, 4 * 1024 * 2)); //1024 records * 4 bytes * 2 times
-		for($i = 0; $i < 1024; ++$i){
-			$index = $data[$i + 1];
-			$this->locationTable[$i] = [$index >> 8, $index & 0xff, $data[1024 + $i + 1]];
-			if(($this->locationTable[$i][0] + $this->locationTable[$i][1] - 1) > $this->lastSector){
-				$this->lastSector = $this->locationTable[$i][0] + $this->locationTable[$i][1] - 1;
-			}
-		}
-	}
-
-	private function writeLocationTable(){
-		$write = [];
-
-		for($i = 0; $i < 1024; ++$i){
-			$write[] = (($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1]);
-		}
-		for($i = 0; $i < 1024; ++$i){
-			$write[] = $this->locationTable[$i][2];
-		}
-		fseek($this->filePointer, 0);
-		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
-	}
-
-	protected function writeLocationIndex($index){
-		fseek($this->filePointer, $index << 2);
-		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index][0] << 8) | $this->locationTable[$index][1]), 4);
-		fseek($this->filePointer, 4096 + ($index << 2));
-		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index][2]), 4);
-	}
-
-	protected function createBlank(){
-		fseek($this->filePointer, 0);
-		ftruncate($this->filePointer, 0);
-		$this->lastSector = 1;
-		$table = "";
-		for($i = 0; $i < 1024; ++$i){
-			$this->locationTable[$i] = [0, 0];
-			$table .= Binary::writeInt(0);
-		}
-
-		$time = time();
-		for($i = 0; $i < 1024; ++$i){
-			$this->locationTable[$i][2] = $time;
-			$table .= Binary::writeInt($time);
-		}
-
-		fwrite($this->filePointer, $table, 4096 * 2);
-	}
-
-	public function getX() : int{
-		return $this->x;
-	}
-
-	public function getZ() : int{
-		return $this->z;
 	}
 
 }

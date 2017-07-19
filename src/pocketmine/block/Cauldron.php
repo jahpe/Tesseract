@@ -44,7 +44,7 @@ use pocketmine\tile\Cauldron as TileCauldron;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Color;
 
-class Cauldron extends Solid{
+class Cauldron extends Solid {
 
 	protected $id = self::CAULDRON_BLOCK;
 
@@ -78,7 +78,7 @@ class Cauldron extends Solid{
 			new ByteTag("SplashPotion", 0),
 			new ListTag("Items", [])
 		]);
-		
+
 		if($item->hasCustomBlockData()){
 			foreach($item->getCustomBlockData() as $key => $v){
 				$nbt->{$key} = $v;
@@ -87,11 +87,13 @@ class Cauldron extends Solid{
 
 		$tile = Tile::createTile("Cauldron", $this->getLevel(), $nbt);//
 		$this->getLevel()->setBlock($block, $this, true, true);
+
 		return true;
 	}
 
 	public function onBreak(Item $item){
 		$this->getLevel()->setBlock($this, new Air(), true);
+
 		return true;
 	}
 
@@ -101,20 +103,8 @@ class Cauldron extends Solid{
 				[Item::CAULDRON, 0, 1]
 			];
 		}
+
 		return [];
-	}
-
-	public function update(){//umm... right update method...?
-		$this->getLevel()->setBlock($this, Block::get($this->id, $this->meta + 1), true);
-		$this->getLevel()->setBlock($this, $this, true);//Undo the damage value
-	}
-
-	public function isEmpty(){
-		return $this->meta === 0x00;
-	}
-
-	public function isFull(){
-		return $this->meta === 0x06;
 	}
 
 	public function onActivate(Item $item, Player $player = null){//@author iTX. rewrite @Dog194
@@ -256,7 +246,7 @@ class Cauldron extends Solid{
 				if($ev->isCancelled()){
 					return false;
 				}
-				if($this->meta < 2) {
+				if($this->meta < 2){
 					break;
 				}
 				if($tile->hasPotion()){
@@ -286,7 +276,21 @@ class Cauldron extends Solid{
 				}
 				break;
 		}
+
 		return true;
+	}
+
+	public function isFull(){
+		return $this->meta === 0x06;
+	}
+
+	public function update(){//umm... right update method...?
+		$this->getLevel()->setBlock($this, Block::get($this->id, $this->meta + 1), true);
+		$this->getLevel()->setBlock($this, $this, true);//Undo the damage value
+	}
+
+	public function isEmpty(){
+		return $this->meta === 0x00;
 	}
 
 	public function addItem(Item $item, Player $player, Item $result){
@@ -299,7 +303,7 @@ class Cauldron extends Solid{
 			}else{
 				$motion = $player->getDirectionVector()->multiply(0.4);
 				$position = clone $player->getPosition();
-				$player->getLevel()->dropItem($position->add(0 , 0.5, 0), $result , $motion, 40);
+				$player->getLevel()->dropItem($position->add(0, 0.5, 0), $result, $motion, 40);
 			}
 		}
 	}

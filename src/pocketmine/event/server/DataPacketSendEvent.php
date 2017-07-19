@@ -26,7 +26,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\Player;
 
-class DataPacketSendEvent extends ServerEvent implements Cancellable{
+class DataPacketSendEvent extends ServerEvent implements Cancellable {
 
 	public static $handlerList = null;
 
@@ -48,7 +48,7 @@ class DataPacketSendEvent extends ServerEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "DataPacketSendEvent";
 	}

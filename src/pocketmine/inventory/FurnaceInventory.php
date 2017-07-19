@@ -25,7 +25,7 @@ namespace pocketmine\inventory;
 use pocketmine\item\Item;
 use pocketmine\tile\Furnace;
 
-class FurnaceInventory extends ContainerInventory{
+class FurnaceInventory extends ContainerInventory {
 
 	const SMELTING = 0;
 	const FUEL = 1;
@@ -33,13 +33,6 @@ class FurnaceInventory extends ContainerInventory{
 
 	public function __construct(Furnace $tile){
 		parent::__construct($tile, InventoryType::get(InventoryType::FURNACE));
-	}
-
-	/**
-	 * @return InventoryHolder|Furnace
-     */
-	public function getHolder(){
-		return $this->holder;
 	}
 
 	/**
@@ -94,5 +87,12 @@ class FurnaceInventory extends ContainerInventory{
 		parent::onSlotChange($index, $before, $send);
 
 		$this->getHolder()->scheduleUpdate();
+	}
+
+	/**
+	 * @return InventoryHolder|Furnace
+	 */
+	public function getHolder(){
+		return $this->holder;
 	}
 }

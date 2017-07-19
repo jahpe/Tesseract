@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\utils;
+
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\Server;
 
@@ -29,7 +30,7 @@ use pocketmine\Server;
  *
  * Config Class for simple config manipulation of multiple formats.
  */
-class Config{
+class Config {
 	const DETECT = -1; //Detect by file extension
 	const PROPERTIES = 0; // .properties
 	const CNF = Config::PROPERTIES; // .cnf
@@ -39,19 +40,6 @@ class Config{
 	const SERIALIZED = 4; // .sl
 	const ENUM = 5; // .txt, .list, .enum
 	const ENUMERATION = Config::ENUM;
-
-	/** @var array */
-	private $config = [];
-
-	private $nestedCache = [];
-
-	/** @var string */
-	private $file;
-	/** @var boolean */
-	private $correct = false;
-	/** @var integer */
-	private $type = Config::DETECT;
-
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
@@ -69,6 +57,15 @@ class Config{
 		"list" => Config::ENUM,
 		"enum" => Config::ENUM,
 	];
+	/** @var array */
+	private $config = [];
+	private $nestedCache = [];
+	/** @var string */
+	private $file;
+	/** @var boolean */
+	private $correct = false;
+	/** @var integer */
+	private $type = Config::DETECT;
 
 	/**
 	 * @param string $file     Path of the file to be loaded
@@ -79,25 +76,6 @@ class Config{
 	public function __construct($file, $type = Config::DETECT, $default = [], &$correct = null){
 		$this->load($file, $type, $default);
 		$correct = $this->correct;
-	}
-
-	/**
-	 * Removes all the changes in memory and loads the file again
-	 */
-	public function reload(){
-		$this->config = [];
-		$this->nestedCache = [];
-		$this->correct = false;
-		$this->load($this->file, $this->type);
-	}
-
-	/**
-	 * @param $str
-	 *
-	 * @return mixed
-	 */
-	public static function fixYAMLIndexes($str){
-		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[ ]*)\\:$#m", "$1\"$2\":", $str);
 	}
 
 	/**
@@ -167,13 +145,6 @@ class Config{
 	}
 
 	/**
-	 * @return boolean
-	 */
-	public function check(){
-		return $this->correct === true;
-	}
-
-	/**
 	 * @param bool $async
 	 *
 	 * @return boolean
@@ -221,6 +192,112 @@ class Config{
 	}
 
 	/**
+	 * @return string
+	 */
+	private function writeProperties(){
+		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
+		foreach($this->config as $k => $v){
+			if(is_bool($v) === true){
+				$v = $v === true ? "on" : "off";
+			}elseif(is_array($v)){
+				$v = implode(";", $v);
+			}
+			$content .= $k . "=" . $v . "\r\n";
+		}
+
+		return $content;
+	}
+
+	/**
+	 * @param $content
+	 */
+	private function parseProperties($content){
+		if(preg_match_all('/([a-zA-Z0-9\-_\.]*)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
+			foreach($matches[1] as $i => $k){
+				$v = trim($matches[2][$i]);
+				switch(strtolower($v)){
+					case "on":
+					case "true":
+					case "yes":
+						$v = true;
+						break;
+					case "off":
+					case "false":
+					case "no":
+						$v = false;
+						break;
+				}
+				if(isset($this->config[$k])){
+					MainLogger::getLogger()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
+				}
+				$this->config[$k] = $v;
+			}
+		}
+	}
+
+	/**
+	 * @param $str
+	 *
+	 * @return mixed
+	 */
+	public static function fixYAMLIndexes($str){
+		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[ ]*)\\:$#m", "$1\"$2\":", $str);
+	}
+
+	/**
+	 * @param $content
+	 */
+	private function parseList($content){
+		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
+			$v = trim($v);
+			if($v == ""){
+				continue;
+			}
+			$this->config[$v] = true;
+		}
+	}
+
+	/**
+	 * @param $default
+	 * @param $data
+	 *
+	 * @return integer
+	 */
+	private function fillDefaults($default, &$data){
+		$changed = 0;
+		foreach($default as $k => $v){
+			if(is_array($v)){
+				if(!isset($data[$k]) or !is_array($data[$k])){
+					$data[$k] = [];
+				}
+				$changed += $this->fillDefaults($v, $data[$k]);
+			}elseif(!isset($data[$k])){
+				$data[$k] = $v;
+				++$changed;
+			}
+		}
+
+		return $changed;
+	}
+
+	/**
+	 * Removes all the changes in memory and loads the file again
+	 */
+	public function reload(){
+		$this->config = [];
+		$this->nestedCache = [];
+		$this->correct = false;
+		$this->load($this->file, $this->type);
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function check(){
+		return $this->correct === true;
+	}
+
+	/**
 	 * @param $k
 	 *
 	 * @return boolean|mixed
@@ -238,6 +315,29 @@ class Config{
 	}
 
 	/**
+	 * @param       $k
+	 * @param mixed $default
+	 *
+	 * @return boolean|mixed
+	 */
+	public function get($k, $default = false){
+		return ($this->correct and isset($this->config[$k])) ? $this->config[$k] : $default;
+	}
+
+	/**
+	 * @param string $k key to be set
+	 * @param mixed  $v value to set key
+	 */
+	public function set($k, $v = true){
+		$this->config[$k] = $v;
+		foreach($this->nestedCache as $nestedKey => $nvalue){
+			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
+				unset($this->nestedCache[$nestedKey]);
+			}
+		}
+	}
+
+	/**
 	 * @param $k
 	 *
 	 * @return boolean
@@ -247,10 +347,34 @@ class Config{
 	}
 
 	/**
+	 * @param      $k
+	 * @param bool $lowercase If set, searches Config in single-case / lowercase.
+	 *
+	 * @return boolean
+	 */
+	public function exists($k, $lowercase = false){
+		if($lowercase === true){
+			$k = strtolower($k); //Convert requested  key to lower
+			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
+
+			return isset($array[$k]); //Find $k in modified array
+		}else{
+			return isset($this->config[$k]);
+		}
+	}
+
+	/**
 	 * @param $k
 	 */
 	public function __unset($k){
 		$this->remove($k);
+	}
+
+	/**
+	 * @param $k
+	 */
+	public function remove($k){
+		unset($this->config[$k]);
 	}
 
 	/**
@@ -311,56 +435,10 @@ class Config{
 	}
 
 	/**
-	 * @param       $k
-	 * @param mixed $default
-	 *
-	 * @return boolean|mixed
-	 */
-	public function get($k, $default = false){
-		return ($this->correct and isset($this->config[$k])) ? $this->config[$k] : $default;
-	}
-
-	/**
-	 * @param string $k key to be set
-	 * @param mixed  $v value to set key
-	 */
-	public function set($k, $v = true){
-		$this->config[$k] = $v;
-		foreach($this->nestedCache as $nestedKey => $nvalue){
-			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
-				unset($this->nestedCache[$nestedKey]);
-  			}
-		}
-	}
-
-	/**
 	 * @param array $v
 	 */
 	public function setAll($v){
 		$this->config = $v;
-	}
-
-	/**
-	 * @param      $k
-	 * @param bool $lowercase If set, searches Config in single-case / lowercase.
-	 *
-	 * @return boolean
-	 */
-	public function exists($k, $lowercase = false){
-		if($lowercase === true){
-			$k = strtolower($k); //Convert requested  key to lower
-			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
-			return isset($array[$k]); //Find $k in modified array
-		}else{
-			return isset($this->config[$k]);
-		}
-	}
-
-	/**
-	 * @param $k
-	 */
-	public function remove($k){
-		unset($this->config[$k]);
 	}
 
 	/**
@@ -377,86 +455,6 @@ class Config{
 	 */
 	public function setDefaults(array $defaults){
 		$this->fillDefaults($defaults, $this->config);
-	}
-
-	/**
-	 * @param $default
-	 * @param $data
-	 *
-	 * @return integer
-	 */
-	private function fillDefaults($default, &$data){
-		$changed = 0;
-		foreach($default as $k => $v){
-			if(is_array($v)){
-				if(!isset($data[$k]) or !is_array($data[$k])){
-					$data[$k] = [];
-				}
-				$changed += $this->fillDefaults($v, $data[$k]);
-			}elseif(!isset($data[$k])){
-				$data[$k] = $v;
-				++$changed;
-			}
-		}
-
-		return $changed;
-	}
-
-	/**
-	 * @param $content
-	 */
-	private function parseList($content){
-		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
-			$v = trim($v);
-			if($v == ""){
-				continue;
-			}
-			$this->config[$v] = true;
-		}
-	}
-
-	/**
-	 * @return string
-	 */
-	private function writeProperties(){
-		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
-		foreach($this->config as $k => $v){
-			if(is_bool($v) === true){
-				$v = $v === true ? "on" : "off";
-			}elseif(is_array($v)){
-				$v = implode(";", $v);
-			}
-			$content .= $k . "=" . $v . "\r\n";
-		}
-
-		return $content;
-	}
-
-	/**
-	 * @param $content
-	 */
-	private function parseProperties($content){
-		if(preg_match_all('/([a-zA-Z0-9\-_\.]*)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
-			foreach($matches[1] as $i => $k){
-				$v = trim($matches[2][$i]);
-				switch(strtolower($v)){
-					case "on":
-					case "true":
-					case "yes":
-						$v = true;
-						break;
-					case "off":
-					case "false":
-					case "no":
-						$v = false;
-						break;
-				}
-				if(isset($this->config[$k])){
-					MainLogger::getLogger()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
-				}
-				$this->config[$k] = $v;
-			}
-		}
 	}
 
 }

@@ -24,14 +24,14 @@ namespace pocketmine\event\player;
 use pocketmine\event\Cancellable;
 use pocketmine\entity\Human;
 
-class PlayerExperienceChangeEvent extends PlayerEvent implements Cancellable{
-	
+class PlayerExperienceChangeEvent extends PlayerEvent implements Cancellable {
+
 	/** @deprecated */
 	const ADD_EXPERIENCE = 0;
 	const SET_EXPERIENCE = 1;
-	
+
 	public static $handlerList = null;
-	
+
 	public $progress;
 	public $expLevel;
 
@@ -40,7 +40,7 @@ class PlayerExperienceChangeEvent extends PlayerEvent implements Cancellable{
 		$this->expLevel = $expLevel;
 		$this->player = $player;
 	}
-	
+
 	/**
 	 * @deprecated This is redundant, and will be removed in the future.
 	 */
@@ -56,10 +56,10 @@ class PlayerExperienceChangeEvent extends PlayerEvent implements Cancellable{
 		$this->expLevel = $level;
 	}
 
-	public function getProgress(): float{
+	public function getProgress() : float{
 		return $this->progress;
 	}
-	
+
 	public function setProgress(float $progress){
 		$this->progress = $progress;
 	}
@@ -74,7 +74,7 @@ class PlayerExperienceChangeEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerExperienceChangeEvent";
 	}

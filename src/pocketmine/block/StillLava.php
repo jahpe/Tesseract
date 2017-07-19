@@ -23,7 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\level\Level;
 
-class StillLava extends Lava{
+class StillLava extends Lava {
 
 	protected $id = self::STILL_LAVA;
 
@@ -31,6 +31,7 @@ class StillLava extends Lava{
 		if($type !== Level::BLOCK_UPDATE_SCHEDULED){
 			return parent::onUpdate($type);
 		}
+
 		return false;
 	}
 

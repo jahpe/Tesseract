@@ -21,7 +21,7 @@
 
 namespace pocketmine\network\protocol;
 
-class AddPlayerPacket extends DataPacket{
+class AddPlayerPacket extends DataPacket {
 
 	const NETWORK_ID = Info::ADD_PLAYER_PACKET;
 
@@ -61,7 +61,7 @@ class AddPlayerPacket extends DataPacket{
 
 	/**
 	 * @return PacketName|string
-     */
+	 */
 	public function getName(){
 		return "AddPlayerPacket";
 	}

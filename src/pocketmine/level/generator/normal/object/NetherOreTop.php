@@ -17,25 +17,31 @@
  * @link https://itxtech.org
  *
  */
+
 namespace pocketmine\level\generator\normal\object;
 
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\object\Object;
 use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
-class NetherOreTop extends Object{
-	private $random;
+
+class NetherOreTop extends Object {
 	public $type;
+	private $random;
+
 	public function __construct(Random $random, OreType $type){
 		$this->type = $type;
 		$this->random = $random;
 	}
+
 	public function getType(){
 		return $this->type;
 	}
+
 	public function canPlaceObject(ChunkManager $level, $x, $y, $z){
 		return ($level->getBlockIdAt($x, $y, $z) === 0);
 	}
+
 	public function placeObject(ChunkManager $level, $x, $y, $z){
 		$clusterSize = (int) $this->type->clusterSize;
 		$angle = $this->random->nextFloat() * M_PI;

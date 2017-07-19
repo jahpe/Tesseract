@@ -25,7 +25,7 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\item\Item;
 
-class Sponge extends Solid{
+class Sponge extends Solid {
 
 	protected $id = self::SPONGE;
 	protected $absorbRange = 6;
@@ -34,26 +34,12 @@ class Sponge extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.6;
 	}
 
-	public function absorbWater($block = null){
-		if ($block == null) $block = $this;
-		$range = $this->absorbRange / 2;
-		for ($xx = -$range; $xx <= $range; $xx++){
-			for ($yy = -$range; $yy <= $range; $yy++){
-				for ($zz = -$range; $zz <= $range; $zz++){
-					$block = $this->getLevel()->getBlock(new Vector3($this->x + $xx, $this->y + $yy, $this->z + $zz));
-					if ($block->getId() === Block::WATER) $this->getLevel()->setBlock($block, Block::get(Block::AIR), true, true);
-					if ($block->getId() === Block::STILL_WATER) $this->getLevel()->setBlock($block, Block::get(Block::AIR), true, true);
-				}
-			}
-		}
-	}
-
 	public function onUpdate($type){
-		if ($this->meta == 0) {
+		if($this->meta == 0){
 			if($type === Level::BLOCK_UPDATE_NORMAL){
 				$blockAbove = $this->getSide(Vector3::SIDE_UP)->getId();
 				$blockBeneath = $this->getSide(Vector3::SIDE_DOWN)->getId();
@@ -67,9 +53,11 @@ class Sponge extends Solid{
 					$blockNorth === Block::WATER ||
 					$blockSouth === Block::WATER ||
 					$blockEast === Block::WATER ||
-					$blockWest === Block::WATER){
+					$blockWest === Block::WATER
+				){
 					$this->absorbWater($this);
 					$this->getLevel()->setBlock($this, Block::get(Block::SPONGE, 1), true, true);
+
 					return Level::BLOCK_UPDATE_NORMAL;
 				}
 				if($blockAbove === Block::STILL_WATER ||
@@ -77,13 +65,30 @@ class Sponge extends Solid{
 					$blockNorth === Block::STILL_WATER ||
 					$blockSouth === Block::STILL_WATER ||
 					$blockEast === Block::STILL_WATER ||
-					$blockWest === Block::STILL_WATER){
+					$blockWest === Block::STILL_WATER
+				){
 					$this->absorbWater($this);
 					$this->getLevel()->setBlock($this, Block::get(Block::SPONGE, 1), true, true);
+
 					return Level::BLOCK_UPDATE_NORMAL;
 				}
 			}
+
 			return false;
+		}
+	}
+
+	public function absorbWater($block = null){
+		if($block == null) $block = $this;
+		$range = $this->absorbRange / 2;
+		for($xx = -$range; $xx <= $range; $xx++){
+			for($yy = -$range; $yy <= $range; $yy++){
+				for($zz = -$range; $zz <= $range; $zz++){
+					$block = $this->getLevel()->getBlock(new Vector3($this->x + $xx, $this->y + $yy, $this->z + $zz));
+					if($block->getId() === Block::WATER) $this->getLevel()->setBlock($block, Block::get(Block::AIR), true, true);
+					if($block->getId() === Block::STILL_WATER) $this->getLevel()->setBlock($block, Block::get(Block::AIR), true, true);
+				}
+			}
 		}
 	}
 
@@ -92,10 +97,11 @@ class Sponge extends Solid{
 			0 => "Sponge",
 			1 => "Wet Sponge",
 		];
+
 		return $names[$this->meta & 0x0f];
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, $this->meta & 0x0f, 1],
 		];

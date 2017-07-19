@@ -17,6 +17,7 @@
  * @link https://itxtech.org
  *
  */
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
@@ -27,17 +28,22 @@ use pocketmine\nbt\tag\{
 use pocketmine\Player;
 use pocketmine\tile\ItemFrame as TileItemFrame;
 use pocketmine\tile\Tile;
-class ItemFrame extends Flowable{
+
+class ItemFrame extends Flowable {
 	protected $id = Block::ITEM_FRAME_BLOCK;
+
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
+
 	public function getName() : string{
 		return "Item Frame";
 	}
+
 	public function canBeActivated() : bool{
 		return true;
 	}
+
 	public function onActivate(Item $item, Player $player = null){
 		if(!(($tile = $this->level->getTile($this)) instanceof TileItemFrame)){
 			$nbt = new CompoundTag("", [
@@ -63,8 +69,10 @@ class ItemFrame extends Flowable{
 				}
 			}
 		}
+
 		return true;
 	}
+
 	public function onBreak(Item $item){
 		if(($tile = $this->level->getTile($this)) instanceof TileItemFrame){
 			//TODO: add events
@@ -72,8 +80,10 @@ class ItemFrame extends Flowable{
 				$this->level->dropItem($tile->getBlock(), $tile->getItem());
 			}
 		}
+
 		return parent::onBreak($item);
 	}
+
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$sides = [
@@ -84,11 +94,14 @@ class ItemFrame extends Flowable{
 			];
 			if(!$this->getSide($sides[$this->meta])->isSolid()){
 				$this->level->useBreakOn($this);
+
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}
+
 		return false;
 	}
+
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($face === 0 or $face === 1){
 			return false;
@@ -115,8 +128,10 @@ class ItemFrame extends Flowable{
 			}
 		}
 		Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), $nbt);
+
 		return true;
 	}
+
 	public function getDrops(Item $item) : array{
 		return [
 			[Item::ITEM_FRAME, 0, 1]

@@ -27,7 +27,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\object\Object;
 use pocketmine\utils\Random;
 
-abstract class Tree extends Object{
+abstract class Tree extends Object {
 	public $overridable = [
 		Block::AIR => true,
 		6 => true,

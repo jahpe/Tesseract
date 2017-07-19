@@ -22,19 +22,13 @@
 /**
  * Various Utilities used around the code
  */
- 
+
 namespace pocketmine\utils;
 
 
-
-
-class Binary{
+class Binary {
 	const BIG_ENDIAN = 0x00;
 	const LITTLE_ENDIAN = 0x01;
-
-	private static function checkLength($str, $expect){
-		assert(($len = strlen($str)) === $expect, "Expected $expect bytes, got $len");
-	}
 
 	/**
 	 * Reads a 3-byte big-endian number
@@ -45,7 +39,12 @@ class Binary{
 	 */
 	public static function readTriad($str){
 		self::checkLength($str, 3);
+
 		return unpack("N", "\x00" . $str)[1];
+	}
+
+	private static function checkLength($str, $expect){
+		assert(($len = strlen($str)) === $expect, "Expected $expect bytes, got $len");
 	}
 
 	/**
@@ -68,6 +67,7 @@ class Binary{
 	 */
 	public static function readLTriad($str){
 		self::checkLength($str, 3);
+
 		return unpack("V", $str . "\x00")[1];
 	}
 
@@ -94,17 +94,6 @@ class Binary{
 	}
 
 	/**
-	 * Writes a byte boolean
-	 *
-	 * @param $b
-	 *
-	 * @return bool|string
-	 */
-	public static function writeBool($b){
-		return self::writeByte($b === true ? 1 : 0);
-	}
-
-	/**
 	 * Reads an unsigned/signed byte
 	 *
 	 * @param string $c
@@ -128,6 +117,17 @@ class Binary{
 	}
 
 	/**
+	 * Writes a byte boolean
+	 *
+	 * @param $b
+	 *
+	 * @return bool|string
+	 */
+	public static function writeBool($b){
+		return self::writeByte($b === true ? 1 : 0);
+	}
+
+	/**
 	 * Writes an unsigned/signed byte
 	 *
 	 * @param $c
@@ -136,18 +136,6 @@ class Binary{
 	 */
 	public static function writeByte($c){
 		return chr($c);
-	}
-
-	/**
-	 * Reads a 16-bit unsigned big-endian number
-	 *
-	 * @param $str
-	 *
-	 * @return int
-	 */
-	public static function readShort($str){
-		self::checkLength($str, 2);
-		return unpack("n", $str)[1];
 	}
 
 	/**
@@ -167,17 +155,6 @@ class Binary{
 	}
 
 	/**
-	 * Writes a 16-bit signed/unsigned big-endian number
-	 *
-	 * @param $value
-	 *
-	 * @return string
-	 */
-	public static function writeShort($value){
-		return pack("n", $value);
-	}
-
-	/**
 	 * Reads a 16-bit unsigned little-endian number
 	 *
 	 * @param      $str
@@ -186,6 +163,7 @@ class Binary{
 	 */
 	public static function readLShort($str){
 		self::checkLength($str, 2);
+
 		return unpack("v", $str)[1];
 	}
 
@@ -276,6 +254,7 @@ class Binary{
 
 	public static function readDouble($str){
 		self::checkLength($str, 8);
+
 		return ENDIANNESS === self::BIG_ENDIAN ? unpack("d", $str)[1] : unpack("d", strrev($str))[1];
 	}
 
@@ -285,6 +264,7 @@ class Binary{
 
 	public static function readLDouble($str){
 		self::checkLength($str, 8);
+
 		return ENDIANNESS === self::BIG_ENDIAN ? unpack("d", strrev($str))[1] : unpack("d", $str)[1];
 	}
 
@@ -292,10 +272,15 @@ class Binary{
 		return ENDIANNESS === self::BIG_ENDIAN ? strrev(pack("d", $value)) : pack("d", $value);
 	}
 
+	public static function readLLong($str){
+		return self::readLong(strrev($str));
+	}
+
 	public static function readLong($x){
 		self::checkLength($x, 8);
 		if(PHP_INT_SIZE === 8){
 			$int = unpack("N*", $x);
+
 			return ($int[1] << 32) | $int[2];
 		}else{
 			$value = "0";
@@ -310,6 +295,23 @@ class Binary{
 
 			return $value;
 		}
+	}
+
+	/**
+	 * Reads a 16-bit unsigned big-endian number
+	 *
+	 * @param $str
+	 *
+	 * @return int
+	 */
+	public static function readShort($str){
+		self::checkLength($str, 2);
+
+		return unpack("n", $str)[1];
+	}
+
+	public static function writeLLong($value){
+		return strrev(self::writeLong($value));
 	}
 
 	public static function writeLong($value){
@@ -331,12 +333,15 @@ class Binary{
 		}
 	}
 
-	public static function readLLong($str){
-		return self::readLong(strrev($str));
-	}
-
-	public static function writeLLong($value){
-		return strrev(self::writeLong($value));
+	/**
+	 * Writes a 16-bit signed/unsigned big-endian number
+	 *
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public static function writeShort($value){
+		return pack("n", $value);
 	}
 
 	//TODO: proper varlong support
@@ -345,6 +350,7 @@ class Binary{
 		$shift = PHP_INT_SIZE === 8 ? 63 : 31;
 		$raw = self::readUnsignedVarInt($stream);
 		$temp = ((($raw << $shift) >> $shift) ^ $raw) >> 1;
+
 		return $temp ^ ($raw & (1 << $shift));
 	}
 
@@ -369,13 +375,14 @@ class Binary{
 	public static function writeUnsignedVarInt($value){
 		$buf = "";
 		for($i = 0; $i < 10; ++$i){
- 			if(($value >> 7) !== 0){
- 				$buf .= chr($value | 0x80); //Let chr() take the last byte of this, it's faster than adding another & 0x7f.
- 			}else{
- 				$buf .= chr($value & 0x7f);
- 				return $buf;
+			if(($value >> 7) !== 0){
+				$buf .= chr($value | 0x80); //Let chr() take the last byte of this, it's faster than adding another & 0x7f.
+			}else{
+				$buf .= chr($value & 0x7f);
+
+				return $buf;
 			}
-		$value = (($value >> 7) & (PHP_INT_MAX >> 6)); //PHP really needs a logical right-shift operator
+			$value = (($value >> 7) & (PHP_INT_MAX >> 6)); //PHP really needs a logical right-shift operator
 		}
 		throw new \InvalidArgumentException("Value too large to be encoded as a varint");
 	}

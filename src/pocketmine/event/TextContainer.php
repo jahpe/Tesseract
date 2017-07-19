@@ -21,7 +21,7 @@
 
 namespace pocketmine\event;
 
-class TextContainer{
+class TextContainer {
 
 	/** @var string $text */
 	protected $text;
@@ -30,8 +30,11 @@ class TextContainer{
 		$this->text = $text;
 	}
 
-	public function setText($text){
-		$this->text = $text;
+	/**
+	 * @return string
+	 */
+	public function __toString(){
+		return $this->getText();
 	}
 
 	/**
@@ -41,10 +44,7 @@ class TextContainer{
 		return $this->text;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function __toString(){
-		return $this->getText();
+	public function setText($text){
+		$this->text = $text;
 	}
 }

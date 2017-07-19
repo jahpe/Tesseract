@@ -29,7 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
 
-class Cave extends Populator{
+class Cave extends Populator {
 	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
 		$overlap = 8;
 		$firstSeed = $random->nextInt();
@@ -86,6 +86,10 @@ class Cave extends Populator{
 		}
 	}
 
+	private function generateLargeCaveBranch(ChunkManager $level, Vector3 $chunk, Vector3 $target, Random $random){
+		$this->generateCaveBranch($level, $chunk, $target, $random->nextFloat() * 6 + 1, 0.5, 0, 0, -1, -1, $random);
+	}
+
 	private function generateCaveBranch(ChunkManager $level, Vector3 $chunk, Vector3 $target, $horizontalScale, $verticalScale, $horizontalAngle, $verticalAngle, int $startingNode, int $nodeAmount, Random $random){
 		$middle = new Vector3($chunk->getX() + 8, 0, $chunk->getZ() + 8);
 		$horizontalOffset = 0;
@@ -127,6 +131,7 @@ class Cave extends Populator{
 				if($startingNode == $intersectionMode and $horizontalScale > 1 and $nodeAmount > 0){
 					$this->generateCaveBranch($level, $chunk, $target, $random->nextFloat() * 0.5 + 0.5, 1, $horizontalAngle - pi() / 2, $verticalAngle / 3, $startingNode, $nodeAmount, new Random($random->nextInt()));
 					$this->generateCaveBranch($level, $chunk, $target, $random->nextFloat() * 0.5 + 0.5, 1, $horizontalAngle - pi() / 2, $verticalAngle / 3, $startingNode, $nodeAmount, new Random($random->nextInt()));
+
 					return;
 				}
 
@@ -165,13 +170,9 @@ class Cave extends Populator{
 			}
 		}
 	}
-
-	private function generateLargeCaveBranch(ChunkManager $level, Vector3 $chunk, Vector3 $target, Random $random){
-		$this->generateCaveBranch($level, $chunk, $target, $random->nextFloat() * 6 + 1, 0.5, 0, 0, -1, -1, $random);
-	}
 }
 
-class CaveNode{
+class CaveNode {
 	/** @var ChunkManager */
 	private $level;
 	/** @var Vector3 */
@@ -217,6 +218,7 @@ class CaveNode{
 				}
 			}
 		}
+
 		return true;
 	}
 

@@ -31,7 +31,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 
-abstract class Fallable extends Solid{
+abstract class Fallable extends Solid {
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){

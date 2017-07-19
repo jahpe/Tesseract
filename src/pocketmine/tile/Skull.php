@@ -22,9 +22,11 @@
 namespace pocketmine\tile;
 
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\{ByteTag, CompoundTag, IntTag, StringTag};
+use pocketmine\nbt\tag\{
+	ByteTag, CompoundTag, IntTag, StringTag
+};
 
-class Skull extends Spawnable{
+class Skull extends Spawnable {
 
 	const TYPE_SKELETON = 0;
 	const TYPE_WITHER = 1;
@@ -37,11 +39,11 @@ class Skull extends Spawnable{
 		if(!isset($nbt->SkullType)){
 			$nbt->SkullType = new ByteTag("SkullType", 0);
 		}
-		if(!isset($nbt->Rot) or !($nbt->Rot instanceof ByteTag)) {
+		if(!isset($nbt->Rot) or !($nbt->Rot instanceof ByteTag)){
 			$nbt->Rot = new ByteTag("Rot", 0);
 		}
 		if(!isset($nbt->MouthMoving)){
-            $nbt->MouthMoving = new ByteTag("MouthMoving", (bool) false);
+			$nbt->MouthMoving = new ByteTag("MouthMoving", (bool) false);
 		}
 		parent::__construct($level, $nbt);
 	}
@@ -50,12 +52,14 @@ class Skull extends Spawnable{
 		if($type >= 0 && $type <= 4){
 			$this->namedtag->SkullType = new ByteTag("SkullType", $type);
 			$this->onChanged();
+
 			return true;
 		}
+
 		return false;
 	}
 
-	public function getType() {
+	public function getType(){
 		return $this->namedtag["SkullType"];
 	}
 
@@ -70,9 +74,9 @@ class Skull extends Spawnable{
 			$this->namedtag->SkullType,
 			$this->namedtag->Rot,
 			$this->namedtag->MouthMoving,
-			new IntTag("x", (int)$this->x),
-			new IntTag("y", (int)$this->y),
-			new IntTag("z", (int)$this->z),
+			new IntTag("x", (int) $this->x),
+			new IntTag("y", (int) $this->y),
+			new IntTag("z", (int) $this->z),
 		]);
 	}
 }

@@ -43,8 +43,9 @@ use pocketmine\level\generator\normal\populator\Ore;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
-class Normal2 extends Normal{
+class Normal2 extends Normal {
 	const NAME = "Normal2";
+	protected $bedrockDepth = 5;
 	/** @var Simplex */
 	private $noiseSeaFloor;
 	/** @var Simplex */
@@ -55,36 +56,15 @@ class Normal2 extends Normal{
 	private $noiseBaseGround;
 	/** @var Simplex */
 	private $noiseRiver;
-
 	private $heightOffset;
-
 	private $seaHeight = 62;
 	private $seaFloorHeight = 48;
 	private $beathStartHeight = 60;
 	private $beathStopHeight = 64;
-	protected $bedrockDepth = 5;
 	private $seaFloorGenerateRange = 5;
 	private $landHeightRange = 18; // 36 / 2
 	private $mountainHeight = 13; // 26 / 2
 	private $basegroundHeight = 3;
-
-	public function pickBiome($x, $z) : Biome{
-		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->level->getSeed();
-		$hash *= $hash + 223;
-
-		$xNoise = $hash >> 20 & 3;
-		$zNoise = $hash >> 22 & 3;
-
-		if($xNoise == 3){
-			$xNoise = 1;
-		}
-		if($zNoise == 3){
-			$zNoise = 1;
-		}
-
-		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
-	}
-
 
 	public function init(ChunkManager $level, Random $random){
 		$this->level = $level;
@@ -139,7 +119,6 @@ class Normal2 extends Normal{
 		$this->populators[] = $ores;
 	}
 
-
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ $chunkX ^ $chunkZ ^ $this->level->getSeed());
 
@@ -190,7 +169,7 @@ class Normal2 extends Normal{
 						$genyHeight = $this->seaFloorHeight;
 					}
 					$canRiver = false;
-				}else if($genyHeight <= $this->beathStopHeight && $genyHeight >= $this->beathStartHeight){
+				}elseif($genyHeight <= $this->beathStopHeight && $genyHeight >= $this->beathStartHeight){
 					$biome = Biome::getBiome(Biome::BEACH);
 				}else{
 					$biome = $this->pickBiome($chunkX * 16 + $genx, $chunkZ * 16 + $genz);
@@ -256,6 +235,22 @@ class Normal2 extends Normal{
 
 	}
 
+	public function pickBiome($x, $z) : Biome{
+		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->level->getSeed();
+		$hash *= $hash + 223;
+
+		$xNoise = $hash >> 20 & 3;
+		$zNoise = $hash >> 22 & 3;
+
+		if($xNoise == 3){
+			$xNoise = 1;
+		}
+		if($zNoise == 3){
+			$zNoise = 1;
+		}
+
+		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
+	}
 
 	public function populateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ $chunkX ^ $chunkZ ^ $this->level->getSeed());

@@ -26,7 +26,7 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
 
 
-class DefaultGamemodeCommand extends VanillaCommand{
+class DefaultGamemodeCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(

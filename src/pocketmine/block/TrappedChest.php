@@ -33,7 +33,7 @@ use pocketmine\Player;
 use pocketmine\tile\Chest as TileChest;
 use pocketmine\tile\Tile;
 
-class TrappedChest extends Solid{
+class TrappedChest extends Solid {
 	protected $id = self::TRAPPED_CHEST;
 
 	public function __construct($meta = 0){
@@ -44,7 +44,19 @@ class TrappedChest extends Solid{
 		if($this->boundingBox === null){
 			$this->boundingBox = $this->recalculateBoundingBox();
 		}
+
 		return $this->boundingBox;
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x + 0.0625,
+			$this->y,
+			$this->z + 0.0625,
+			$this->x + 0.9375,
+			$this->y + 0.9475,
+			$this->z + 0.9375
+		);
 	}
 
 	public function isSolid(){
@@ -55,16 +67,16 @@ class TrappedChest extends Solid{
 		return false;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
-	}
-
-	public function getHardness() {
-		return 2.5;
 	}
 
 	public function getResistance(){
 		return $this->getHardness() * 5;
+	}
+
+	public function getHardness(){
+		return 2.5;
 	}
 
 	public function getName() : string{
@@ -75,23 +87,12 @@ class TrappedChest extends Solid{
 		return Tool::TYPE_AXE;
 	}
 
-	protected function recalculateBoundingBox() {
-		return new AxisAlignedBB(
-				$this->x + 0.0625,
-				$this->y,
-				$this->z + 0.0625,
-				$this->x + 0.9375,
-				$this->y + 0.9475,
-				$this->z + 0.9375
-		);
-	}
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = [
-				0 => 4,
-				1 => 2,
-				2 => 5,
-				3 => 3,
+			0 => 4,
+			1 => 2,
+			2 => 5,
+			3 => 3,
 		];
 
 		$chest = null;
@@ -115,11 +116,11 @@ class TrappedChest extends Solid{
 
 		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new CompoundTag("", [
-				new ListTag("Items", []),
-				new StringTag("id", Tile::CHEST),
-				new IntTag("x", $this->x),
-				new IntTag("y", $this->y),
-				new IntTag("z", $this->z)
+			new ListTag("Items", []),
+			new StringTag("id", Tile::CHEST),
+			new IntTag("x", $this->x),
+			new IntTag("y", $this->y),
+			new IntTag("z", $this->z)
 		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
 
@@ -166,11 +167,11 @@ class TrappedChest extends Solid{
 				$chest = $t;
 			}else{
 				$nbt = new CompoundTag("", [
-						new ListTag("Items", []),
-						new StringTag("id", Tile::CHEST),
-						new IntTag("x", $this->x),
-						new IntTag("y", $this->y),
-						new IntTag("z", $this->z)
+					new ListTag("Items", []),
+					new StringTag("id", Tile::CHEST),
+					new IntTag("x", $this->x),
+					new IntTag("y", $this->y),
+					new IntTag("z", $this->z)
 				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
 				$chest = Tile::createTile("Chest", $this->getLevel(), $nbt);
@@ -191,9 +192,9 @@ class TrappedChest extends Solid{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
-				[$this->id, 0, 1],
+			[$this->id, 0, 1],
 		];
 	}
 }

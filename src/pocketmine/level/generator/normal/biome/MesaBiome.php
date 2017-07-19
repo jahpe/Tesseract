@@ -28,7 +28,7 @@ use pocketmine\block\StainedClay;
 use pocketmine\level\generator\normal\populator\Cactus;
 use pocketmine\level\generator\normal\populator\DeadBush;
 
-class MesaBiome extends SandyBiome{
+class MesaBiome extends SandyBiome {
 
 	public function __construct(){
 		parent::__construct();

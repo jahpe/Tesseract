@@ -24,8 +24,8 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class Sandstone extends Solid{
-	
+class Sandstone extends Solid {
+
 	const NORMAL = 0;
 	const CHISELED = 1;
 	const SMOOTH = 2;
@@ -36,7 +36,7 @@ class Sandstone extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.8;
 	}
 
@@ -47,6 +47,7 @@ class Sandstone extends Solid{
 			2 => "Smooth Sandstone",
 			3 => "",
 		];
+
 		return $names[$this->meta & 0x03];
 	}
 
@@ -54,7 +55,7 @@ class Sandstone extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
 				[$this->id, $this->meta & 0x03, 1],

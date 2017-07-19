@@ -20,6 +20,7 @@
  */
 
 namespace pocketmine\event\server;
+
 use pocketmine\utils\Utils;
 
 
@@ -27,7 +28,7 @@ use pocketmine\utils\Utils;
  * Called when the server is in a low-memory state as defined by the properties
  * Plugins should free caches or other non-essential data.
  */
-class LowMemoryEvent extends ServerEvent{
+class LowMemoryEvent extends ServerEvent {
 
 	public static $handlerList = null;
 
@@ -41,15 +42,6 @@ class LowMemoryEvent extends ServerEvent{
 		$this->memoryLimit = $memoryLimit;
 		$this->global = (bool) $isGlobal;
 		$this->triggerCount = (int) $triggerCount;
-	}
-
-	/**
-	 * Returns the memory usage at the time of the event call (in bytes)
-	 *
-	 * @return int
-	 */
-	public function getMemory(){
-		return $this->memory;
 	}
 
 	/**
@@ -71,13 +63,6 @@ class LowMemoryEvent extends ServerEvent{
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function isGlobal(){
-		return $this->global;
-	}
-
-	/**
 	 * Amount of memory already freed
 	 *
 	 * @return int
@@ -87,8 +72,24 @@ class LowMemoryEvent extends ServerEvent{
 	}
 
 	/**
+	 * Returns the memory usage at the time of the event call (in bytes)
+	 *
+	 * @return int
+	 */
+	public function getMemory(){
+		return $this->memory;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isGlobal(){
+		return $this->global;
+	}
+
+	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "LowMemoryEvent";
 	}

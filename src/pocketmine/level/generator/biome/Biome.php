@@ -41,7 +41,7 @@ use pocketmine\utils\Random;
 
 use pocketmine\level\generator\normal\populator\Flower;
 
-abstract class Biome{
+abstract class Biome {
 
 	const OCEAN = 0;
 	const PLAINS = 1;
@@ -66,7 +66,7 @@ abstract class Biome{
 	const SMALL_MOUNTAINS = 20;
 	const BIRCH_FOREST = 27;
 	const BIRCH_FOREST_HILLS = 28;
-	const ROOFED_FOREST = 29;	
+	const ROOFED_FOREST = 29;
 	const COLD_TAIGA = 30;
 	const COLD_TAIGA_HILLS = 31;
 	const MEGA_TAIGA = 32;
@@ -77,26 +77,44 @@ abstract class Biome{
 	const MESA = 37;
 	const MESA_PLATEAU_F = 38;
 	const MESA_PLATEAU = 39;
-	
+
 	const VOID = 127;
 
 	const MAX_BIOMES = 256;
 
 	/** @var Biome[] */
 	private static $biomes = [];
-
+	protected $rainfall = 0.5;
+	protected $temperature = 0.5;
 	private $id;
 	private $registered = false;
 	/** @var Populator[] */
 	private $populators = [];
-
 	private $minElevation;
 	private $maxElevation;
-
 	private $groundCover = [];
 
-	protected $rainfall = 0.5;
-	protected $temperature = 0.5;
+	public static function init(){
+		self::register(self::OCEAN, new OceanBiome());
+		self::register(self::PLAINS, new PlainBiome());
+		self::register(self::DESERT, new DesertBiome());
+		self::register(self::MOUNTAINS, new MountainsBiome());
+		self::register(self::FOREST, new ForestBiome());
+		self::register(self::TAIGA, new TaigaBiome());
+		self::register(self::SWAMP, new SwampBiome());
+		self::register(self::RIVER, new RiverBiome());
+
+		self::register(self::BEACH, new BeachBiome());
+		self::register(self::MESA, new MesaBiome());
+
+		self::register(self::ICE_PLAINS, new IcePlainsBiome());
+
+
+		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
+		self::register(self::HELL, new HellBiome());
+
+		self::register(self::BIRCH_FOREST, new ForestBiome(ForestBiome::TYPE_BIRCH));
+	}
 
 	protected static function register($id, Biome $biome){
 		self::$biomes[(int) $id] = $biome;
@@ -117,26 +135,12 @@ abstract class Biome{
 		}
 	}
 
-	public static function init(){
-		self::register(self::OCEAN, new OceanBiome());
-		self::register(self::PLAINS, new PlainBiome());
-		self::register(self::DESERT, new DesertBiome());
-		self::register(self::MOUNTAINS, new MountainsBiome());
-		self::register(self::FOREST, new ForestBiome());
-		self::register(self::TAIGA, new TaigaBiome());
-		self::register(self::SWAMP, new SwampBiome());
-		self::register(self::RIVER, new RiverBiome());
-		
-		self::register(self::BEACH, new BeachBiome());
-		self::register(self::MESA, new MesaBiome());
+	public function getPopulators(){
+		return $this->populators;
+	}
 
-		self::register(self::ICE_PLAINS, new IcePlainsBiome());
-
-
-		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
-		self::register(self::HELL, new HellBiome());
-
-		self::register(self::BIRCH_FOREST, new ForestBiome(ForestBiome::TYPE_BIRCH));
+	public function addPopulator(Populator $populator){
+		$this->populators[get_class($populator)] = $populator;
 	}
 
 	/**
@@ -152,10 +156,6 @@ abstract class Biome{
 		$this->populators = [];
 	}
 
-	public function addPopulator(Populator $populator){
-		$this->populators[get_class($populator)] = $populator;
-	}
-
 	public function removePopulator($class){
 		if(isset($this->populators[$class])){
 			unset($this->populators[$class]);
@@ -168,8 +168,8 @@ abstract class Biome{
 		}
 	}
 
-	public function getPopulators(){
-		return $this->populators;
+	public function getId(){
+		return $this->id;
 	}
 
 	public function setId($id){
@@ -177,10 +177,6 @@ abstract class Biome{
 			$this->registered = true;
 			$this->id = $id;
 		}
-	}
-
-	public function getId(){
-		return $this->id;
 	}
 
 	public abstract function getName();

@@ -28,7 +28,7 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class Zombie extends Monster{
+class Zombie extends Monster {
 	const NETWORK_ID = 32;
 
 	public $width = 0.6;
@@ -40,7 +40,7 @@ class Zombie extends Monster{
 	public function getName() : string{
 		return "Zombie";
 	}
-	
+
 	public function initEntity(){
 		$this->setMaxHealth(20);
 		parent::initEntity();

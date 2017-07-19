@@ -28,7 +28,7 @@ use pocketmine\level\generator\normal\object\OreType;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
 
-class NetherGlowStone extends Populator{
+class NetherGlowStone extends Populator {
 
 	/** @var ChunkManager */
 	private $level;

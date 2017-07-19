@@ -28,7 +28,7 @@ use pocketmine\Player;
 /**
  * Called when a player tries to drop an item from its hotbar
  */
-class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
+class PlayerDropItemEvent extends PlayerEvent implements Cancellable {
 
 	public static $handlerList = null;
 
@@ -53,7 +53,7 @@ class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerDropItemEvent";
 	}

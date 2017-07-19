@@ -25,33 +25,28 @@ namespace pocketmine\utils;
  * XorShift128Engine Random Number Noise, used for fast seeded values
  * Most of the code in this class was adapted from the XorShift128Engine in the php-random library.
  */
-class Random{
+class Random {
 	const X = 123456789;
 	const Y = 362436069;
 	const Z = 521288629;
 	const W = 88675123;
-
+	protected $seed;
 	/**
 	 * @var int
 	 */
 	private $x;
-
 	/**
 	 * @var int
 	 */
 	private $y;
-
 	/**
 	 * @var int
 	 */
 	private $z;
-
 	/**
 	 * @var int
 	 */
 	private $w;
-
-	protected $seed;
 
 	/**
 	 * @param int $seed Integer to be used as seed.
@@ -64,6 +59,10 @@ class Random{
 		$this->setSeed($seed);
 	}
 
+	public function getSeed(){
+		return $this->seed;
+	}
+
 	/**
 	 * @param int $seed Integer to be used as seed.
 	 */
@@ -71,11 +70,17 @@ class Random{
 		$this->seed = $seed;
 		$this->x = self::X ^ $seed;
 		$this->y = self::Y ^ ($seed << 17) | (($seed >> 15) & 0x7fffffff) & 0xffffffff;
-		$this->z = self::Z ^ ($seed << 31) | (($seed >>  1) & 0x7fffffff) & 0xffffffff;
+		$this->z = self::Z ^ ($seed << 31) | (($seed >> 1) & 0x7fffffff) & 0xffffffff;
 		$this->w = self::W ^ ($seed << 18) | (($seed >> 14) & 0x7fffffff) & 0xffffffff;
 	}
-	public function getSeed(){
-		return $this->seed;
+
+	/**
+	 * Returns a float between 0.0 and 1.0 (inclusive)
+	 *
+	 * @return float
+	 */
+	public function nextFloat(){
+		return $this->nextInt() / 0x7fffffff;
 	}
 
 	/**
@@ -99,18 +104,9 @@ class Random{
 		$this->y = $this->z;
 		$this->z = $this->w;
 		$this->w = ($this->w ^ (($this->w >> 19) & 0x7fffffff)
-							 ^ ($t ^ (($t >> 8) & 0x7fffffff))) & 0xffffffff;
+				^ ($t ^ (($t >> 8) & 0x7fffffff))) & 0xffffffff;
 
 		return $this->w;
-	}
-
-	/**
-	 * Returns a float between 0.0 and 1.0 (inclusive)
-	 *
-	 * @return float
-	 */
-	public function nextFloat(){
-		return $this->nextInt() / 0x7fffffff;
 	}
 
 	/**

@@ -25,7 +25,7 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\item\Item as ItemItem;
 
-class Wither extends FlyingAnimal{
+class Wither extends FlyingAnimal {
 	const NETWORK_ID = 52;
 
 	public $width = 0.72;
@@ -33,7 +33,7 @@ class Wither extends FlyingAnimal{
 	public $height = 2;
 
 	public $dropExp = 50;
-	
+
 	public function getName() : string{
 		return "Wither";
 	}
@@ -42,7 +42,7 @@ class Wither extends FlyingAnimal{
 		$this->setMaxHealth(300);
 		parent::initEntity();
 	}
-	
+
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->eid = $this->getId();
@@ -65,6 +65,7 @@ class Wither extends FlyingAnimal{
 
 	public function getDrops(){
 		$drops = [ItemItem::get(ItemItem::NETHER_STAR, 0, 1)];
+
 		return $drops;
 	}
 }

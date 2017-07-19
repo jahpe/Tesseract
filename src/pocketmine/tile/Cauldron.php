@@ -30,7 +30,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Color;
 
-class Cauldron extends Spawnable{
+class Cauldron extends Spawnable {
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->PotionId) or !($nbt->PotionId instanceof ShortTag)){
@@ -43,10 +43,6 @@ class Cauldron extends Spawnable{
 			$nbt->Items = new ListTag("Items", []);
 		}
 		parent::__construct($level, $nbt);
-	}
-
-	public function getPotionId(){
-		return $this->namedtag["PotionId"];
 	}
 
 	public function setPotionId($potionId){
@@ -73,9 +69,15 @@ class Cauldron extends Spawnable{
 			$green = ($color >> 8) & 0xff;
 			$red = ($color >> 16) & 0xff;
 			$blue = ($color) & 0xff;
+
 			return Color::getRGB($red, $green, $blue);
 		}
+
 		return null;
+	}
+
+	public function isCustomColor(){
+		return isset($this->namedtag->CustomColor);
 	}
 
 	public function getCustomColorRed(){
@@ -88,10 +90,6 @@ class Cauldron extends Spawnable{
 
 	public function getCustomColorBlue(){
 		return ($this->namedtag["CustomColor"]) & 0xff;
-	}
-
-	public function isCustomColor(){
-		return isset($this->namedtag->CustomColor);
 	}
 
 	public function setCustomColor($r, $g = 0xff, $b = 0xff){
@@ -125,6 +123,11 @@ class Cauldron extends Spawnable{
 		if($this->getPotionId() === 0xffff and $this->isCustomColor()){
 			$nbt->CustomColor = $this->namedtag->CustomColor;
 		}
+
 		return $nbt;
+	}
+
+	public function getPotionId(){
+		return $this->namedtag["PotionId"];
 	}
 }

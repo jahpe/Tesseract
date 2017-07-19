@@ -24,7 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class LoginPacket extends DataPacket{
+class LoginPacket extends DataPacket {
 
 	const NETWORK_ID = Info::LOGIN_PACKET;
 
@@ -38,7 +38,7 @@ class LoginPacket extends DataPacket{
 	public $gameEdition;
 	public $clientUUID;
 	public $clientId;
-     public $adRole;
+	public $adRole;
 	public $currentInputMode;
 	public $defaultInputMode;
 	public $deviceModel;
@@ -57,6 +57,7 @@ class LoginPacket extends DataPacket{
 		$this->protocol = $this->getInt();
 		if(!in_array($this->protocol, Info::ACCEPTED_PROTOCOLS)){
 			$this->buffer = null;
+
 			return; //Do not attempt to decode for non-accepted protocols
 		}
 
@@ -99,30 +100,30 @@ class LoginPacket extends DataPacket{
 			}
 		}
 		list($verified, $skinToken) = $this->decodeToken($this->get($this->getLInt()), $chainKey);
-        if(isset($skinToken["AdRole"])){
-            $this->AdRole = $skinToken["AdRole"];
-        }
-        if(isset($skinToken["ClientRandomId"])){
+		if(isset($skinToken["AdRole"])){
+			$this->AdRole = $skinToken["AdRole"];
+		}
+		if(isset($skinToken["ClientRandomId"])){
 			$this->clientId = $skinToken["ClientRandomId"];
 		}
-        if(isset($skinToken["CurrentInputMode"])){
-            $this->currentInputMode = $skinToken["CurrentInputMode"];
-        }
-        if(isset($skinToken["DefaultInputMode"])){
-            $this->defaultInputMode = $skinToken["DefaultInputMode"];
-        }
- 		if(isset($skinToken["DeviceModel"])){
-            $this->deviceModel = $skinToken["DeviceModel"];
-        }
- 		if(isset($skinToken["DeviceOS"])){
-            $this->deviceOS = $skinToken["DeviceOS"];
-        }
- 		if(isset($skinToken["GameVersion"])){
-            $this->gameVersion = $skinToken["GameVersion"];
-        }
- 		if(isset($skinToken["GuiScale"])){
-            $this->guiScale = $skinToken["GuiScale"];
-        }
+		if(isset($skinToken["CurrentInputMode"])){
+			$this->currentInputMode = $skinToken["CurrentInputMode"];
+		}
+		if(isset($skinToken["DefaultInputMode"])){
+			$this->defaultInputMode = $skinToken["DefaultInputMode"];
+		}
+		if(isset($skinToken["DeviceModel"])){
+			$this->deviceModel = $skinToken["DeviceModel"];
+		}
+		if(isset($skinToken["DeviceOS"])){
+			$this->deviceOS = $skinToken["DeviceOS"];
+		}
+		if(isset($skinToken["GameVersion"])){
+			$this->gameVersion = $skinToken["GameVersion"];
+		}
+		if(isset($skinToken["GuiScale"])){
+			$this->guiScale = $skinToken["GuiScale"];
+		}
 		if(isset($skinToken["ServerAddress"])){
 			$this->serverAddress = $skinToken["ServerAddress"];
 		}
@@ -132,21 +133,17 @@ class LoginPacket extends DataPacket{
 		if(isset($skinToken["SkinId"])){
 			$this->skinId = $skinToken["SkinId"];
 		}
-        if(isset($skinToken["TenantId"])){
-            $this->TenantId = $skinToken["TenantId"];
-        }
-        if(isset($skinToken["UIProfile"])){
-            $this->UIProfile = $skinToken["UIProfile"];
-        }
+		if(isset($skinToken["TenantId"])){
+			$this->TenantId = $skinToken["TenantId"];
+		}
+		if(isset($skinToken["UIProfile"])){
+			$this->UIProfile = $skinToken["UIProfile"];
+		}
 		if($verified){
 			$this->identityPublicKey = $chainKey;
 		}
 	}
 
-	public function encode(){
-
-	}
-	
 	public function decodeToken($token, $key){
 		$tokens = explode(".", $token);
 		list($headB64, $payloadB64, $sigB64) = $tokens;
@@ -154,9 +151,11 @@ class LoginPacket extends DataPacket{
 		if($key !== null and extension_loaded("openssl")){
 			$sig = base64_decode(strtr($sigB64, '-_', '+/'), true);
 			$rawLen = 48; // ES384
-			for($i = $rawLen; $i > 0 and $sig[$rawLen - $i] == chr(0); $i--) {}
+			for($i = $rawLen; $i > 0 and $sig[$rawLen - $i] == chr(0); $i--){
+			}
 			$j = $i + (ord($sig[$rawLen - $i]) >= 128 ? 1 : 0);
-			for($k = $rawLen; $k > 0 and $sig[2 * $rawLen - $k] == chr(0); $k--) {}
+			for($k = $rawLen; $k > 0 and $sig[2 * $rawLen - $k] == chr(0); $k--){
+			}
 			$l = $k + (ord($sig[2 * $rawLen - $k]) >= 128 ? 1 : 0);
 			$len = 2 + $j + 2 + $l;
 			$derSig = chr(48);
@@ -176,6 +175,10 @@ class LoginPacket extends DataPacket{
 		}
 
 		return array($verified, json_decode(base64_decode($payloadB64), true));
+	}
+
+	public function encode(){
+
 	}
 
 }

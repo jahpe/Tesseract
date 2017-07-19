@@ -22,6 +22,7 @@
 /**
  * All Block classes are in here
  */
+
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
@@ -38,7 +39,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 
-class Block extends Position implements BlockIds, Metadatable{	
+class Block extends Position implements BlockIds, Metadatable {
 
 	/** @var \SplFixedArray */
 	public static $list = null;
@@ -55,12 +56,19 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $hardness = null;
 	/** @var \SplFixedArray */
 	public static $transparent = null;
-
+	/** @var AxisAlignedBB */
+	public $boundingBox = null;
 	protected $id;
 	protected $meta = 0;
 
-	/** @var AxisAlignedBB */
-	public $boundingBox = null;
+	/**
+	 * @param int $id
+	 * @param int $meta
+	 */
+	public function __construct($id, $meta = 0){
+		$this->id = (int) $id;
+		$this->meta = (int) $meta;
+	}
 
 	public static function init(){
 		if(self::$list === null){
@@ -167,7 +175,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::IRON_TRAPDOOR] = IronTrapdoor::class;
 
 			self::$list[self::STONE_BRICKS] = StoneBricks::class;
-			
+
 			self::$list[self::BROWN_MUSHROOM_BLOCK] = BrownMushroomBlock::class;
 			self::$list[self::RED_MUSHROOM_BLOCK] = RedMushroomBlock::class;
 
@@ -329,46 +337,29 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 	}
 
-	/**
-	 * @param int      $id
-	 * @param int      $meta
-	 * @param Position $pos
-	 *
-	 * @return Block
-	 */
-	public static function get($id, $meta = 0, Position $pos = null){
-		if($id > 0xff){
-			trigger_error("BlockID cannot be higher than 255, defaulting to 0", E_USER_NOTICE);
-			$id = 0;
-		}
-		try{
-			$block = self::$list[$id];
-			if($block !== null){
-				$block = new $block($meta);
-			}else{
-				$block = new Block($id, $meta);
-			}
-		}catch(\RuntimeException $e){
-			$block = new Block($id, $meta);
-		}
-
-		if($pos !== null){
-			$block->x = $pos->x;
-			$block->y = $pos->y;
-			$block->z = $pos->z;
-			$block->level = $pos->level;
-		}
-
-		return $block;
+	public function isSolid(){
+		return true;
 	}
 
 	/**
-	 * @param int $id
-	 * @param int $meta
+	 * @return bool
 	 */
-	public function __construct($id, $meta = 0){
-		$this->id = (int) $id;
-		$this->meta = (int) $meta;
+	public function isTransparent(){
+		return false;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getHardness(){
+		return 10;
+	}
+
+	/**
+	 * @return int 0-15
+	 */
+	public function getLightLevel(){
+		return 0;
 	}
 
 	/**
@@ -441,22 +432,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	public function getHardness(){
-		return 10;
-	}
-
-	/**
-	 * @return int
-	 */
 	public function getResistance(){
 		return $this->getHardness() * 5;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getBurnChance() : int{
-		return 0;
 	}
 
 	/**
@@ -470,7 +447,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		if($this->isSolid()){
 			return true;
 		}else{
-			if($this instanceof Stair and ($this->getDamage() &4) == 4){
+			if($this instanceof Stair and ($this->getDamage() & 4) == 4){
 				return true;
 			}elseif($this instanceof Slab and ($this->getDamage() & 8) == 8){
 				return true;
@@ -478,7 +455,15 @@ class Block extends Position implements BlockIds, Metadatable{
 				return true;
 			}
 		}
+
 		return false;
+	}
+
+	/**
+	 * @return int
+	 */
+	final public function getDamage(){
+		return $this->meta;
 	}
 
 	public function canNeighborBurn(){
@@ -487,14 +472,64 @@ class Block extends Position implements BlockIds, Metadatable{
 				return true;
 			}
 		}
+
 		return false;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getToolType(){
-		return Tool::TYPE_NONE;
+	public function getBurnChance() : int{
+		return 0;
+	}
+
+	/**
+	 * Returns the Block on the side $side, works like Vector3::side()
+	 *
+	 * @param int $side
+	 * @param int $step
+	 *
+	 * @return Block
+	 */
+	public function getSide($side, $step = 1){
+		if($this->isValid()){
+			return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
+		}
+
+		return Block::get(Item::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
+	}
+
+	/**
+	 * @param int      $id
+	 * @param int      $meta
+	 * @param Position $pos
+	 *
+	 * @return Block
+	 */
+	public static function get($id, $meta = 0, Position $pos = null){
+		if($id > 0xff){
+			trigger_error("BlockID cannot be higher than 255, defaulting to 0", E_USER_NOTICE);
+			$id = 0;
+		}
+		try{
+			$block = self::$list[$id];
+			if($block !== null){
+				$block = new $block($meta);
+			}else{
+				$block = new Block($id, $meta);
+			}
+		}catch(\RuntimeException $e){
+			$block = new Block($id, $meta);
+		}
+
+		if($pos !== null){
+			$block->x = $pos->x;
+			$block->y = $pos->y;
+			$block->z = $pos->z;
+			$block->level = $pos->level;
+		}
+
+		return $block;
 	}
 
 	/**
@@ -504,11 +539,8 @@ class Block extends Position implements BlockIds, Metadatable{
 		return 0.6;
 	}
 
-	/**
-	 * @return int 0-15
-	 */
-	public function getLightLevel(){
-		return 0;
+	public function isPlaceable(){
+		return $this->canBePlaced();
 	}
 
 	/**
@@ -520,10 +552,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
-	public function isPlaceable(){
-		return $this->canBePlaced();
-	}
-
 	/**
 	 * AKA: Block->canBeReplaced()
 	 *
@@ -531,17 +559,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function canBeReplaced(){
 		return false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isTransparent(){
-		return false;
-	}
-
-	public function isSolid(){
-		return true;
 	}
 
 	/**
@@ -582,29 +599,8 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName(){
-		return "Unknown";
-	}
-
-	/**
-	 * @return int
-	 */
-	final public function getId(){
-		return $this->id;
-	}
-
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
 
-	}
-
-	/**
-	 * @return int
-	 */
-	final public function getDamage(){
-		return $this->meta;
 	}
 
 	/**
@@ -642,6 +638,13 @@ class Block extends Position implements BlockIds, Metadatable{
 				[$this->getId(), $this->getDamage(), 1],
 			];
 		}
+	}
+
+	/**
+	 * @return int
+	 */
+	final public function getId(){
+		return $this->id;
 	}
 
 	/**
@@ -695,19 +698,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Returns the Block on the side $side, works like Vector3::side()
-	 *
-	 * @param int $side
-	 * @param int $step
-	 *
-	 * @return Block
+	 * @return int
 	 */
-	public function getSide($side, $step = 1){
-		if($this->isValid()){
-			return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
-		}
-
-		return Block::get(Item::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
+	public function getToolType(){
+		return Tool::TYPE_NONE;
 	}
 
 	/**
@@ -715,6 +709,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function __toString(){
 		return "Block[" . $this->getName() . "] (" . $this->getId() . ":" . $this->getDamage() . ")";
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName(){
+		return "Unknown";
 	}
 
 	/**
@@ -731,19 +732,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @param Entity $entity
-	 */
-	public function onEntityCollide(Entity $entity){
-
-	}
-
-	/**
 	 * @return AxisAlignedBB
 	 */
 	public function getBoundingBox(){
 		if($this->boundingBox === null){
 			$this->boundingBox = $this->recalculateBoundingBox();
 		}
+
 		return $this->boundingBox;
 	}
 
@@ -759,6 +754,13 @@ class Block extends Position implements BlockIds, Metadatable{
 			$this->y + 1,
 			$this->z + 1
 		);
+	}
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function onEntityCollide(Entity $entity){
+
 	}
 
 	/**

@@ -29,7 +29,7 @@ use pocketmine\Player;
 use pocketmine\level\Explosion;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 
-class GhastFireball extends Projectile{
+class GhastFireball extends Projectile {
 	const NETWORK_ID = 85;
 
 	public $width = 1.0;
@@ -62,9 +62,9 @@ class GhastFireball extends Projectile{
 		$hasUpdate = parent::onUpdate($currentTick);
 		if(!$this->hadCollision and $this->isCritical){
 			$this->level->addParticle(new CriticalParticle($this->add(
-			$this->width / 2 + mt_rand(-100, 100) / 500,
-			$this->height / 2 + mt_rand(-100, 100) / 500,
-			$this->width / 2 + mt_rand(-100, 100) / 500)));
+				$this->width / 2 + mt_rand(-100, 100) / 500,
+				$this->height / 2 + mt_rand(-100, 100) / 500,
+				$this->width / 2 + mt_rand(-100, 100) / 500)));
 		}elseif($this->onGround){
 			$this->isCritical = false;
 		}
@@ -84,6 +84,7 @@ class GhastFireball extends Projectile{
 			$hasUpdate = true;
 		}
 		$this->timings->stopTiming();
+
 		return $hasUpdate;
 	}
 

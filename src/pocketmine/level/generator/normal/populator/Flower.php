@@ -27,16 +27,11 @@ use pocketmine\utils\Random;
 use pocketmine\level\generator\populator\VariableAmountPopulator;
 use pocketmine\block\Flower as FlowerBlock;
 
-class Flower extends VariableAmountPopulator{
+class Flower extends VariableAmountPopulator {
+	protected $baseAmount = 8;
 	/** @var ChunkManager */
 	private $level;
-	protected $baseAmount = 8;
-
 	private $flowerTypes = [];
-
-	public function addType($type){
-		$this->flowerTypes[] = $type;
-	}
 
 	public function getTypes(){
 		return $this->flowerTypes;
@@ -65,9 +60,8 @@ class Flower extends VariableAmountPopulator{
 		}
 	}
 
-	private function canFlowerStay($x, $y, $z){
-		$b = $this->level->getBlockIdAt($x, $y, $z);
-		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::GRASS;
+	public function addType($type){
+		$this->flowerTypes[] = $type;
 	}
 
 	private function getHighestWorkableBlock($x, $z){
@@ -77,6 +71,13 @@ class Flower extends VariableAmountPopulator{
 				break;
 			}
 		}
+
 		return $y === 0 ? -1 : ++$y;
+	}
+
+	private function canFlowerStay($x, $y, $z){
+		$b = $this->level->getBlockIdAt($x, $y, $z);
+
+		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::GRASS;
 	}
 }

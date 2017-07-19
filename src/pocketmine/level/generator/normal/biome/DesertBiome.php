@@ -26,7 +26,7 @@ use pocketmine\level\generator\normal\populator\DeadBush;
 use pocketmine\level\generator\normal\populator\Mushroom;
 use pocketmine\level\generator\normal\populator\SugarCane;
 
-class DesertBiome extends SandyBiome{
+class DesertBiome extends SandyBiome {
 
 	public function __construct(){
 		$deadBush = new DeadBush();
@@ -42,7 +42,7 @@ class DesertBiome extends SandyBiome{
 		$this->addPopulator($mushroom);
 		$this->addPopulator($deadBush);
 		$this->addPopulator($sugarCane);
-		
+
 		$this->setElevation(63, 74);
 
 		$this->temperature = 2;

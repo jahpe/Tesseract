@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class EndStoneBricks extends Solid{
+class EndStoneBricks extends Solid {
 
 	protected $id = self::END_STONE_BRICKS;
 
@@ -34,7 +34,7 @@ class EndStoneBricks extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.8;
 	}
 
@@ -46,7 +46,7 @@ class EndStoneBricks extends Solid{
 		return "End Stone Bricks";
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
 				[self::END_STONE_BRICKS, $this->meta & 0x03, 1],

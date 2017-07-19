@@ -33,7 +33,7 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
-class Fire extends Flowable{
+class Fire extends Flowable {
 
 	protected $id = self::FIRE;
 
@@ -87,7 +87,7 @@ class Fire extends Flowable{
 		}
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [];
 	}
 
@@ -95,6 +95,7 @@ class Fire extends Flowable{
 		if($type == Level::BLOCK_UPDATE_NORMAL or $type == Level::BLOCK_UPDATE_RANDOM or $type == Level::BLOCK_UPDATE_SCHEDULED){
 			if(!$this->getSide(Vector3::SIDE_DOWN)->isTopFacingSurfaceSolid() and !$this->canNeighborBurn()){
 				$this->getLevel()->setBlock($this, new Air(), true);
+
 				return Level::BLOCK_UPDATE_NORMAL;
 			}elseif($type == Level::BLOCK_UPDATE_NORMAL or $type == Level::BLOCK_UPDATE_RANDOM){
 				$this->getLevel()->scheduleUpdate($this, $this->getTickRate() + mt_rand(0, 10));
@@ -146,7 +147,7 @@ class Fire extends Flowable{
 
 						for($x = ($this->x - 1); $x <= ($this->x + 1); ++$x){
 							for($z = ($this->z - 1); $z <= ($this->z + 1); ++$z){
-								for($y = ($this->y -1); $y <= ($this->y + 4); ++$y){
+								for($y = ($this->y - 1); $y <= ($this->y + 4); ++$y){
 									$k = 100;
 
 									if($y > $this->y + 1){
@@ -174,6 +175,7 @@ class Fire extends Flowable{
 				}
 			}
 		}
+
 		return 0;
 	}
 
@@ -216,7 +218,7 @@ class Fire extends Flowable{
 					$this->getLevel()->scheduleUpdate($block, $fire->getTickRate());
 				}
 			}else{
-					$this->getLevel()->setBlock($this, new Air(), true);
+				$this->getLevel()->setBlock($this, new Air(), true);
 			}
 
 			if($block instanceof TNT){
@@ -233,6 +235,7 @@ class Fire extends Flowable{
 			for($i = 0; $i < 5; $i++){
 				$chance = max($chance, $block->getSide($i)->getBurnChance());
 			}
+
 			return $chance;
 		}
 	}

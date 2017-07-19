@@ -30,7 +30,7 @@ use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\Item;
 use pocketmine\utils\BinaryStream;
 
-class CraftingDataPacket extends DataPacket{
+class CraftingDataPacket extends DataPacket {
 
 	const NETWORK_ID = Info::CRAFTING_DATA_PACKET;
 
@@ -47,6 +47,7 @@ class CraftingDataPacket extends DataPacket{
 
 	public function clean(){
 		$this->entries = [];
+
 		return parent::clean();
 	}
 
@@ -107,6 +108,38 @@ class CraftingDataPacket extends DataPacket{
 		$this->getBool(); //cleanRecipes
 	}
 
+	public function addShapelessRecipe(ShapelessRecipe $recipe){
+		$this->entries[] = $recipe;
+	}
+
+	public function addShapedRecipe(ShapedRecipe $recipe){
+		$this->entries[] = $recipe;
+	}
+
+	public function addFurnaceRecipe(FurnaceRecipe $recipe){
+		$this->entries[] = $recipe;
+	}
+
+	public function encode(){
+		$this->reset();
+		$this->putUnsignedVarInt(count($this->entries));
+
+		$writer = new BinaryStream();
+		foreach($this->entries as $d){
+			$entryType = self::writeEntry($d, $writer);
+			if($entryType >= 0){
+				$this->putVarInt($entryType);
+				$this->put($writer->getBuffer());
+			}else{
+				$this->putVarInt(-1);
+			}
+
+			$writer->reset();
+		}
+
+		$this->putBool($this->cleanRecipes);
+	}
+
 	private static function writeEntry($entry, BinaryStream $stream){
 		if($entry instanceof ShapelessRecipe){
 			return self::writeShapelessRecipe($entry, $stream);
@@ -115,6 +148,7 @@ class CraftingDataPacket extends DataPacket{
 		}elseif($entry instanceof FurnaceRecipe){
 			return self::writeFurnaceRecipe($entry, $stream);
 		}
+
 		//TODO: add MultiRecipe
 
 		return -1;
@@ -165,38 +199,6 @@ class CraftingDataPacket extends DataPacket{
 
 			return CraftingDataPacket::ENTRY_FURNACE;
 		}
-	}
-
-	public function addShapelessRecipe(ShapelessRecipe $recipe){
-		$this->entries[] = $recipe;
-	}
-
-	public function addShapedRecipe(ShapedRecipe $recipe){
-		$this->entries[] = $recipe;
-	}
-
-	public function addFurnaceRecipe(FurnaceRecipe $recipe){
-		$this->entries[] = $recipe;
-	}
-
-	public function encode(){
-		$this->reset();
-		$this->putUnsignedVarInt(count($this->entries));
-
-		$writer = new BinaryStream();
-		foreach($this->entries as $d){
-			$entryType = self::writeEntry($d, $writer);
-			if($entryType >= 0){
-				$this->putVarInt($entryType);
-				$this->put($writer->getBuffer());
-			}else{
-				$this->putVarInt(-1);
-			}
-
-			$writer->reset();
-		}
-
-		$this->putBool($this->cleanRecipes);
 	}
 
 }

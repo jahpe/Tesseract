@@ -45,8 +45,10 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
-class Normal extends Generator{
+class Normal extends Generator {
 
+	private static $GAUSSIAN_KERNEL = null;
+	private static $SMOOTH_SIZE = 2;
 	/** @var Populator[] */
 	protected $populators = [];
 	/** @var ChunkManager */
@@ -55,17 +57,12 @@ class Normal extends Generator{
 	protected $random;
 	protected $waterHeight = 62;
 	protected $bedrockDepth = 5;
-
 	/** @var Populator[] */
 	protected $generationPopulators = [];
 	/** @var Simplex */
 	protected $noiseBase;
-
 	/** @var BiomeSelector */
 	protected $selector;
-
-	private static $GAUSSIAN_KERNEL = null;
-	private static $SMOOTH_SIZE = 2;
 
 	public function __construct(array $options = []){
 		if(self::$GAUSSIAN_KERNEL === null){
@@ -94,27 +91,12 @@ class Normal extends Generator{
 		return "Normal";
 	}
 
-	public function getWaterHeight(): int{
-        return $this->waterHeight;
-    }
-
-    public function getSettings(){
-		return [];
+	public function getWaterHeight() : int{
+		return $this->waterHeight;
 	}
 
-	public function pickBiome($x, $z){
-		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->level->getSeed();
-		$hash *= $hash + 223;
-		$xNoise = $hash >> 20 & 3;
-		$zNoise = $hash >> 22 & 3;
-		if($xNoise == 3){
-			$xNoise = 1;
-		}
-		if($zNoise == 3){
-			$zNoise = 1;
-		}
-
-		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
+	public function getSettings(){
+		return [];
 	}
 
 	public function init(ChunkManager $level, Random $random){
@@ -156,9 +138,9 @@ class Normal extends Generator{
 			new OreType(new GoldOre(), 2, 9, 0, 32),
 			new OreType(new DiamondOre(), 1, 8, 0, 16),
 			new OreType(new Dirt(), 10, 33, 0, 128),
-            new OreType(new Stone(Stone::GRANITE), 10, 33, 0, 80),
-            new OreType(new Stone(Stone::DIORITE), 10, 33, 0, 80),
-            new OreType(new Stone(Stone::ANDESITE), 10, 33, 0, 80),
+			new OreType(new Stone(Stone::GRANITE), 10, 33, 0, 80),
+			new OreType(new Stone(Stone::DIORITE), 10, 33, 0, 80),
+			new OreType(new Stone(Stone::ANDESITE), 10, 33, 0, 80),
 			new OreType(new Gravel(), 8, 33, 0, 128)
 		]);
 		$this->populators[] = $ores;
@@ -210,19 +192,19 @@ class Normal extends Generator{
 
 				$solidLand = false;
 
-                for($y = 127; $y >= 0; --$y){
+				for($y = 127; $y >= 0; --$y){
 					if($y === 0){
 						$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
 						continue;
 					}
 
-                    $noiseAdjustment = 2 * (($maxSum - $y) / ($maxSum - $minSum)) - 1;
+					$noiseAdjustment = 2 * (($maxSum - $y) / ($maxSum - $minSum)) - 1;
 
-                    $caveLevel = $minSum - 10;
-                    $distAboveCaveLevel = max(0, $y - $caveLevel);
+					$caveLevel = $minSum - 10;
+					$distAboveCaveLevel = max(0, $y - $caveLevel);
 
-                    $noiseAdjustment = min($noiseAdjustment, 0.4 + ($distAboveCaveLevel / 10));
-                    $noiseValue = $noise[$x][$z][$y] + $noiseAdjustment;
+					$noiseAdjustment = min($noiseAdjustment, 0.4 + ($distAboveCaveLevel / 10));
+					$noiseValue = $noise[$x][$z][$y] + $noiseAdjustment;
 
 					if($noiseValue > 0){
 						$chunk->setBlockId($x, $y, $z, Block::STONE);
@@ -236,6 +218,21 @@ class Normal extends Generator{
 		foreach($this->generationPopulators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
+	}
+
+	public function pickBiome($x, $z){
+		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->level->getSeed();
+		$hash *= $hash + 223;
+		$xNoise = $hash >> 20 & 3;
+		$zNoise = $hash >> 22 & 3;
+		if($xNoise == 3){
+			$xNoise = 1;
+		}
+		if($zNoise == 3){
+			$zNoise = 1;
+		}
+
+		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
 	}
 
 	public function populateChunk($chunkX, $chunkZ){

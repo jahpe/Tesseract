@@ -20,15 +20,20 @@
 */
 
 namespace pocketmine\math;
+
 use pocketmine\utils\Random;
 
-class Vector2{
+class Vector2 {
 	public $x;
 	public $y;
 
 	public function __construct($x = 0, $y = 0){
 		$this->x = $x;
 		$this->y = $y;
+	}
+
+	public static function createRandomDirection(Random $random){
+		return VectorMath::getDirection2D($random->nextFloat() * 2 * pi());
 	}
 
 	public function getX(){
@@ -47,19 +52,19 @@ class Vector2{
 		return (int) $this->y;
 	}
 
-	public function add($x, $y = 0){
-		if($x instanceof Vector2){
-			return $this->add($x->x, $x->y);
-		}else{
-			return new Vector2($this->x + $x, $this->y + $y);
-		}
-	}
-
 	public function subtract($x, $y = 0){
 		if($x instanceof Vector2){
 			return $this->add(-$x->x, -$x->y);
 		}else{
 			return $this->add(-$x, -$y);
+		}
+	}
+
+	public function add($x, $y = 0){
+		if($x instanceof Vector2){
+			return $this->add($x->x, $x->y);
+		}else{
+			return new Vector2($this->x + $x, $this->y + $y);
 		}
 	}
 
@@ -81,10 +86,6 @@ class Vector2{
 
 	public function multiply($number){
 		return new Vector2($this->x * $number, $this->y * $number);
-	}
-
-	public function divide($number){
-		return new Vector2($this->x / $number, $this->y / $number);
 	}
 
 	public function distance($x, $y = 0){
@@ -120,15 +121,15 @@ class Vector2{
 		return new Vector2(0, 0);
 	}
 
+	public function divide($number){
+		return new Vector2($this->x / $number, $this->y / $number);
+	}
+
 	public function dot(Vector2 $v){
 		return $this->x * $v->x + $this->y * $v->y;
 	}
 
 	public function __toString(){
 		return "Vector2(x=" . $this->x . ",y=" . $this->y . ")";
-	}
-
-	public static function createRandomDirection(Random $random){
-		return VectorMath::getDirection2D($random->nextFloat() * 2 * pi());
 	}
 }

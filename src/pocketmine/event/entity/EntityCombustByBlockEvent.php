@@ -24,7 +24,7 @@ namespace pocketmine\event\entity;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 
-class EntityCombustByBlockEvent extends EntityCombustEvent{
+class EntityCombustByBlockEvent extends EntityCombustEvent {
 
 	protected $combuster;
 
@@ -48,7 +48,7 @@ class EntityCombustByBlockEvent extends EntityCombustEvent{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "EntityCombustByBlockEvent";
 	}

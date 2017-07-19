@@ -23,7 +23,7 @@ namespace pocketmine\plugin;
 
 use pocketmine\permission\Permission;
 
-class PluginDescription{
+class PluginDescription {
 	private $name;
 	private $main;
 	private $api;
@@ -64,7 +64,7 @@ class PluginDescription{
 		$this->version = $plugin["version"];
 		$this->main = $plugin["main"];
 		$this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
-		
+
 		if(stripos($this->main, "pocketmine\\") === 0){
 			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
 		}

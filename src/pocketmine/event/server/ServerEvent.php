@@ -22,15 +22,16 @@
 /**
  * Events related to the server core, like networking, stop, level loading
  */
+
 namespace pocketmine\event\server;
 
 use pocketmine\event\Event;
 
-abstract class ServerEvent extends Event{
+abstract class ServerEvent extends Event {
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "ServerEvent";
 	}

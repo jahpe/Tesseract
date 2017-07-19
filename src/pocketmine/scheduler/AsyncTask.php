@@ -28,7 +28,7 @@ use pocketmine\Server;
  *
  * WARNING: Do not call PocketMine-MP API methods, or save objects from/on other Threads!!
  */
-abstract class AsyncTask extends \Threaded implements \Collectable{
+abstract class AsyncTask extends \Threaded implements \Collectable {
 
 	/** @var AsyncWorker $worker */
 	public $worker = null;
@@ -44,10 +44,6 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 	private $isGarbage = false;
 
 	private $isFinished = false;
-
-	public function isGarbage() : bool{
-		return $this->isGarbage;
-	}
 
 	public function setGarbage(){
 		$this->isGarbage = true;
@@ -74,6 +70,13 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 		//$this->setGarbage();
 	}
 
+	/**
+	 * Actions to execute when run
+	 *
+	 * @return void
+	 */
+	public abstract function onRun();
+
 	public function isCrashed(){
 		return $this->crashed;
 	}
@@ -83,6 +86,15 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 	 */
 	public function getResult(){
 		return $this->serialized ? unserialize($this->result) : $this->result;
+	}
+
+	/**
+	 * @param mixed $result
+	 * @param bool  $serialize
+	 */
+	public function setResult($result, $serialize = true){
+		$this->result = $serialize ? serialize($result) : $result;
+		$this->serialized = $serialize;
 	}
 
 	public function cancelRun(){
@@ -100,21 +112,12 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 		return $this->result !== null;
 	}
 
-	/**
-	 * @param mixed $result
-	 * @param bool  $serialize
-	 */
-	public function setResult($result, $serialize = true){
-		$this->result = $serialize ? serialize($result) : $result;
-		$this->serialized = $serialize;
+	public function getTaskId(){
+		return $this->taskId;
 	}
 
 	public function setTaskId($taskId){
 		$this->taskId = $taskId;
-	}
-
-	public function getTaskId(){
-		return $this->taskId;
 	}
 
 	/**
@@ -122,11 +125,17 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 	 * You have to initialize this in some way from the task on run
 	 *
 	 * @param string $identifier
+	 *
 	 * @return mixed
 	 */
 	public function getFromThreadStore($identifier){
 		global $store;
+
 		return $this->isGarbage() ? null : $store[$identifier];
+	}
+
+	public function isGarbage() : bool{
+		return $this->isGarbage;
 	}
 
 	/**
@@ -142,13 +151,6 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 			$store[$identifier] = $value;
 		}
 	}
-
-	/**
-	 * Actions to execute when run
-	 *
-	 * @return void
-	 */
-	public abstract function onRun();
 
 	/**
 	 * Actions to execute when completed (on main thread)

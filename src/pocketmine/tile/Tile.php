@@ -22,6 +22,7 @@
 /**
  * All the Tile classes and related classes
  */
+
 namespace pocketmine\tile;
 
 use pocketmine\event\Timings;
@@ -32,8 +33,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 
-abstract class Tile extends Position{
-	
+abstract class Tile extends Position {
+
 	const BREWING_STAND = "BrewingStand";
 	const CHEST = "Chest";
 	const ENCHANT_TABLE = "EnchantTable";
@@ -66,13 +67,33 @@ abstract class Tile extends Position{
 	public $metadata;
 	public $closed = false;
 	public $namedtag;
+	/** @var \pocketmine\event\TimingsHandler */
+	public $tickTimer;
 	protected $lastUpdate;
 	protected $server;
 	protected $timings;
 
-	/** @var \pocketmine\event\TimingsHandler */
-	public $tickTimer;
-	
+	public function __construct(Level $level, CompoundTag $nbt){
+		$this->timings = Timings::getTileEntityTimings($this);
+
+		$this->namedtag = $nbt;
+		$this->server = $level->getServer();
+		$this->setLevel($level);
+		$this->chunk = $level->getChunk($this->namedtag["x"] >> 4, $this->namedtag["z"] >> 4, false);
+		assert($this->chunk !== null);
+
+		$this->name = "";
+		$this->lastUpdate = microtime(true);
+		$this->id = Tile::$tileCount++;
+		$this->x = (int) $this->namedtag["x"];
+		$this->y = (int) $this->namedtag["y"];
+		$this->z = (int) $this->namedtag["z"];
+
+		$this->chunk->addTile($this);
+		$this->getLevel()->addTile($this);
+		$this->tickTimer = Timings::getTileEntityTimings($this);
+	}
+
 	public static function init(){
 		self::registerTile(Beacon::class);
 		self::registerTile(BeaconDelayedCheckTask::class);
@@ -93,23 +114,6 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * @param string    $type
-	 * @param Level     $level
-	 * @param CompoundTag  $nbt
-	 * @param array $args
-	 *
-	 * @return Tile
-	 */
-	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args){
-		if(isset(self::$knownTiles[$type])){
-			$class = self::$knownTiles[$type];
-			return new $class($level, $nbt, ...$args);
-		}
-
-		return null;
-	}
-
-	/**
 	 * @param $className
 	 *
 	 * @return bool
@@ -119,6 +123,7 @@ abstract class Tile extends Position{
 		if(is_a($className, Tile::class, true) and !$class->isAbstract()){
 			self::$knownTiles[$class->getShortName()] = $className;
 			self::$shortNames[$className] = $class->getShortName();
+
 			return true;
 		}
 
@@ -126,33 +131,21 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * Returns the short save name
+	 * @param string      $type
+	 * @param Level       $level
+	 * @param CompoundTag $nbt
+	 * @param array       $args
 	 *
-	 * @return string
+	 * @return Tile
 	 */
-	public function getSaveId(){
-		return self::$shortNames[static::class];
-	}
+	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args){
+		if(isset(self::$knownTiles[$type])){
+			$class = self::$knownTiles[$type];
 
-	public function __construct(Level $level, CompoundTag $nbt){
-		$this->timings = Timings::getTileEntityTimings($this);
+			return new $class($level, $nbt, ...$args);
+		}
 
-		$this->namedtag = $nbt;
-        $this->server = $level->getServer();
-        $this->setLevel($level);
-        $this->chunk = $level->getChunk($this->namedtag["x"] >> 4, $this->namedtag["z"] >> 4, false);
-        assert($this->chunk !== null);
-
-		$this->name = "";
-		$this->lastUpdate = microtime(true);
-		$this->id = Tile::$tileCount++;
-		$this->x = (int) $this->namedtag["x"];
-		$this->y = (int) $this->namedtag["y"];
-		$this->z = (int) $this->namedtag["z"];
-
-		$this->chunk->addTile($this);
-		$this->getLevel()->addTile($this);
-		$this->tickTimer = Timings::getTileEntityTimings($this);
+		return null;
 	}
 
 	public function getId(){
@@ -164,6 +157,15 @@ abstract class Tile extends Position{
 		$this->namedtag->x = new IntTag("x", $this->x);
 		$this->namedtag->y = new IntTag("y", $this->y);
 		$this->namedtag->z = new IntTag("z", $this->z);
+	}
+
+	/**
+	 * Returns the short save name
+	 *
+	 * @return string
+	 */
+	public function getSaveId(){
+		return self::$shortNames[static::class];
 	}
 
 	/**

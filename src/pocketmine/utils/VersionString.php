@@ -25,7 +25,7 @@ namespace pocketmine\utils;
 /**
  * Manages PocketMine-MP version strings, and compares them
  */
-class VersionString{
+class VersionString {
 	private $major;
 	private $build;
 	private $minor;
@@ -43,10 +43,6 @@ class VersionString{
 			$this->development = true;
 			$this->build = 0;
 		}
-	}
-
-	public function getNumber(){
-		return (int) (($this->generation << 9) + ($this->major << 5) + $this->minor);
 	}
 
 	/**
@@ -68,24 +64,20 @@ class VersionString{
 		return $this->minor;
 	}
 
-	public function getRelease(){
-		return $this->generation . "." . $this->major . ($this->minor > 0 ? "." . $this->minor : "");
-	}
-
-	public function getBuild(){
-		return $this->build;
-	}
-
 	public function isDev(){
 		return $this->development === true;
+	}
+
+	public function __toString(){
+		return $this->get();
 	}
 
 	public function get($build = false){
 		return $this->getRelease() . ($this->development === true ? "dev" : "") . (($this->build > 0 and $build === true) ? "-" . $this->build : "");
 	}
 
-	public function __toString(){
-		return $this->get();
+	public function getRelease(){
+		return $this->generation . "." . $this->major . ($this->minor > 0 ? "." . $this->minor : "");
 	}
 
 	public function compare($target, $diff = false){
@@ -108,5 +100,13 @@ class VersionString{
 		}else{
 			return 0; //Same version
 		}
+	}
+
+	public function getNumber(){
+		return (int) (($this->generation << 9) + ($this->major << 5) + $this->minor);
+	}
+
+	public function getBuild(){
+		return $this->build;
 	}
 }

@@ -25,7 +25,7 @@ use pocketmine\nbt\NBT;
 
 #include <rules/NBT.h>
 
-class IntArrayTag extends NamedTag{
+class IntArrayTag extends NamedTag {
 
 	public function getType(){
 		return NBT::TAG_IntArray;
@@ -44,6 +44,7 @@ class IntArrayTag extends NamedTag{
 	public function __toString(){
 		$str = get_class($this) . "{\n";
 		$str .= implode(", ", $this->value);
+
 		return $str . "}";
 	}
 }

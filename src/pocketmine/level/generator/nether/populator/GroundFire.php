@@ -26,10 +26,10 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\populator\VariableAmountPopulator;
 use pocketmine\utils\Random;
 
-class GroundFire extends VariableAmountPopulator{
+class GroundFire extends VariableAmountPopulator {
 	/** @var ChunkManager */
 	private $level;
-	
+
 	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
 		$this->level = $level;
 		$amount = $this->getAmount($random);
@@ -44,11 +44,6 @@ class GroundFire extends VariableAmountPopulator{
 		}
 	}
 
-	private function canGroundFireStay($x, $y, $z){
-		$b = $this->level->getBlockIdAt($x, $y, $z);
-		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === 87;
-	}
-
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 0; $y <= 127; ++$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
@@ -58,5 +53,11 @@ class GroundFire extends VariableAmountPopulator{
 		}
 
 		return $y === 0 ? -1 : $y;
+	}
+
+	private function canGroundFireStay($x, $y, $z){
+		$b = $this->level->getBlockIdAt($x, $y, $z);
+
+		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === 87;
 	}
 }

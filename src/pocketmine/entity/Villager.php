@@ -27,7 +27,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class Villager extends Creature implements NPC, Ageable{
+class Villager extends Creature implements NPC, Ageable {
 	const PROFESSION_FARMER = 0;
 	const PROFESSION_LIBRARIAN = 1;
 	const PROFESSION_PRIEST = 2;
@@ -43,10 +43,6 @@ class Villager extends Creature implements NPC, Ageable{
 	public $length = 0.6;
 	public $height = 1.8;
 
-	public function getName() : string{
-		return "Villager";
-	}
-
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->Profession)){
 			$nbt->Profession = new ByteTag("Profession", mt_rand(0, 4));
@@ -57,11 +53,14 @@ class Villager extends Creature implements NPC, Ageable{
 		$this->setDataProperty(self::DATA_PROFESSION_ID, self::DATA_TYPE_BYTE, $this->getProfession());
 	}
 
-	protected function initEntity(){
-		parent::initEntity();
-		if(!isset($this->namedtag->Profession)){
-			$this->setProfession(self::PROFESSION_FARMER);
-		}
+	public function getProfession() : int{
+		$pro = (int) $this->namedtag["Profession"];
+
+		return min(4, max(0, $pro));
+	}
+
+	public function getName() : string{
+		return "Villager";
 	}
 
 	public function spawnTo(Player $player){
@@ -82,6 +81,17 @@ class Villager extends Creature implements NPC, Ageable{
 		parent::spawnTo($player);
 	}
 
+	public function isBaby(){
+		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
+		if(!isset($this->namedtag->Profession)){
+			$this->setProfession(self::PROFESSION_FARMER);
+		}
+	}
+
 	/**
 	 * Sets the villager profession
 	 *
@@ -89,14 +99,5 @@ class Villager extends Creature implements NPC, Ageable{
 	 */
 	public function setProfession(int $profession){
 		$this->namedtag->Profession = new ByteTag("Profession", $profession);
-	}
-
-	public function getProfession() : int{
-		$pro = (int) $this->namedtag["Profession"];
-		return min(4, max(0, $pro));
-	}
-
-	public function isBaby(){
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
 	}
 }

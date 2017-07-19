@@ -27,9 +27,9 @@ use pocketmine\level\generator\normal\object\OreType;
 use pocketmine\level\generator\object\Object;
 use pocketmine\utils\Random;
 
-class NetherOre extends Object{
-	private $random;
+class NetherOre extends Object {
 	public $type;
+	private $random;
 
 	public function __construct(Random $random, OreType $type){
 		$this->type = $type;

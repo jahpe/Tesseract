@@ -43,10 +43,9 @@ use pocketmine\network\protocol\ExplodePacket;
 
 use pocketmine\utils\Random;
 
-class Explosion{
+class Explosion {
 
-	private $rays = 16; //Rays
-	public $level;
+		public $level; //Rays
 	public $source;
 	public $size;
 	/**
@@ -54,6 +53,7 @@ class Explosion{
 	 */
 	public $affectedBlocks = [];
 	public $stepLen = 0.3;
+private $rays = 16;
 	/** @var Entity|Block */
 	private $what;
 	private $dropItem;

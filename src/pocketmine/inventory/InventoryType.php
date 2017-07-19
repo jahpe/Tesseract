@@ -24,7 +24,7 @@ namespace pocketmine\inventory;
 /**
  * Saves all the information regarding default inventory sizes and types
  */
-class InventoryType{
+class InventoryType {
 	const CHEST = 0;
 	const DOUBLE_CHEST = 1;
 	const PLAYER = 2;
@@ -48,6 +48,17 @@ class InventoryType{
 	private $size;
 	private $title;
 	private $typeId;
+
+	/**
+	 * @param int    $defaultSize
+	 * @param string $defaultTitle
+	 * @param int    $typeId
+	 */
+	private function __construct($defaultSize, $defaultTitle, $typeId = 0){
+		$this->size = $defaultSize;
+		$this->title = $defaultTitle;
+		$this->typeId = $typeId;
+	}
 
 	/**
 	 * @param $index
@@ -79,17 +90,6 @@ class InventoryType{
 		static::$default[static::BEACON] = new InventoryType(0, "Beacon", 13);
 
 		static::$default[static::PLAYER_FLOATING] = new InventoryType(36, "Floating", null); //Mirror all slots of main inventory (needed for large item pickups)
-	}
-
-	/**
-	 * @param int    $defaultSize
-	 * @param string $defaultTitle
-	 * @param int    $typeId
-	 */
-	private function __construct($defaultSize, $defaultTitle, $typeId = 0){
-		$this->size = $defaultSize;
-		$this->title = $defaultTitle;
-		$this->typeId = $typeId;
 	}
 
 	/**

@@ -23,7 +23,7 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-class CommandStepPacket extends DataPacket{
+class CommandStepPacket extends DataPacket {
 
 	const NETWORK_ID = Info::COMMAND_STEP_PACKET;
 

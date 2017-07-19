@@ -22,7 +22,7 @@
 namespace pocketmine\wizard;
 
 
-class InstallerLang{
+class InstallerLang {
 	public static $languages = [
 		"eng" => "English",
 		"chs" => "简体中文",
@@ -69,10 +69,6 @@ class InstallerLang{
 
 	}
 
-	public function getLang(){
-		return ($this->lang);
-	}
-
 	public function loadLang($langfile, $lang = "en"){
 		$this->texts[$lang] = [];
 		$texts = explode("\n", str_replace(["\r", "\\/\\/"], ["", "//"], file_get_contents($langfile)));
@@ -84,6 +80,14 @@ class InstallerLang{
 			$line = explode("=", $line);
 			$this->texts[$lang][trim(array_shift($line))] = trim(str_replace(["\\n", "\\N",], "\n", implode("=", $line)));
 		}
+	}
+
+	public function getLang(){
+		return ($this->lang);
+	}
+
+	public function __get($name){
+		return $this->get($name);
 	}
 
 	public function get($name, $search = [], $replace = []){
@@ -98,10 +102,6 @@ class InstallerLang{
 		}else{
 			return $this->texts[$this->lang][$name];
 		}
-	}
-
-	public function __get($name){
-		return $this->get($name);
 	}
 
 }

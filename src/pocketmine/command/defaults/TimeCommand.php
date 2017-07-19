@@ -28,7 +28,7 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class TimeCommand extends VanillaCommand{
+class TimeCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(
@@ -58,6 +58,7 @@ class TimeCommand extends VanillaCommand{
 				$level->checkTime();
 			}
 			Command::broadcastCommandMessage($sender, "Restarted the time");
+
 			return true;
 		}elseif($args[0] === "stop"){
 			if(!$sender->hasPermission("pocketmine.command.time.stop")){
@@ -71,6 +72,7 @@ class TimeCommand extends VanillaCommand{
 				$level->checkTime();
 			}
 			Command::broadcastCommandMessage($sender, "Stopped the time");
+
 			return true;
 		}elseif($args[0] === "query"){
 			if(!$sender->hasPermission("pocketmine.command.time.query")){
@@ -84,6 +86,7 @@ class TimeCommand extends VanillaCommand{
 				$level = $sender->getServer()->getDefaultLevel();
 			}
 			$sender->sendMessage(new TranslationContainer("commands.time.query", [$level->getTime()]));
+
 			return true;
 		}
 

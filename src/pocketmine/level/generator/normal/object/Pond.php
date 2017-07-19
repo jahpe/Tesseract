@@ -26,9 +26,9 @@ use pocketmine\level\ChunkManager;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
-class Pond{
-	private $random;
+class Pond {
 	public $type;
+	private $random;
 
 	public function __construct(Random $random, Block $type){
 		$this->type = $type;

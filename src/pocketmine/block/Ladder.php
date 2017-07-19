@@ -28,7 +28,7 @@ use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
-class Ladder extends Transparent{
+class Ladder extends Transparent {
 
 	protected $id = self::LADDER;
 
@@ -48,7 +48,7 @@ class Ladder extends Transparent{
 		return false;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.4;
 	}
 
@@ -57,7 +57,56 @@ class Ladder extends Transparent{
 		$entity->onGround = true;
 	}
 
-	protected function recalculateBoundingBox() {
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		if($target->isTransparent() === false){
+			$faces = [
+				2 => 2,
+				3 => 3,
+				4 => 4,
+				5 => 5,
+			];
+			if(isset($faces[$face])){
+				$this->meta = $faces[$face];
+				$this->getLevel()->setBlock($block, $this, true, true);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function onUpdate($type){
+		$faces = [
+			2 => 3,
+			3 => 2,
+			4 => 5,
+			5 => 4,
+		];
+		if($type === Level::BLOCK_UPDATE_NORMAL){
+			if(isset($faces[$this->meta])){
+				if($this->getSide($faces[$this->meta])->getId() === self::AIR){
+					$this->getLevel()->useBreakOn($this);
+				}
+
+				return Level::BLOCK_UPDATE_NORMAL;
+			}
+		}
+
+		return false;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
+	}
+
+	public function getDrops(Item $item) : array{
+		return [
+			[$this->id, 0, 1],
+		];
+	}
+
+	protected function recalculateBoundingBox(){
 
 		$f = 0.1875;
 
@@ -100,53 +149,5 @@ class Ladder extends Transparent{
 		}
 
 		return null;
-	}
-
-
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($target->isTransparent() === false){
-			$faces = [
-				2 => 2,
-				3 => 3,
-				4 => 4,
-				5 => 5,
-			];
-			if(isset($faces[$face])){
-				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($block, $this, true, true);
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public function onUpdate($type){
-		$faces = [
-			2 => 3,
-			3 => 2,
-			4 => 5,
-			5 => 4,
-		];
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if(isset($faces[$this->meta])) {
-				if ($this->getSide($faces[$this->meta])->getId() === self::AIR) {
-					$this->getLevel()->useBreakOn($this);
-				}
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
-		return false;
-	}
-	
-	public function getToolType(){
-		return Tool::TYPE_AXE;
-	}
-
-	public function getDrops(Item $item) : array {
-		return [
-			[$this->id, 0, 1],
-		];
 	}
 }

@@ -17,6 +17,7 @@
  * @link https://itxtech.org
  *
  */
+
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
@@ -27,7 +28,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 
-class ItemFrame extends Spawnable{
+class ItemFrame extends Spawnable {
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->ItemRotation)){
@@ -39,18 +40,6 @@ class ItemFrame extends Spawnable{
 		}
 
 		parent::__construct($level, $nbt);
-	}
-
-	public function hasItem() : bool{
-		return $this->getItem()->getId() !== Item::AIR;
-	}
-
-	public function getItem() : Item{
-		if(isset($this->namedtag->Item)){
-			return Item::nbtDeserialize($this->namedtag->Item);
-		}else{
-			return Item::get(Item::AIR);
-		}
 	}
 
 	public function setItem(Item $item = null){
@@ -92,7 +81,20 @@ class ItemFrame extends Spawnable{
 		if($this->hasItem()){
 			$tag->Item = $this->namedtag->Item;
 		}
+
 		return $tag;
+	}
+
+	public function hasItem() : bool{
+		return $this->getItem()->getId() !== Item::AIR;
+	}
+
+	public function getItem() : Item{
+		if(isset($this->namedtag->Item)){
+			return Item::nbtDeserialize($this->namedtag->Item);
+		}else{
+			return Item::get(Item::AIR);
+		}
 	}
 
 }

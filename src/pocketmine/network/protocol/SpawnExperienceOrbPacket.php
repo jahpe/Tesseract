@@ -1,10 +1,11 @@
 <?php
+
 namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
 
-class SpawnExperienceOrbPacket extends DataPacket{
+class SpawnExperienceOrbPacket extends DataPacket {
 
 	const NETWORK_ID = Info::SPAWN_EXPERIENCE_ORB_PACKET;
 

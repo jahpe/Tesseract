@@ -29,7 +29,7 @@ use pocketmine\level\generator\normal\populator\Mushroom;
 use pocketmine\level\generator\normal\populator\SugarCane;
 use pocketmine\level\generator\normal\populator\TallGrass;
 
-class SwampBiome extends GrassyBiome{
+class SwampBiome extends GrassyBiome {
 
 	public function __construct(){
 		parent::__construct();

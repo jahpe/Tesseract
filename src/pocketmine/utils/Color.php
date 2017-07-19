@@ -43,13 +43,17 @@ class Color {
 	const COLOR_DYE_MAGENTA = 13;
 	const COLOR_DYE_ORANGE = 14;
 	const COLOR_DYE_WHITE = 15;
-
+	/** @var \SplFixedArray */
+	public static $dyeColors = null;
 	private $red = 0;
 	private $green = 0;
 	private $blue = 0;
 
-	/** @var \SplFixedArray */
-	public static $dyeColors = null;
+	public function __construct($r, $g, $b){
+		$this->red = $r;
+		$this->green = $g;
+		$this->blue = $b;
+	}
 
 	public static function init(){
 		if(self::$dyeColors === null){
@@ -88,32 +92,28 @@ class Color {
 			$tb += $c->getBlue();
 			++$count;
 		}
+
 		return Color::getRGB($tr / $count, $tg / $count, $tb / $count);
-	}
-
-	public static function getDyeColor($id){
-		if(isset(self::$dyeColors[$id])){
-			return clone self::$dyeColors[$id];
-		}
-		return Color::getRGB(0, 0, 0);
-	}
-
-	public function __construct($r, $g, $b){
-		$this->red = $r;
-		$this->green = $g;
-		$this->blue = $b;
 	}
 
 	public function getRed(){
 		return (int) $this->red;
 	}
 
+	public function getGreen(){
+		return (int) $this->green;
+	}
+
 	public function getBlue(){
 		return (int) $this->blue;
 	}
 
-	public function getGreen(){
-		return (int) $this->green;
+	public static function getDyeColor($id){
+		if(isset(self::$dyeColors[$id])){
+			return clone self::$dyeColors[$id];
+		}
+
+		return Color::getRGB(0, 0, 0);
 	}
 
 	public function getColorCode(){

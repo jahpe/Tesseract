@@ -29,7 +29,7 @@ use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
-class Cake extends Transparent implements FoodSource{
+class Cake extends Transparent implements FoodSource {
 
 	protected $id = self::CAKE_BLOCK;
 
@@ -47,20 +47,6 @@ class Cake extends Transparent implements FoodSource{
 
 	public function getName() : string{
 		return "Cake Block";
-	}
-
-	protected function recalculateBoundingBox(){
-
-		$f = (1 + $this->getDamage() * 2) / 16;
-
-		return new AxisAlignedBB(
-			$this->x + $f,
-			$this->y,
-			$this->z + 0.0625,
-			$this->x + 1 - 0.0625,
-			$this->y + 0.5,
-			$this->z + 1 - 0.0625
-		);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
@@ -96,6 +82,7 @@ class Cake extends Transparent implements FoodSource{
 
 			if(!$ev->isCancelled()){
 				$this->getLevel()->setBlock($this, $ev->getResidue());
+
 				return true;
 			}
 		}
@@ -117,6 +104,7 @@ class Cake extends Transparent implements FoodSource{
 		if($clone->meta >= 0x06){
 			$clone = new Air();
 		}
+
 		return $clone;
 	}
 
@@ -125,5 +113,19 @@ class Cake extends Transparent implements FoodSource{
 	 */
 	public function getAdditionalEffects() : array{
 		return [];
+	}
+
+	protected function recalculateBoundingBox(){
+
+		$f = (1 + $this->getDamage() * 2) / 16;
+
+		return new AxisAlignedBB(
+			$this->x + $f,
+			$this->y,
+			$this->z + 0.0625,
+			$this->x + 1 - 0.0625,
+			$this->y + 0.5,
+			$this->z + 1 - 0.0625
+		);
 	}
 }

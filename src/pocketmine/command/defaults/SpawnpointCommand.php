@@ -28,7 +28,7 @@ use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class SpawnpointCommand extends VanillaCommand{
+class SpawnpointCommand extends VanillaCommand {
 
 	public function __construct($name){
 		parent::__construct(
@@ -83,6 +83,7 @@ class SpawnpointCommand extends VanillaCommand{
 				$target->setSpawn($pos);
 
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
+
 				return true;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");

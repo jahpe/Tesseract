@@ -27,7 +27,7 @@ use pocketmine\level\generator\normal\populator\MossStone;
 use pocketmine\level\generator\normal\populator\Mushroom;
 use pocketmine\level\generator\normal\populator\Tree;
 
-class TaigaBiome extends SnowyBiome{
+class TaigaBiome extends SnowyBiome {
 
 	public function __construct(){
 		parent::__construct();

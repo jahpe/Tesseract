@@ -26,22 +26,23 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Server;
 
-class MelonStem extends Crops{
+class MelonStem extends Crops {
 
 	protected $id = self::MELON_STEM;
 
-	public function getName() : string{
-		return "Melon Stem";
-	}
-
 	public function __construct($meta = 0){
 		$this->meta = $meta;
+	}
+
+	public function getName() : string{
+		return "Melon Stem";
 	}
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent() === true){
 				$this->getLevel()->useBreakOn($this);
+
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
@@ -79,7 +80,7 @@ class MelonStem extends Crops{
 		return false;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::MELON_SEEDS, 0, mt_rand(0, 2)],
 		];

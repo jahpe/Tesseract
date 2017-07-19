@@ -9,7 +9,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class EnderPearl extends Projectile{
+class EnderPearl extends Projectile {
 	const NETWORK_ID = 87;
 
 	public $width = 0.25;
@@ -25,20 +25,6 @@ class EnderPearl extends Projectile{
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
-
-    public function teleportShooter(){
-	    if(!$this->hasTeleportedShooter){
-	        $this->hasTeleportedShooter = true;
-            if($this->isAlive()) {
-                if ($this->shootingEntity instanceof Player and $this->y > 0) {
-                    $this->shootingEntity->attack(5, new EntityDamageEvent($this->shootingEntity, EntityDamageEvent::CAUSE_FALL, 5));
-                    $this->shootingEntity->teleport($this->getPosition());
-                }
-
-                $this->kill();
-            }
- 		}
- 	}
 
 	public function onUpdate($currentTick){
 		if($this->closed){
@@ -59,6 +45,19 @@ class EnderPearl extends Projectile{
 		return $hasUpdate;
 	}
 
+	public function teleportShooter(){
+		if(!$this->hasTeleportedShooter){
+			$this->hasTeleportedShooter = true;
+			if($this->isAlive()){
+				if($this->shootingEntity instanceof Player and $this->y > 0){
+					$this->shootingEntity->attack(5, new EntityDamageEvent($this->shootingEntity, EntityDamageEvent::CAUSE_FALL, 5));
+					$this->shootingEntity->teleport($this->getPosition());
+				}
+
+				$this->kill();
+			}
+		}
+	}
 
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();

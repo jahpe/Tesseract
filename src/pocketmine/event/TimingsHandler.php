@@ -26,7 +26,7 @@ use pocketmine\entity\Living;
 use pocketmine\plugin\PluginManager;
 use pocketmine\Server;
 
-class TimingsHandler{
+class TimingsHandler {
 
 	/** @var TimingsHandler[] */
 	private static $HANDLERS = [];
@@ -98,6 +98,16 @@ class TimingsHandler{
 		}
 	}
 
+	public function reset(){
+		$this->count = 0;
+		$this->curCount = 0;
+		$this->violations = 0;
+		$this->curTickTotal = 0;
+		$this->totalTime = 0;
+		$this->start = 0;
+		$this->timingDepth = 0;
+	}
+
 	public static function tick($measure = true){
 		if(PluginManager::$useTimings){
 			if($measure){
@@ -147,16 +157,6 @@ class TimingsHandler{
 				$this->parent->stopTiming();
 			}
 		}
-	}
-
-	public function reset(){
-		$this->count = 0;
-		$this->curCount = 0;
-		$this->violations = 0;
-		$this->curTickTotal = 0;
-		$this->totalTime = 0;
-		$this->start = 0;
-		$this->timingDepth = 0;
 	}
 
 	public function remove(){

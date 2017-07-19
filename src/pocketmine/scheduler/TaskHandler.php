@@ -23,30 +23,23 @@ namespace pocketmine\scheduler;
 
 use pocketmine\event\Timings;
 
-class TaskHandler{
-
-	/** @var Task */
-	protected $task;
-
-	/** @var int */
-	protected $taskId;
-
-	/** @var int */
-	protected $delay;
-
-	/** @var int */
-	protected $period;
-
-	/** @var int */
-	protected $nextRun;
-
-	/** @var bool */
-	protected $cancelled = false;
+class TaskHandler {
 
 	/** @var \pocketmine\event\TimingsHandler */
 	public $timings;
-
 	public $timingName = null;
+	/** @var Task */
+	protected $task;
+	/** @var int */
+	protected $taskId;
+	/** @var int */
+	protected $delay;
+	/** @var int */
+	protected $period;
+	/** @var int */
+	protected $nextRun;
+	/** @var bool */
+	protected $cancelled = false;
 
 	/**
 	 * @param string $timingName
@@ -63,13 +56,6 @@ class TaskHandler{
 		$this->timingName = $timingName === null ? "Unknown" : $timingName;
 		$this->timings = Timings::getPluginTaskTimings($this, $period);
 		$this->task->setHandler($this);
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isCancelled(){
-		return $this->cancelled === true;
 	}
 
 	/**
@@ -137,6 +123,13 @@ class TaskHandler{
 			$this->task->onCancel();
 		}
 		$this->remove();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isCancelled(){
+		return $this->cancelled === true;
 	}
 
 	public function remove(){

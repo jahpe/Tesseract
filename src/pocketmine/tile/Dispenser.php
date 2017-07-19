@@ -40,7 +40,7 @@ use pocketmine\nbt\tag\IntTag;
 
 use pocketmine\nbt\tag\StringTag;
 
-class Dispenser extends Spawnable implements InventoryHolder, Container, Nameable{
+class Dispenser extends Spawnable implements InventoryHolder, Container, Nameable {
 
 	/** @var DispenserInventory */
 	protected $inventory;
@@ -58,28 +58,27 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 		$this->scheduleUpdate();
 	}
 
-	public function close(){
-		if($this->closed === false){
-			foreach($this->getInventory()->getViewers() as $player){
-				$player->removeWindow($this->getInventory());
-			}
-			parent::close();
-		}
-	}
-
-	public function saveNBT(){
-		$this->namedtag->Items = new ListTag("Items", []);
-		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
-		for($index = 0; $index < $this->getSize(); ++$index){
-			$this->setItem($index, $this->inventory->getItem($index));
-		}
-	}
-
 	/**
 	 * @return int
 	 */
 	public function getSize(){
 		return 9;
+	}
+
+	/**
+	 * This method should not be used by plugins, use the Inventory
+	 *
+	 * @param int $index
+	 *
+	 * @return Item
+	 */
+	public function getItem($index){
+		$i = $this->getSlotIndex($index);
+		if($i < 0){
+			return Item::get(Item::AIR, 0, 0);
+		}else{
+			return Item::nbtDeserialize($this->namedtag->Items[$i]);
+		}
 	}
 
 	/**
@@ -97,19 +96,27 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 		return -1;
 	}
 
+	public function close(){
+		if($this->closed === false){
+			foreach($this->getInventory()->getViewers() as $player){
+				$player->removeWindow($this->getInventory());
+			}
+			parent::close();
+		}
+	}
+
 	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int $index
-	 *
-	 * @return Item
+	 * @return DispenserInventory
 	 */
-	public function getItem($index){
-		$i = $this->getSlotIndex($index);
-		if($i < 0){
-			return Item::get(Item::AIR, 0, 0);
-		}else{
-			return Item::nbtDeserialize($this->namedtag->Items[$i]);
+	public function getInventory(){
+		return $this->inventory;
+	}
+
+	public function saveNBT(){
+		$this->namedtag->Items = new ListTag("Items", []);
+		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
+		for($index = 0; $index < $this->getSize(); ++$index){
+			$this->setItem($index, $this->inventory->getItem($index));
 		}
 	}
 
@@ -142,48 +149,18 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 		return true;
 	}
 
-	/**
-	 * @return DispenserInventory
-	 */
-	public function getInventory(){
-		return $this->inventory;
-	}
-
 	public function getName() : string{
 		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Dispenser";
-	}
-
-	public function hasName(){
-		return isset($this->namedtag->CustomName);
 	}
 
 	public function setName($str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);
+
 			return;
 		}
 
 		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-	public function getMotion(){
-		$meta = $this->getBlock()->getDamage();
-		switch($meta){
-			case Vector3::SIDE_DOWN:
-				return [0, -1, 0];
-			case Vector3::SIDE_UP:
-				return [0, 1, 0];
-			case Vector3::SIDE_NORTH:
-				return [0, 0, -1];
-			case Vector3::SIDE_SOUTH:
-				return [0, 0, 1];
-			case Vector3::SIDE_WEST:
-				return [-1, 0, 0];
-			case Vector3::SIDE_EAST:
-				return [1, 0, 0];
-			default:
-				return [0, 0, 0];
-		}
 	}
 
 	public function activate(){
@@ -209,19 +186,19 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 			$f = 1.5;
 			$nbt = new CompoundTag("", [
 				"Pos" => new ListTag("Pos", [
-							new DoubleTag("", $this->x + $motion[0] * 2 + 0.5),
-							new DoubleTag("", $this->y + ($motion[1] > 0 ? $motion[1] : 0.5)),
-							new DoubleTag("", $this->z + $motion[2] * 2 + 0.5)
-						]),
-						"Motion" => new ListTag("Motion", [
-							new DoubleTag("", $motion[0]),
-							new DoubleTag("", $motion[1]),
-							new DoubleTag("", $motion[2])
-						]),
-						"Rotation" => new ListTag("Rotation", [
-							new FloatTag("", lcg_value() * 360),
-							new FloatTag("", 0)
-						]),
+					new DoubleTag("", $this->x + $motion[0] * 2 + 0.5),
+					new DoubleTag("", $this->y + ($motion[1] > 0 ? $motion[1] : 0.5)),
+					new DoubleTag("", $this->z + $motion[2] * 2 + 0.5)
+				]),
+				"Motion" => new ListTag("Motion", [
+					new DoubleTag("", $motion[0]),
+					new DoubleTag("", $motion[1]),
+					new DoubleTag("", $motion[2])
+				]),
+				"Rotation" => new ListTag("Rotation", [
+					new FloatTag("", lcg_value() * 360),
+					new FloatTag("", 0)
+				]),
 			]);
 			switch($needItem->getId()){
 				case Item::ARROW:
@@ -259,6 +236,26 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 		}
 	}
 
+	public function getMotion(){
+		$meta = $this->getBlock()->getDamage();
+		switch($meta){
+			case Vector3::SIDE_DOWN:
+				return [0, -1, 0];
+			case Vector3::SIDE_UP:
+				return [0, 1, 0];
+			case Vector3::SIDE_NORTH:
+				return [0, 0, -1];
+			case Vector3::SIDE_SOUTH:
+				return [0, 0, 1];
+			case Vector3::SIDE_WEST:
+				return [-1, 0, 0];
+			case Vector3::SIDE_EAST:
+				return [1, 0, 0];
+			default:
+				return [0, 0, 0];
+		}
+	}
+
 	public function getSpawnCompound(){
 		$c = new CompoundTag("", [
 			new StringTag("id", Tile::DISPENSER),
@@ -272,5 +269,9 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 		}
 
 		return $c;
+	}
+
+	public function hasName(){
+		return isset($this->namedtag->CustomName);
 	}
 }

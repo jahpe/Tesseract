@@ -30,7 +30,7 @@ use pocketmine\scheduler\AsyncTask;
 
 use pocketmine\utils\Random;
 
-class GeneratorRegisterTask extends AsyncTask{
+class GeneratorRegisterTask extends AsyncTask {
 
 	public $generator;
 	public $settings;

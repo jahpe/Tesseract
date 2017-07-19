@@ -37,7 +37,7 @@ use pocketmine\level\generator\normal\populator\Populator;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
-class Flat extends Generator{
+class Flat extends Generator {
 	/** @var ChunkManager */
 	private $level;
 	/** @var Chunk */
@@ -47,14 +47,6 @@ class Flat extends Generator{
 	/** @var Populator[] */
 	private $populators = [];
 	private $structure, $chunks, $options, $floorLevel, $preset;
-
-	public function getSettings(){
-		return $this->options;
-	}
-
-	public function getName() : string{
-		return "flat";
-	}
 
 	public function __construct(array $options = []){
 		$this->preset = "2;7,2x3,2;1;";
@@ -76,6 +68,42 @@ class Flat extends Generator{
 			$this->populators[] = $ores;
 		}
 
+	}
+
+	public function getSettings(){
+		return $this->options;
+	}
+
+	public function getName() : string{
+		return "flat";
+	}
+
+	public function init(ChunkManager $level, Random $random){
+		$this->level = $level;
+		$this->random = $random;
+
+		/*
+		  // Commented out : We want to delay this
+		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
+			$this->parsePreset($this->options["preset"]);
+		}else{
+			$this->parsePreset($this->preset);
+		}
+		*/
+	}
+
+	public function generateChunk($chunkX, $chunkZ){
+		if($this->chunk === null){
+			if(isset($this->options["preset"]) and $this->options["preset"] != ""){
+				$this->parsePreset($this->options["preset"], $chunkX, $chunkZ);
+			}else{
+				$this->parsePreset($this->preset, $chunkX, $chunkZ);
+			}
+		}
+		$chunk = clone $this->chunk;
+		$chunk->setX($chunkX);
+		$chunk->setZ($chunkZ);
+		$this->level->setChunk($chunkX, $chunkZ, $chunk);
 	}
 
 	protected function parsePreset($preset, $chunkX, $chunkZ){
@@ -132,34 +160,6 @@ class Flat extends Generator{
 			}
 			$this->options[$option] = $params;
 		}
-	}
-
-	public function init(ChunkManager $level, Random $random){
-		$this->level = $level;
-		$this->random = $random;
-
-		/*
-		  // Commented out : We want to delay this
-		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
-			$this->parsePreset($this->options["preset"]);
-		}else{
-			$this->parsePreset($this->preset);
-		}
-		*/
-	}
-
-	public function generateChunk($chunkX, $chunkZ){
-		if($this->chunk === null){
-			if(isset($this->options["preset"]) and $this->options["preset"] != ""){
-				$this->parsePreset($this->options["preset"], $chunkX, $chunkZ);
-			}else{
-				$this->parsePreset($this->preset, $chunkX, $chunkZ);
-			}
-		}
-		$chunk = clone $this->chunk;
-		$chunk->setX($chunkX);
-		$chunk->setZ($chunkZ);
-		$this->level->setChunk($chunkX, $chunkZ, $chunk);
 	}
 
 	public function populateChunk($chunkX, $chunkZ){

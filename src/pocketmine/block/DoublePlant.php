@@ -25,16 +25,15 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
-class DoublePlant extends Flowable{
+class DoublePlant extends Flowable {
 
-	protected $id = self::DOUBLE_PLANT;
-	
 	const SUNFLOWER = 0;
 	const LILAC = 1;
 	const DOUBLE_TALLGRASS = 2;
 	const LARGE_FERN = 3;
 	const ROSE_BUSH = 4;
 	const PEONY = 5;
+	protected $id = self::DOUBLE_PLANT;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
@@ -53,6 +52,7 @@ class DoublePlant extends Flowable{
 			4 => "Rose Bush",
 			5 => "Peony"
 		];
+
 		return $names[$this->meta & 0x07];
 	}
 
@@ -74,8 +74,10 @@ class DoublePlant extends Flowable{
 		if($down->getId() === self::GRASS or $down->getId() === self::DIRT){
 			$this->getLevel()->setBlock($block, $this, true);
 			$this->getLevel()->setBlock($up, Block::get($this->id, $this->meta ^ 0x08), true);
+
 			return true;
 		}
+
 		return false;
 	}
 

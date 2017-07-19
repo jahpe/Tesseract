@@ -29,7 +29,7 @@ use pocketmine\Server;
  * Simple script loader, not for plugin development
  * For an example see https://gist.github.com/shoghicp/516105d470cf7d140757
  */
-class ScriptPluginLoader implements PluginLoader{
+class ScriptPluginLoader implements PluginLoader {
 
 	/** @var Server */
 	private $server;
@@ -99,7 +99,7 @@ class ScriptPluginLoader implements PluginLoader{
 
 				if($key === "notscript"){
 					return null;
- 				}
+				}
 
 				$data[$key] = $content;
 			}
@@ -116,15 +116,6 @@ class ScriptPluginLoader implements PluginLoader{
 	}
 
 	/**
-	 * Returns the filename patterns that this loader accepts
-	 *
-	 * @return array|string
-     */
-	public function getPluginFilters(){
-		return "/\\.php$/i";
-	}
-
-	/**
 	 * @param PluginBase        $plugin
 	 * @param PluginDescription $description
 	 * @param string            $dataFolder
@@ -133,6 +124,15 @@ class ScriptPluginLoader implements PluginLoader{
 	private function initPlugin(PluginBase $plugin, PluginDescription $description, $dataFolder, $file){
 		$plugin->init($this, $this->server, $description, $dataFolder, $file);
 		$plugin->onLoad();
+	}
+
+	/**
+	 * Returns the filename patterns that this loader accepts
+	 *
+	 * @return array|string
+	 */
+	public function getPluginFilters(){
+		return "/\\.php$/i";
 	}
 
 	/**

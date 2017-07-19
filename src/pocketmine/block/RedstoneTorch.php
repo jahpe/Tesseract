@@ -26,7 +26,7 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 
-class RedstoneTorch extends Torch{
+class RedstoneTorch extends Torch {
 
 	protected $id = self::REDSTONE_TORCH;
 	protected $ignore = "";
@@ -59,10 +59,10 @@ class RedstoneTorch extends Torch{
 
 			return true;
 		}elseif(
-				$below->isTransparent() === false or $below->getId() === self::FENCE or
-				$below->getId() === self::COBBLE_WALL or
-				$below->getId() == Block::REDSTONE_LAMP or
-				$below->getId() == Block::LIT_REDSTONE_LAMP
+			$below->isTransparent() === false or $below->getId() === self::FENCE or
+			$below->getId() === self::COBBLE_WALL or
+			$below->getId() == Block::REDSTONE_LAMP or
+			$below->getId() == Block::LIT_REDSTONE_LAMP
 		){
 			$this->meta = 0;
 			$this->getLevel()->setBlock($block, $this, true, true);

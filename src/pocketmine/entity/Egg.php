@@ -26,7 +26,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\network\protocol\AddEntityPacket;
 
-class Egg extends Projectile{
+class Egg extends Projectile {
 	const NETWORK_ID = 82;
 
 	public $width = 0.25;

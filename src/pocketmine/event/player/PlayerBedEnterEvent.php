@@ -25,7 +25,7 @@ use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
+class PlayerBedEnterEvent extends PlayerEvent implements Cancellable {
 
 	public static $handlerList = null;
 
@@ -42,7 +42,7 @@ class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * @return EventName|string
-     */
+	 */
 	public function getName(){
 		return "PlayerBedEnterEvent";
 	}

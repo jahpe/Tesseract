@@ -26,7 +26,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class BlueWitherSkull extends Projectile{
+class BlueWitherSkull extends Projectile {
 	const NETWORK_ID = 89;
 
 	public $width = 0.25;

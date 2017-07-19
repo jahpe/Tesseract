@@ -23,12 +23,13 @@
  * Set-up wizard used on the first run
  * Can be disabled with --no-wizard
  */
+
 namespace pocketmine\wizard;
 
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 
-class Installer{
+class Installer {
 	const DEFAULT_NAME = "Minecraft: PE Server";
 	const DEFAULT_PORT = 19132;
 	const DEFAULT_MEMORY = 512;
@@ -36,7 +37,7 @@ class Installer{
 	const DEFAULT_GAMEMODE = 0;
 	const DEFAULT_LEVEL_NAME = "world";
 	const DEFAULT_LEVEL_TYPE = "DEFAULT";
-	
+
 	const LEVEL_TYPES = [
 		"DEFAULT",
 		"FLAT",
@@ -87,8 +88,10 @@ class Installer{
 		$this->endWizard();
 	}
 
-	public function getDefaultLang(){
-		return $this->defaultLang;
+	private function getInput($default = ""){
+		$input = trim(fgets(STDIN));
+
+		return $input === "" ? $default : $input;
 	}
 
 	private function showLicense(){
@@ -134,14 +137,14 @@ LICENSE;
 			}
 		}while($port <= 0 or $port > 65535);
 		$config->set("server-port", $port);
-		
+
 		echo "[*] " . $this->lang->online_mode_info . "\n";
 		echo "[?] " . $this->lang->online_mode . " (y/N): ";
 		$config->set("online-mode", strtolower($this->getInput("y")) == "y");
-		
+
 		echo "[?] " . $this->lang->level_name . " (" . self::DEFAULT_LEVEL_NAME . "): ";
 		$config->set("level-name", $this->getInput(self::DEFAULT_LEVEL_NAME));
-		
+
 		do{
 			echo "[?] " . $this->lang->level_type . " (" . self::DEFAULT_LEVEL_TYPE . "): ";
 			$type = strtoupper((string) $this->getInput(self::DEFAULT_LEVEL_TYPE));
@@ -166,7 +169,7 @@ LICENSE;
 		}else{
 			$config->set("spawn-protection", 16);
 		}
-		
+
 		echo "[?] " . $this->lang->announce_player_achievements . " (y/N): ";
 		if(strtolower($this->getInput("n")) === "y"){
 			$config->set("announce-player-achievements", "on");
@@ -240,10 +243,8 @@ LICENSE;
 		sleep(4);
 	}
 
-	private function getInput($default = ""){
-		$input = trim(fgets(STDIN));
-
-		return $input === "" ? $default : $input;
+	public function getDefaultLang(){
+		return $this->defaultLang;
 	}
 
 

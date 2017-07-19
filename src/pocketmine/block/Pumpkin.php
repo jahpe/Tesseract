@@ -31,7 +31,7 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 
-class Pumpkin extends Solid{
+class Pumpkin extends Solid {
 
 	protected $id = self::PUMPKIN;
 
@@ -39,10 +39,10 @@ class Pumpkin extends Solid{
 
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 1;
 	}
-	
+
 	public function isHelmet(){
 		return true;
 	}
@@ -60,68 +60,68 @@ class Pumpkin extends Solid{
 			$this->meta = ((int) $player->getDirection() + 5) % 4;
 		}
 		$this->getLevel()->setBlock($block, $this, true, true);
-		if($player != null) {
+		if($player != null){
 			$level = $this->getLevel();
-				$block0 = $level->getBlock($block->add(0,-1,0));
-				$block1 = $level->getBlock($block->add(0,-2,0));
-				if($block0->getId() == Item::SNOW_BLOCK and $block1->getId() == Item::SNOW_BLOCK) {
-					$level->setBlock($block, new Air());
-					$level->setBlock($block0, new Air());
-					$level->setBlock($block1, new Air());
-					$golem = new SnowGolem($player->getLevel(), new CompoundTag("", [
-						"Pos" => new ListTag("Pos", [
-							new DoubleTag("", $this->x),
-							new DoubleTag("", $this->y),
-							new DoubleTag("", $this->z)
-						]),
-						"Motion" => new ListTag("Motion", [
-							new DoubleTag("", 0),
-							new DoubleTag("", 0),
-							new DoubleTag("", 0)
-						]),
-						"Rotation" => new ListTag("Rotation", [
-							new FloatTag("", 0),
-							new FloatTag("", 0)
-						]),
-					]));
-					$golem->spawnToAll();
-				}
-				$block0 = $level->getBlock($block->add(0,-1,0));
-				$block1 = $level->getBlock($block->add(0,-2,0));
-				$block2 = $level->getBlock($block->add(-1,-1,0));
-				$block3 = $level->getBlock($block->add(1,-1,0));
-				$block4 = $level->getBlock($block->add(0,-1,-1));
-				$block5 = $level->getBlock($block->add(0,-1,1));
-				if($block0->getId() == Item::IRON_BLOCK and $block1->getId() == Item::IRON_BLOCK) {
-					if($block2->getId() == Item::IRON_BLOCK and $block3->getId() == Item::IRON_BLOCK and $block4->getId() == Item::AIR and $block5->getId() == Item::AIR) {
-						$level->setBlock($block2, new Air());
-						$level->setBlock($block3, new Air());
-					}elseif($block4->getId() == Item::IRON_BLOCK and $block5->getId() == Item::IRON_BLOCK and $block2->getId() == Item::AIR and $block3->getId() == Item::AIR){
-						$level->setBlock($block4, new Air());
-						$level->setBlock($block5, new Air());
-					}else return false;
-					$level->setBlock($block, new Air());
-					$level->setBlock($block0, new Air());
-					$level->setBlock($block1, new Air());
-					$golem = new IronGolem($player->getLevel(), new CompoundTag("", [
-						"Pos" => new ListTag("Pos", [
-							new DoubleTag("", $this->x),
-							new DoubleTag("", $this->y),
-							new DoubleTag("", $this->z)
-						]),
-						"Motion" => new ListTag("Motion", [
-							new DoubleTag("", 0),
-							new DoubleTag("", 0),
-							new DoubleTag("", 0)
-						]),
-						"Rotation" => new ListTag("Rotation", [
-							new FloatTag("", 0),
-							new FloatTag("", 0)
-						]),
-					]));
-					$golem->spawnToAll();
-				}
+			$block0 = $level->getBlock($block->add(0, -1, 0));
+			$block1 = $level->getBlock($block->add(0, -2, 0));
+			if($block0->getId() == Item::SNOW_BLOCK and $block1->getId() == Item::SNOW_BLOCK){
+				$level->setBlock($block, new Air());
+				$level->setBlock($block0, new Air());
+				$level->setBlock($block1, new Air());
+				$golem = new SnowGolem($player->getLevel(), new CompoundTag("", [
+					"Pos" => new ListTag("Pos", [
+						new DoubleTag("", $this->x),
+						new DoubleTag("", $this->y),
+						new DoubleTag("", $this->z)
+					]),
+					"Motion" => new ListTag("Motion", [
+						new DoubleTag("", 0),
+						new DoubleTag("", 0),
+						new DoubleTag("", 0)
+					]),
+					"Rotation" => new ListTag("Rotation", [
+						new FloatTag("", 0),
+						new FloatTag("", 0)
+					]),
+				]));
+				$golem->spawnToAll();
 			}
+			$block0 = $level->getBlock($block->add(0, -1, 0));
+			$block1 = $level->getBlock($block->add(0, -2, 0));
+			$block2 = $level->getBlock($block->add(-1, -1, 0));
+			$block3 = $level->getBlock($block->add(1, -1, 0));
+			$block4 = $level->getBlock($block->add(0, -1, -1));
+			$block5 = $level->getBlock($block->add(0, -1, 1));
+			if($block0->getId() == Item::IRON_BLOCK and $block1->getId() == Item::IRON_BLOCK){
+				if($block2->getId() == Item::IRON_BLOCK and $block3->getId() == Item::IRON_BLOCK and $block4->getId() == Item::AIR and $block5->getId() == Item::AIR){
+					$level->setBlock($block2, new Air());
+					$level->setBlock($block3, new Air());
+				}elseif($block4->getId() == Item::IRON_BLOCK and $block5->getId() == Item::IRON_BLOCK and $block2->getId() == Item::AIR and $block3->getId() == Item::AIR){
+					$level->setBlock($block4, new Air());
+					$level->setBlock($block5, new Air());
+				}else return false;
+				$level->setBlock($block, new Air());
+				$level->setBlock($block0, new Air());
+				$level->setBlock($block1, new Air());
+				$golem = new IronGolem($player->getLevel(), new CompoundTag("", [
+					"Pos" => new ListTag("Pos", [
+						new DoubleTag("", $this->x),
+						new DoubleTag("", $this->y),
+						new DoubleTag("", $this->z)
+					]),
+					"Motion" => new ListTag("Motion", [
+						new DoubleTag("", 0),
+						new DoubleTag("", 0),
+						new DoubleTag("", 0)
+					]),
+					"Rotation" => new ListTag("Rotation", [
+						new FloatTag("", 0),
+						new FloatTag("", 0)
+					]),
+				]));
+				$golem->spawnToAll();
+			}
+		}
 
 		return true;
 	}

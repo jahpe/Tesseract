@@ -69,7 +69,7 @@ use pocketmine\item\WoodenShovel;
 use pocketmine\item\WoodenSword;
 use pocketmine\Server;
 
-class Enchantment{
+class Enchantment {
 
 	const TYPE_INVALID = -1;
 
@@ -136,6 +136,20 @@ class Enchantment{
 
 	/** @var Enchantment[] */
 	protected static $enchantments;
+	private $id;
+	private $level = 1;
+	private $name;
+	private $rarity;
+	private $activationType;
+	private $slot;
+
+	private function __construct($id, $name, $rarity, $activationType, $slot){
+		$this->id = (int) $id;
+		$this->name = (string) $name;
+		$this->rarity = (int) $rarity;
+		$this->activationType = (int) $activationType;
+		$this->slot = (int) $slot;
+	}
 
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
@@ -170,43 +184,46 @@ class Enchantment{
 
 	}
 
+	public static function registerEnchantment($id, $name, $rarity, $activationType, $slot){
+		if(isset(self::$enchantments[$id])){
+			Server::getInstance()->getLogger()->debug("Unable to register enchantment with id $id.");
+
+			return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
+		}
+		self::$enchantments[$id] = new Enchantment($id, $name, $rarity, $activationType, $slot);
+
+		return new Enchantment($id, $name, $rarity, $activationType, $slot);
+	}
+
+	public static function getEnchantmentByName($name){
+		if(defined(Enchantment::class . "::TYPE_" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_" . strtoupper($name)));
+		}elseif(defined(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name)));
+		}elseif(defined(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name)));
+		}elseif(defined(Enchantment::class . "::TYPE_MINING_" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_MINING_" . strtoupper($name)));
+		}elseif(defined(Enchantment::class . "::TYPE_BOW_" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_BOW_" . strtoupper($name)));
+		}elseif(defined(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name)));
+		}else{
+			return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
+		}
+	}
+
 	/**
 	 * @param int $id
+	 *
 	 * @return $this
 	 */
 	public static function getEnchantment($id){
 		if(isset(self::$enchantments[$id])){
 			return clone self::$enchantments[(int) $id];
 		}
-		return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
-	}
-	
-	public static function registerEnchantment($id, $name, $rarity, $activationType, $slot){
-		if(isset(self::$enchantments[$id])){
-			Server::getInstance()->getLogger()->debug("Unable to register enchantment with id $id.");
-			return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
-		}
-		self::$enchantments[$id] = new Enchantment($id, $name, $rarity, $activationType, $slot);
-		return new Enchantment($id, $name, $rarity, $activationType, $slot); 
-	}
-		
 
-	public static function getEnchantmentByName($name){
-		if(defined(Enchantment::class . "::TYPE_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_" . strtoupper($name)));
-		}elseif(defined(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name))); 
-		}elseif(defined(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name))); 
-		}elseif(defined(Enchantment::class . "::TYPE_MINING_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_MINING_" . strtoupper($name))); 
-		}elseif(defined(Enchantment::class . "::TYPE_BOW_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_BOW_" . strtoupper($name))); 
-		}elseif(defined(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name))); 
-		}else{
-			return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
-	    }
+		return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
 	}
 
 	public static function getEnchantAbility(Item $item){
@@ -279,6 +296,7 @@ class Enchantment{
 			case self::TYPE_BOW_INFINITY:
 				return 1;
 		}
+
 		return 0;
 	}
 
@@ -324,38 +342,22 @@ class Enchantment{
 			case self::TYPE_FISHING_LURE:
 				return 3;
 		}
+
 		return 999;
 	}
 
-	private $id;
-	private $level = 1;
-	private $name;
-	private $rarity;
-	private $activationType;
-	private $slot;
+	public static function getRandomName(){
+		$count = mt_rand(3, 6);
+		$set = [];
+		while(count($set) < $count){
+			$set[] = self::$words[mt_rand(0, count(self::$words) - 1)];
+		}
 
-	private function __construct($id, $name, $rarity, $activationType, $slot){
-		$this->id = (int) $id;
-		$this->name = (string) $name;
-		$this->rarity = (int) $rarity;
-		$this->activationType = (int) $activationType;
-		$this->slot = (int) $slot;
-	}
-
-	public function getId(){
-		return $this->id;
+		return implode(" ", $set);
 	}
 
 	public function getName() : string{
 		return $this->name;
-	}
-
-	public function getRarity(){
-		return $this->rarity;
-	}
-
-	public function getActivationType(){
-		return $this->activationType;
 	}
 
 	public function getSlot(){
@@ -364,6 +366,18 @@ class Enchantment{
 
 	public function hasSlot($slot){
 		return ($this->slot & $slot) > 0;
+	}
+
+	public function equals(Enchantment $ent){
+		if($ent->getId() == $this->getId() and $ent->getLevel() == $this->getLevel() and $ent->getActivationType() == $this->getActivationType() and $ent->getRarity() == $this->getRarity()){
+			return true;
+		}
+
+		return false;
+	}
+
+	public function getId(){
+		return $this->id;
 	}
 
 	public function getLevel(){
@@ -376,19 +390,11 @@ class Enchantment{
 		return $this;
 	}
 
-	public function equals(Enchantment $ent){
-		if($ent->getId() == $this->getId() and $ent->getLevel() == $this->getLevel() and $ent->getActivationType() == $this->getActivationType() and $ent->getRarity() == $this->getRarity()){
-			return true;
-		}
-		return false;
+	public function getActivationType(){
+		return $this->activationType;
 	}
 
-	public static function getRandomName(){
-		$count = mt_rand(3, 6);
-		$set = [];
-		while(count($set) < $count){
-			$set[] = self::$words[mt_rand(0, count(self::$words) - 1)];
-		}
-		return implode(" ", $set);
+	public function getRarity(){
+		return $this->rarity;
 	}
 }
