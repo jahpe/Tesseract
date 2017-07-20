@@ -27,8 +27,8 @@ class InvisibleBedrock extends Transparent {
 
 	protected $id = self::INVISIBLE_BEDROCK;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getName() : string{

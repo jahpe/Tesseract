@@ -29,8 +29,8 @@ class EndPortal extends Transparent {
 
 	protected $id = Block::END_PORTAL;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getName(){

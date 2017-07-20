@@ -33,7 +33,8 @@ class Portal extends Transparent {
 	/** @var  Vector3 */
 	private $temporalVector = null;
 
-	public function __construct(){
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 		if($this->temporalVector === null){
 			$this->temporalVector = new Vector3(0, 0, 0);
 		}

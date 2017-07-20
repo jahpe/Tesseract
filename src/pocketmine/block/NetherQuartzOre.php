@@ -28,8 +28,8 @@ use pocketmine\item\enchantment\Enchantment;
 class NetherQuartzOre extends Solid {
 	protected $id = self::NETHER_QUARTZ_ORE;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getName() : string{
