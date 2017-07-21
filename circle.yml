@@ -1,9 +1,13 @@
 machine:
   pre:
-    - sudo apt-get update; USE_PRECOMPILE=true sudo -E circleci-install php 7.1.0
+    - mkdir plugins
+ - pecl install channel://pecl.php.net/pthreads-3.1.6
+ - pecl install channel://pecl.php.net/weakref-0.3.3
+ - echo | pecl install channel://pecl.php.net/yaml-2.0.0
+ - chmod 777 ci.sh
   php:
-    version: 7.1.0
+    version: 7.0.0
 
 test:
   override:
-    - php --version
+     - ./ci.sh
